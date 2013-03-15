@@ -25,5 +25,9 @@ class Piece{
 		type = t;
 	}
 
-
+	public Piece(Piece p){
+		type = p.type;
+		row = p.row;
+		column = p.column;
+	}
 }

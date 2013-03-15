@@ -1,20 +1,66 @@
 class Board{
 
+	public class invalidFirstPiece extends Exception{
+		public invalidFirstPiece(){
+		}
+	}
+	Exception invalidSecondPiece;
+
 	//enum Player {Player1, Player2}
 
 	private int rows;
 	private int columns;
 
+	String whiteMoves;
+	String blackMoves;
+
 	public Piece.Type activePlayer;
 
 	Piece[][] array;
 
-	public Board(int row, int col){
+	public int numberRemaining(Piece.Type type){
+		int count = 0;
+		for(int i = 0; i < rows; i++){
+			for(int j = 0; j < columns; j++){
+				if(array[i][j].type == type){
+					count++;
+				}
+			}
+		}
+		return count;
+	}
+
+	public int numberRemaining(Piece[][] arr, Piece.Type type){
+		int count = 0;
+		for(int i = 0; i < rows; i++){
+			for(int j = 0; j < columns; j++){
+				if(arr[i][j].type == type){
+					count++;
+				}
+			}
+		}
+		return count;
+	}
+
+	public Board copyBoard(){
+		Board b;
+		if(activePlayer == Piece.Type.WHITE){
+			b = new Board(rows, columns, array, Piece.Type.WHITE);
+		}
+		else{
+			b = new Board(rows, columns, array, Piece.Type.BLACK);
+		}
+		return b;
+	}
+
+	public Board(int row, int col, Piece.Type type){
 
 		rows = row;
 		columns = col;
 		activePlayer = Piece.Type.WHITE;
-
+		whiteMoves = "";
+		blackMoves = "";
+		activePlayer = type;
 
 		array = new Piece[rows][columns];
 
@@ -43,24 +89,39 @@ class Board{
 				}
 			}
 		}
+	}
 
-		// System.out.println("Possible moves: "+possibleMoves(array[3][4]));
-		//System.out.println("connected moves: "+connectedSpaces(array[3][4]));
-		//System.out.println("Possible moves: "+possibleMoves(array[3][4]));
+	public Board(int row, int col, Piece[][] arr, Piece.Type type){
+
+		rows = row;
+		columns = col;
+		activePlayer = Piece.Type.WHITE;
+		whiteMoves = "";
+		blackMoves = "";
+		activePlayer = type;
+
+		array = new Piece[rows][columns];
+		for(int i = 0; i < rows; i++){
+			for(int j = 0; j < columns; j++){
+				array[i][j] = new Piece(arr[i][j]);
+			}
+		}
 	}
 
 	void movePiece(int row, int col, int row2, int col2, char type){
 
-		//System.out.println("Strongly connected: "+array[row][col].stronglyConnected);
-
+		//System.out.println("Inside move");
+		//System.out.println("Active player: "+activePlayer);
 		if(array[row][col].type != activePlayer){
-			//not correct player, probably throw exception
 			System.out.println("Invalid move");
-			return;
+			//throw new invalidFirstPiece();
 		}
 
 		if(array[row][col].type == Piece.Type.NULL){
 			//problem
+
+
+
 		}
 
 		if(array[row2][col2].type != Piece.Type.NULL){
@@ -240,12 +301,22 @@ class Board{
 		return s;
 	}
 
-	public boolean isPossibleMove(int _row, int _col,String s){
+	public boolean isPossibleMove(int _row, int _col,String s, char type){
+
+		//prettyprint();
 
 		int row = (int) s.charAt(0) -48;
 		int col = (int) s.charAt(1) -48;
 
+		//String moves = possibleMoves(array[_row][_col]);
+
+		//if(!moves.contains(""+_row+_col+" "+row+col)){
+		//	System.out.println("exiting");
+		//	return false;
+		//}
+
 		Piece.Type t = array[_row][_col].type;
+		//System.out.println("row: "+row+"  col: "+col);
 
 		if(t == Piece.Type.WHITE){
 			if(array[row][col].type == Piece.Type.NULL){
@@ -260,47 +331,69 @@ class Board{
 		return false;
 	}
 
-	public boolean isPossibleCapturingMove(int _row, int _col,String s){
+	public boolean isPossibleCapturingMove(int _row, int _col,String s,char type){
+
+		Piece.Type other;
+		if(activePlayer == Piece.Type.WHITE){
+			other = Piece.Type.BLACK;
+		}
+		else{
+			other = Piece.Type.WHITE;
+		}
+
+		Board tester = copyBoard();
+		int temp = numberRemaining(other);
+
+		tester.prettyprint();
+
 		int row = (int) s.charAt(0) -48;
 		int col = (int) s.charAt(1) -48;
 
-		Piece.Type t = array[_row][_col].type;
+		tester.movePiece(_row,_col,row,col,type);
+		int temp2 = tester.numberRemaining(other);
+		System.out.println("temp: "+temp+"  temp2: "+temp2);
 
-		int nextrow = (row-_row)+row;
-		int nextcol = (col-_col)+col;
-
-		String next = (""+nextrow+nextcol);
-
-		//System.out.println("test: "+connectedSpaces(array[row][col]).contains(next));
-
-		//System.out.println("row: "+row+"  col: "+col+"  _row: "+_row+"  _col: "+_col);
-
-		//System.out.println("Next row: "+nextrow);
-		//System.out.println("Next col: "+nextcol);
-
-
-		if(array[row][col].type == Piece.Type.NULL){
-			return true;
-		}
-
+		if(temp2 < temp) return true;
 		return false;
+
+		// Piece.Type t = array[_row][_col].type;
+
+		// int nextrow = (row-_row)+row;
+		// int nextcol = (col-_col)+col;
+
+		// String next = (""+nextrow+nextcol);
+
+		// //System.out.println("test: "+connectedSpaces(array[row][col]).contains(next));
+
+		// //System.out.println("row: "+row+"  col: "+col+"  _row: "+_row+"  _col: "+_col);
+
+		// //System.out.println("Next row: "+nextrow);
+		// //System.out.println("Next col: "+nextcol);
+
+
+		// if(array[row][col].type == Piece.Type.NULL){
+		// 	return true;
+		// }
+
+		// return false;
 	}
 
 	boolean capturingMoveAvailable(){
 		for(int i = 0; i < rows; i++){
 			for(int j = 0; j < columns; j++){
 				if(array[i][j].type == activePlayer){
-					//System.out.println("piece: "+i+", "+j+"  "+possibleMoves(array[i][j]));
+					System.out.println("piece: "+i+", "+j+"  "+possibleMoves(array[i][j]));
 					String s = possibleMoves(array[i][j]);
 					int length = s.length()/3;
 					for(int k = 0; k < length; k++){
 						int row = (int) s.charAt(1) -48;
 						int col = (int) s.charAt(2) -48;
-						//System.out.println("row: "+row+"  col: "+col);
+						System.out.println("row: "+row+"  col: "+col);
 						s = s.substring(3);
 						String move = ""+row+col;
 						//System.out.println(isPossibleCapturingMove(i,j,move));
-						if(isPossibleCapturingMove(i,j,move)) return true;
+						if(isPossibleCapturingMove(i,j,move,'a')) return true;
+						if(isPossibleCapturingMove(i,j,move,'w')) return true;
 					}
 				}
 			}
@@ -318,7 +411,7 @@ class Board{
 		for(int i = 0; i < connected.length()/3;i++){
 			String move = ""+connected.charAt(temp)+connected.charAt(temp+1);
 			temp+=3;
-			if(isPossibleMove(p.row, p.column,move)){
+			if(isPossibleMove(p.row, p.column,move,' ')){
 				possible+=" "+move;
 			}
 		}
