@@ -1,21 +1,30 @@
 import java.util.ArrayList;
 
-public class MiniMaxTree<T extends Evaluatable> {
+public class MiniMaxTree {
 	Node root;
 	
 	public class Node {
 		Node parent;
-		T state;
+		boolean isMaximizeNode;
+		Evaluatable state;
 		int utilityValue = 0;
 		ArrayList<Node> children;
 		
-		Node(Node _parent, T _state) {
+		Node(Node _parent, Evaluatable _state, boolean _isMaximizeNode) {
 			parent = _parent;
 			state = _state;
+			isMaximizeNode = _isMaximizeNode;
 		}
 		
-		void addChild(Node _child) {
-			children.add(_child);
+		void createChildren() {
+			ArrayList<Evaluatable> childStates = state.getSubsequentStates();
+			for (Evaluatable i: childStates) {
+				addChild(i);
+			}
+		}
+		
+		void addChild(Evaluatable childState) {
+			children.add(new Node(this, childState, !(isMaximizeNode)));
 		}
 		
 		void generateUtilityValue() {
@@ -23,20 +32,18 @@ public class MiniMaxTree<T extends Evaluatable> {
 		}
 	}
 	
-	MiniMaxTree(T state) {
-		root = new Node(null, state);
+	MiniMaxTree(Evaluatable initialState) {
+		/* TODO How to determine if first row is max or min? */
+		root = new Node(null, initialState, true);
 	}
 	
-	/* TODO Needed? Or use lazy evaluation? */
-	private void populateToDepth(int depth) {
-		
-	}
-	
-	void alphaCut() {
-		
-	}
-	
-	void betaCut() {
-		
+	void processToDepth(int howDeep) {
+		int depthCounter = howDeep;
+		Node currentNode = root;
+		/* Go until depthCounter = 1 */
+		while (depthCounter != 1) {
+			currentNode.createChildren();
+			/* Not done */
+		}
 	}
 }
