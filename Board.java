@@ -1,13 +1,5 @@
 class Board{
 
-	public class invalidFirstPiece extends Exception{
-		public invalidFirstPiece(){
-		}
-	}
-	Exception invalidSecondPiece;
-
-	//enum Player {Player1, Player2}
-
 	private int rows;
 	private int columns;
 
@@ -110,24 +102,6 @@ class Board{
 
 	void movePiece(int row, int col, int row2, int col2, char type){
 
-		//System.out.println("Inside move");
-		//System.out.println("Active player: "+activePlayer);
-		if(array[row][col].type != activePlayer){
-			System.out.println("Invalid move");
-			//throw new invalidFirstPiece();
-		}
-
-		if(array[row][col].type == Piece.Type.NULL){
-			//problem
-
-
-
-		}
-
-		if(array[row2][col2].type != Piece.Type.NULL){
-			//problem
-		}
-
 		String direction = "";
 		if(row == row2){
 			if(col < col2) direction = "E";
@@ -145,10 +119,6 @@ class Board{
 			if(col < col2) direction = "SE";
 			else direction = "SW";
 		}
-
-		//System.out.println("direction: "+direction);
-
-		//System.out.println("row: "+row+"  col: "+col+"   row2: "+row2+"  col2: "+col2);
 
 		Piece.Type other;
 
@@ -251,12 +221,6 @@ class Board{
 		}
 
 		if(p.stronglyConnected){
-			// if(p.row == 0 && row%2==0 && col != columns-1){
-			// 	s+=" "+(row+1)+(col+1);
-			// }
-			// if(col%2 == 0 && row != 0){
-			// 	s+=" "+(row-1)+(col+1);
-			// }
 			if(row != 0 && row != rows-1){
 				if(col != columns-1 && col != 0){
 					s+=" "+(row+1)+(col+1);
@@ -303,17 +267,12 @@ class Board{
 
 	public boolean isPossibleMove(int _row, int _col,String s, char type){
 
-		//prettyprint();
-
 		int row = (int) s.charAt(0) -48;
 		int col = (int) s.charAt(1) -48;
 
-		//String moves = possibleMoves(array[_row][_col]);
-
-		//if(!moves.contains(""+_row+_col+" "+row+col)){
-		//	System.out.println("exiting");
-		//	return false;
-		//}
+		if(array[_row][_col].type != activePlayer){
+			return false;
+		}
 
 		Piece.Type t = array[_row][_col].type;
 		//System.out.println("row: "+row+"  col: "+col);
@@ -342,56 +301,60 @@ class Board{
 		}
 
 		Board tester = copyBoard();
-		int temp = numberRemaining(other);
+		int temp = tester.numberRemaining(other);
 
-		tester.prettyprint();
+		//tester.prettyprint();
 
 		int row = (int) s.charAt(0) -48;
 		int col = (int) s.charAt(1) -48;
 
 		tester.movePiece(_row,_col,row,col,type);
 		int temp2 = tester.numberRemaining(other);
-		System.out.println("temp: "+temp+"  temp2: "+temp2);
 
 		if(temp2 < temp) return true;
 		return false;
+	}
 
-		// Piece.Type t = array[_row][_col].type;
+	boolean capturingMoveAvailable(Piece p){
+		String latestMove = "";
+		if(activePlayer == Piece.Type.WHITE && whiteMoves.length() != 0){
+			int temp = whiteMoves.lastIndexOf("\n");
+			if(temp != -1)
+				latestMove = whiteMoves.substring(temp);
+		}
+		else if(activePlayer == Piece.Type.BLACK && blackMoves.length() != 0){
+			int temp = blackMoves.lastIndexOf("\n");
+			if(temp != -1)
+				latestMove = blackMoves.substring(temp);
+		}
 
-		// int nextrow = (row-_row)+row;
-		// int nextcol = (col-_col)+col;
-
-		// String next = (""+nextrow+nextcol);
-
-		// //System.out.println("test: "+connectedSpaces(array[row][col]).contains(next));
-
-		// //System.out.println("row: "+row+"  col: "+col+"  _row: "+_row+"  _col: "+_col);
-
-		// //System.out.println("Next row: "+nextrow);
-		// //System.out.println("Next col: "+nextcol);
-
-
-		// if(array[row][col].type == Piece.Type.NULL){
-		// 	return true;
-		// }
-
-		// return false;
+		String s = possibleMoves(p);
+		int length = s.length()/3;
+		for(int k = 0; k < length; k++){
+			int row = (int) s.charAt(1) -48;
+			int col = (int) s.charAt(2) -48;
+			s = s.substring(3);
+			String move = ""+row+col;
+			if(isPossibleCapturingMove(p.row,p.column,move,'a')){
+				System.out.println(p.row+" "+p.column+" "+move);
+				return true;
+			}
+			if(isPossibleCapturingMove(p.row,p.column,move,'w')) return true;
+		}
+		return false;
 	}
 
 	boolean capturingMoveAvailable(){
 		for(int i = 0; i < rows; i++){
 			for(int j = 0; j < columns; j++){
 				if(array[i][j].type == activePlayer){
-					System.out.println("piece: "+i+", "+j+"  "+possibleMoves(array[i][j]));
 					String s = possibleMoves(array[i][j]);
 					int length = s.length()/3;
 					for(int k = 0; k < length; k++){
 						int row = (int) s.charAt(1) -48;
 						int col = (int) s.charAt(2) -48;
-						System.out.println("row: "+row+"  col: "+col);
 						s = s.substring(3);
 						String move = ""+row+col;
-						//System.out.println(isPossibleCapturingMove(i,j,move));
 						if(isPossibleCapturingMove(i,j,move,'a')) return true;
 						if(isPossibleCapturingMove(i,j,move,'w')) return true;
 					}
@@ -422,8 +385,6 @@ class Board{
 	public void prettyprint(){
 
 		String line2 = "--------------------------------------------";
-
-		System.out.println("Active player: "+activePlayer);
 
 		char c = 'A';
 		for(int i = 0; i < columns; i++){
@@ -471,6 +432,8 @@ class Board{
 				System.out.println(line+" |");
 			}
 		}
+		System.out.println();
+		System.out.println("Active player: "+activePlayer);
 		System.out.println();
 	}
 }

@@ -7,11 +7,10 @@
 
 
 	Possible input format:
-		Upon prompt for input, play lists the move as such:
-			[row][column] [row2][column2] [w/a/f]
+		[row][column] [row2][column2] [w/a/f]
 
-			Where [row][column] is the piece to move, [row2][column2] is the place to move it, and
-			[w/d] indicates whether this move is to be a withdrawal capture, approach capture, or capture-free move
+		Where [row][column] is the piece to move, [row2][column2] is the place to move it, and
+		[w/a/f] indicates whether this move is to be a withdrawal capture, approach capture, or capture-free move
 
 	If a capturing move is possible, a capturing move must be taken
 
@@ -37,25 +36,55 @@ class Fanorona{
 
 	boolean capturingMoveAvailable(){
 
-		board.capturingMoveAvailable();
-
-		return true;
+		return board.capturingMoveAvailable();
 	}
 
-	public void move(int row1, int col1, int row2, int col2, char type){
+	//returns true if a successive capture is possible, false otherwise
+	public boolean move(int row1, int col1, int row2, int col2, char type){
 	
 		String s = ""+row2+col2;
 
-		//boolean needToCapture = capturingMoveAvailable();
-
-		//boolean valid = board.isPossibleMove(row1,row2,s);
 		boolean valid = board.isPossibleMove(row1,col1,s, type);
+
 		//check to see if move is valid
-		//System.out.println("type: "+type);
 		if(valid){
 			System.out.println("valid");
+			Piece.Type temp = board.activePlayer;
 			board.movePiece(row1,col1,row2,col2,type);
+			board.activePlayer = temp;
+
+			if(board.activePlayer == Piece.Type.WHITE){
+				board.whiteMoves += ""+row1+col1+">"+row2+col2;
+			}
+			else{
+				board.blackMoves += ""+row1+col1+">"+row2+col2;
+			}
+
+			if(board.capturingMoveAvailable(board.array[row2][col2])){
+				System.out.println("Successive capture available");
+				return true;
+			}
+
+			if(board.activePlayer == Piece.Type.WHITE){
+				board.whiteMoves += "\n";
+			}
+			else{
+				board.blackMoves += "\n";
+			}
+
+			if(temp == Piece.Type.WHITE){
+				board.activePlayer = Piece.Type.BLACK;
+			}
+			else{
+				board.activePlayer = Piece.Type.WHITE;
+			}
+
+			return false;
 		}
+		else{
+			System.out.println("Invalid move entered");
+		}
+		return false;
 	}
 
 	Piece.Type activePlayer(){
