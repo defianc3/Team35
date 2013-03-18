@@ -9,9 +9,8 @@ class Main{
 
 		game.prettyprint();
 
-		boolean endGame = false;
-		while(!endGame){
-
+		int turn = 0;
+		while(true){
 			if(game.capturingMoveAvailable()) System.out.println("Capturing move required");
 			System.out.print("Enter a move: ");
 
@@ -105,6 +104,11 @@ class Main{
 	      		}
       		}
 		  	game.prettyprint();
+		  	/* TODO Is this the correct spot for this to break? */
+		  	turn++;
+		  	if (turn == 25) {
+		  		break;
+		  	}
 		}
 	}
 }
