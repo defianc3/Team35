@@ -4,22 +4,6 @@ public class MiniMaxTree {
 	Node root;
 	
 	public class Node {
-		public int getAlpha() {
-			return alpha;
-		}
-
-		public void setAlpha(int alpha) {
-			this.alpha = alpha;
-		}
-
-		public int getBeta() {
-			return beta;
-		}
-
-		public void setBeta(int beta) {
-			this.beta = beta;
-		}
-
 		Node parent;
 		boolean isMaximizeNode;
 		Evaluatable state;
@@ -103,6 +87,26 @@ public class MiniMaxTree {
 			return parent;
 		}
 		
+		int getAlpha() {
+			return alpha;
+		}
+
+		void setAlpha(int alpha) {
+			this.alpha = alpha;
+		}
+
+		int getBeta() {
+			return beta;
+		}
+
+		void setBeta(int beta) {
+			this.beta = beta;
+		}
+		
+		Evaluatable getState() {
+			return state;
+		}
+		
 	}
 	
 	MiniMaxTree(Evaluatable initialState) {
@@ -124,17 +128,16 @@ public class MiniMaxTree {
 				}
 				/* TODO Should null be a special case? */
 			}
-		} else if (depth == 1) {
+		} else {
 			/* Leaf nodes */
 			int utilityValue = node.generateUtilityValue();
 			node.parent.setNewUtilityValueIfBetter(utilityValue);
 			generateTree(node.getParent(), depth+1);
-		} else {
-			/* This point should not be reached */
 		}
 	}
 	
-	void processToDepth(int howDeep) {
+	Evaluatable processToDepth(int howDeep) {
 		generateTree(root, howDeep);
+		return root.getState();
 	}
 }
