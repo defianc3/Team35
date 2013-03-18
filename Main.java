@@ -1,4 +1,3 @@
-import java.io.*;
 import java.util.Scanner;
 
 class Main{
@@ -30,6 +29,8 @@ class Main{
 
 			if(c.equals("quit")){
 				System.out.println("\nExiting\n\n");
+				scan.close();
+				scan2.close();
 				System.exit(0);
 			}
 			else if(c.equals("moves")){
@@ -37,9 +38,6 @@ class Main{
 				System.out.println("\nblack: "+game.board.blackMoves);
 			}
 			else{
-
-
-
 				try {
 		        	piece1 = scan.nextInt();
 		        	piece2 = scan.nextInt();

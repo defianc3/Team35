@@ -93,8 +93,8 @@ class Fanorona implements Evaluatable{
 	
 	@Override
 	public int evaluate() {
-		// TODO Auto-generated method stub
-		return 0;
+		return board.numberRemaining(Piece.Type.WHITE) -
+				board.numberRemaining(Piece.Type.BLACK);
 	}
 
 	@Override
