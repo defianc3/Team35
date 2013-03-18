@@ -1,7 +1,7 @@
 class Board{
 
-	private int rows;
-	private int columns;
+	public int rows;
+	public int columns;
 
 	String whiteMoves;
 	String blackMoves;
@@ -319,6 +319,7 @@ class Board{
 
 		tester.movePiece(_row,_col,row,col,type);
 		int temp2 = tester.numberRemaining(other);
+		//System.out.println("temp: "+temp+"temp2: "+temp2);
 
 		if(temp2 < temp) return true;
 		return false;
@@ -380,6 +381,7 @@ class Board{
 		String possible = "";
 
 		int temp = 1;
+		int count = 0;
 		for(int i = 0; i < connected.length()/3;i++){
 			String move = ""+connected.charAt(temp)+connected.charAt(temp+1);
 			temp+=3;
@@ -388,6 +390,29 @@ class Board{
 			}
 		}
 		return possible;
+	}
+
+	public String PossibleCapturingMoves(Piece p){
+		String connected = possibleMoves(p);
+
+		//System.out.println(connected);
+
+		String possiblecapt = "";
+		int temp = 1;
+		for(int i = 0; i < connected.length()/3; i++){
+			String move = ""+connected.charAt(temp)+connected.charAt(temp+1);
+			//System.out.println(move);
+			temp += 3;
+
+			if(isPossibleCapturingMove(p.row, p.column,move,'a')){
+				possiblecapt+=" "+move;
+			}
+
+			if(isPossibleCapturingMove(p.row, p.column,move,'w')){
+				possiblecapt+=" "+move;
+			}
+		}
+		return possiblecapt;
 	}
 
 

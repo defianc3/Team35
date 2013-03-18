@@ -13,10 +13,15 @@ class Main{
 		int turn = 0;
 		while(true){
 			game.printScore();
+			String move = "";
 			if(game.capturingMoveAvailable()) System.out.println("Capturing move required");
+			if(game.activePlayer() == Piece.Type.BLACK){
+				//random
+				//move = game.getRandomMove();
+				//System.out.println("Black move: "+move);
+			}
 			System.out.print("Enter a move: ");
 
-			String move = "";
 			int pieceInt1 = -1;
 			int pieceInt2 = -1;
 

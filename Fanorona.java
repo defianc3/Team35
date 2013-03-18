@@ -92,6 +92,31 @@ class Fanorona implements Evaluatable{
 		return false;
 	}
 
+	public String getRandomMove(){
+		String ret = "";
+		for(int i = 0; i < board.rows; i++){
+			for(int j = 0; j < board.columns; j++){
+				String move = board.PossibleCapturingMoves(board.array[i][j]);
+				//System.out.println("Fanorona move: "+move);
+				Piece p = board.array[i][j];
+				//System.out.println(move.length());
+				if(move.length() > 0){
+					String movetest = ""+p.row+p.column+" "+(move.charAt(1))+""+(move.charAt(2));
+					if(isPossibleCapturingMove(p.row, p.column, move.charAt(1), move.charAt(2), 'a')){
+						ret = ""+p.row+p.column+" "+(move.charAt(1))+""+(move.charAt(2))+" a";
+						break;
+					}
+					else if(isPossibleCapturingMove(p.row, p.column, move.charAt(1), move.charAt(2), 'w')){
+						ret = ""+p.row+p.column+" "+(move.charAt(1))+""+(move.charAt(2)) + " w";
+						break;
+					}
+				}
+			}
+		}
+		//System.out.println("ret: "+ret);
+		return ret;
+	}
+
 	Piece.Type activePlayer(){
 		return board.activePlayer;
 	}

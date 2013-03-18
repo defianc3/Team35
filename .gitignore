@@ -179,3 +179,5 @@ Board$Player.class
 #compile.sh#
 
 #compile.sh#
+
+*.class
