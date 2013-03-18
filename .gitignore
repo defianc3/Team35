@@ -161,3 +161,21 @@ pip-log.txt
 
 # Mac crap
 .DS_Store
+
+Piece$Type.class
+
+Main.class
+
+Piece.class
+
+Fanorona.class
+
+Board.class
+
+Board$invalidFirstPiece.class
+
+Board$Player.class
+
+#compile.sh#
+
+#compile.sh#
