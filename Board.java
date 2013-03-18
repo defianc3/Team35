@@ -22,6 +22,15 @@ class Board{
 		return count;
 	}
 
+	public void printScore(Piece.Type ty){
+		if(ty == Piece.Type.WHITE){
+			System.out.println("White score: "+numberRemaining(ty));
+		}
+		else if(ty == Piece.Type.BLACK){
+			System.out.println("Black score: "+numberRemaining(ty));
+		}
+	}
+
 	public int numberRemaining(Piece[][] arr, Piece.Type type){
 		int count = 0;
 		for(int i = 0; i < rows; i++){

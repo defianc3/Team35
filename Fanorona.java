@@ -30,6 +30,11 @@ class Fanorona implements Evaluatable{
 		board.prettyprint();
 	}
 
+	void printScore(){
+		board.printScore(Piece.Type.WHITE);
+		board.printScore(Piece.Type.BLACK);
+	}
+
 	boolean isPossibleCapturingMove(int row1, int col1, int row2, int col2, char type){
 		return board.isPossibleCapturingMove(row1, col1, ""+row2+col2, type);
 	}

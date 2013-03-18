@@ -3,7 +3,8 @@ import java.util.Scanner;
 class Main{
 	public static void main(String args[]){
 
-		System.out.println("\nX=black  0=white, N='null'(no piece)\n");
+		System.out.println("\nWelcome to Team35's Fanorona game");
+		System.out.println("X=black  0=white, N='null'(no piece)\n");
 
 		Fanorona game = new Fanorona(5,9);
 
@@ -11,6 +12,7 @@ class Main{
 
 		int turn = 0;
 		while(true){
+			game.printScore();
 			if(game.capturingMoveAvailable()) System.out.println("Capturing move required");
 			System.out.print("Enter a move: ");
 
@@ -35,6 +37,10 @@ class Main{
 			else if(playerInput.equals("moves")){
 				System.out.println("\nwhite: "+game.board.whiteMoves);
 				System.out.println("\nblack: "+game.board.blackMoves);
+			}
+			else if(playerInput.equals("reset")){
+				game = new Fanorona(5,9);
+				System.out.println("Starting a new game");
 			}
 			else{
 				try {
@@ -70,9 +76,6 @@ class Main{
 			      	char moveType = move.charAt(6);
 
 			      	boolean valid = true;
-			      	// if(!Character.isDigit(move.charAt(0)) || !Character.isDigit(move.charAt(1)) || !Character.isDigit(move.charAt(3)) || !Character.isDigit(move.charAt(4))){
-			      	// 	valid=false;
-			      	// }
 
 			      	if(row1 > 4 || row1 < 0 || row2 > 4 || row2 < 0 || col1 < 0 || col1 > 8 || col2 < 0 || col2 > 8 || !(moveType == 'a' || moveType == 'w' || moveType == 'f')){
 			      		valid = false;
@@ -83,8 +86,6 @@ class Main{
 			      	else{
 			      		if(game.capturingMoveAvailable()){
 				      		if(game.isPossibleCapturingMove(row1, col1, row2, col2, moveType)){
-				      			System.out.println("inside here");
-				      			System.out.println("is a capturing move");
 				      			boolean successiveMove = game.move(row1, col1, row2, col2, moveType);
 				      			if(successiveMove){
 
@@ -96,6 +97,14 @@ class Main{
 				      	}
 				      	else{
 				      		game.move(row1,col1,row2,col2,moveType);
+				      		if(game.board.numberRemaining(Piece.Type.WHITE) == 0){
+				      			System.out.println("Black victory");
+				      			break;
+				      		}
+				      		else if(game.board.numberRemaining(Piece.Type.BLACK) == 0){
+				      			System.out.println("White victory");
+				      			break;
+				      		}
 				      	}
 			      	}
 			   	}
@@ -107,6 +116,7 @@ class Main{
 		  	/* TODO Is this the correct spot for this to break? */
 		  	turn++;
 		  	if (turn == 25) {
+		  		System.out.println("Maximum turns reached");
 		  		break;
 		  	}
 		}
