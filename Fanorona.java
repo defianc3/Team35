@@ -18,7 +18,7 @@
 
 
 
-class Fanorona{
+class Fanorona implements Evaluatable{
 
 	public Board board;
 
@@ -89,5 +89,17 @@ class Fanorona{
 
 	Piece.Type activePlayer(){
 		return board.activePlayer;
+	}
+	
+	@Override
+	public int evaluate() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Evaluatable getNextState() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
