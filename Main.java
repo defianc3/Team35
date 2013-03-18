@@ -16,66 +16,66 @@ class Main{
 			System.out.print("Enter a move: ");
 
 			String move = "";
-			int piece1 = -1;
-			int piece2 = -1;
+			int pieceInt1 = -1;
+			int pieceInt2 = -1;
 
-			String spiece1 = "";
-			String spiece2 = "";
+			String pieceStr1 = "";
+			String pieceStr2 = "";
 
-			String c = "";
+			String playerInput = "";
 			Scanner scan2 = new Scanner(System.in);
-			c = scan2.nextLine();
-			Scanner scan = new Scanner(c);
+			playerInput = scan2.nextLine();
+			Scanner scan = new Scanner(playerInput);
 
-			if(c.equals("quit")){
+			if(playerInput.equals("quit")){
 				System.out.println("\nExiting\n\n");
 				scan.close();
 				scan2.close();
 				System.exit(0);
 			}
-			else if(c.equals("moves")){
+			else if(playerInput.equals("moves")){
 				System.out.println("\nwhite: "+game.board.whiteMoves);
 				System.out.println("\nblack: "+game.board.blackMoves);
 			}
 			else{
 				try {
-		        	piece1 = scan.nextInt();
-		        	piece2 = scan.nextInt();
+		        	pieceInt1 = scan.nextInt();
+		        	pieceInt2 = scan.nextInt();
 
-		        	spiece1 = Integer.toString(piece1);
-		        	spiece2 = Integer.toString(piece2);
+		        	pieceStr1 = Integer.toString(pieceInt1);
+		        	pieceStr2 = Integer.toString(pieceInt2);
 
-		        	if(piece1 < 10){
-		        		spiece1 = "0"+spiece1;
+		        	if(pieceInt1 < 10){
+		        		pieceStr1 = "0"+pieceStr1;
 		        	}
-		        	if(spiece1.length() != 2){
-		        		spiece1 = spiece1+="0";
-		        	}
-
-		        	if(piece2 < 10){
-		        		spiece2 = "0"+spiece2;
-		        	}
-		        	if(spiece2.length() != 2){
-		        		spiece2 = spiece2+="0";
+		        	if(pieceStr1.length() != 2){
+		        		pieceStr1 = pieceStr1+="0";
 		        	}
 
-		        	c = scan.nextLine();
+		        	if(pieceInt2 < 10){
+		        		pieceStr2 = "0"+pieceStr2;
+		        	}
+		        	if(pieceStr2.length() != 2){
+		        		pieceStr2 = pieceStr2+="0";
+		        	}
+
+		        	playerInput = scan.nextLine();
 
 
-			      	move = spiece1 + " " + spiece2 + c;
+			      	move = pieceStr1 + " " + pieceStr2 + playerInput;
 
 			      	int row1 = move.charAt(0)-48;
 			      	int col1 = move.charAt(1)-48;
 			      	int row2 = move.charAt(3)-48;
 			      	int col2 = move.charAt(4)-48;
-			      	char c2 = move.charAt(6);
+			      	char moveType = move.charAt(6);
 
 			      	boolean valid = true;
 			      	// if(!Character.isDigit(move.charAt(0)) || !Character.isDigit(move.charAt(1)) || !Character.isDigit(move.charAt(3)) || !Character.isDigit(move.charAt(4))){
 			      	// 	valid=false;
 			      	// }
 
-			      	if(row1 > 4 || row1 < 0 || row2 > 4 || row2 < 0 || col1 < 0 || col1 > 8 || col2 < 0 || col2 > 8 || !(c2 == 'a' || c2 == 'w' || c2 == 'f')){
+			      	if(row1 > 4 || row1 < 0 || row2 > 4 || row2 < 0 || col1 < 0 || col1 > 8 || col2 < 0 || col2 > 8 || !(moveType == 'a' || moveType == 'w' || moveType == 'f')){
 			      		valid = false;
 			      	}
 			      	if(!valid){
@@ -83,10 +83,10 @@ class Main{
 			      	}
 			      	else{
 			      		if(game.capturingMoveAvailable()){
-				      		if(game.isPossibleCapturingMove(row1, col1, row2, col2, c2)){
+				      		if(game.isPossibleCapturingMove(row1, col1, row2, col2, moveType)){
 				      			System.out.println("inside here");
 				      			System.out.println("is a capturing move");
-				      			boolean successiveMove = game.move(row1, col1, row2, col2, c2);
+				      			boolean successiveMove = game.move(row1, col1, row2, col2, moveType);
 				      			if(successiveMove){
 
 				      			}
@@ -96,12 +96,12 @@ class Main{
 				      		}
 				      	}
 				      	else{
-				      		game.move(row1,col1,row2,col2,c2);
+				      		game.move(row1,col1,row2,col2,moveType);
 				      	}
 			      	}
 			   	}
 				catch(Exception e){
-	        		System.out.println("IO error");
+	        		System.out.println("Error: " + e.getMessage());
 	      		}
       		}
 		  	game.prettyprint();
