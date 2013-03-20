@@ -20,6 +20,8 @@ public class MiniMaxTree {
 			parent = _parent;
 			state = _state;
 			isMaximizeNode = _isMaximizeNode;
+			alpha = _alphaValue;
+			beta = _betaValue;
 			if (_isMaximizeNode) {
 				utilityValue = -1000000;
 			} else {
