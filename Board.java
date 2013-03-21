@@ -109,7 +109,15 @@ class Board{
 		}
 	}
 
-	void movePiece(int row, int col, int row2, int col2, char type){
+	boolean movePiece(int row, int col, int row2, int col2, char type){
+
+		//System.out.println("moving: "+array[row2][col2].type);
+		if(array[row2][col2].type != Piece.Type.NULL){
+			//System.out.println("Returning false");
+			//System.out.println("moving: "+array[row2][col2].type);
+			//System.out.println("row2: "+row2+"  col2: "+col2);
+			return false;
+		}
 
 		String direction = "";
 		if(row == row2){
@@ -209,6 +217,7 @@ class Board{
 			activePlayer = Piece.Type.WHITE;
 		}
 
+		return true;
 	}
 
 	String connectedSpaces(Piece p){
@@ -313,11 +322,15 @@ class Board{
 		int temp = tester.numberRemaining(other);
 
 		//tester.prettyprint();
+		//System.out.println(s);
 
 		int row = (int) s.charAt(0) -48;
 		int col = (int) s.charAt(1) -48;
 
-		tester.movePiece(_row,_col,row,col,type);
+		boolean valid = tester.movePiece(_row,_col,row,col,type);
+		if(!valid){
+			return false;
+		}
 		int temp2 = tester.numberRemaining(other);
 		//System.out.println("temp: "+temp+"temp2: "+temp2);
 
@@ -346,7 +359,7 @@ class Board{
 			s = s.substring(3);
 			String move = ""+row+col;
 			if(isPossibleCapturingMove(p.row,p.column,move,'a')){
-				System.out.println(p.row+" "+p.column+" "+move);
+			//	System.out.println(p.row+" "+p.column+" "+move);
 				return true;
 			}
 			if(isPossibleCapturingMove(p.row,p.column,move,'w')) return true;
@@ -435,7 +448,8 @@ class Board{
 					System.out.print("O");
 				}
 				if(array[i][j].type == Piece.Type.NULL){
-					System.out.print("N");
+					//System.out.print("N");
+					System.out.print(" ");
 				}
 				if(j != columns-1){
 					System.out.print("----");

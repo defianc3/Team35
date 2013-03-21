@@ -15,12 +15,7 @@ class Main{
 			game.printScore();
 			String move = "";
 			if(game.capturingMoveAvailable()) System.out.println("Capturing move required");
-			if(game.activePlayer() == Piece.Type.BLACK){
-				//random
-				//move = game.getRandomMove();
-				//System.out.println("Black move: "+move);
-			}
-			System.out.print("Enter a move: ");
+
 
 			int pieceInt1 = -1;
 			int pieceInt2 = -1;
@@ -28,51 +23,77 @@ class Main{
 			String pieceStr1 = "";
 			String pieceStr2 = "";
 
-			String playerInput = "";
-			Scanner scan2 = new Scanner(System.in);
-			playerInput = scan2.nextLine();
-			Scanner scan = new Scanner(playerInput);
+			Scanner scan2;
+			Scanner scan;
 
-			if(playerInput.equals("quit")){
-				System.out.println("\nExiting\n\n");
-				scan.close();
-				scan2.close();
-				System.exit(0);
-			}
-			else if(playerInput.equals("moves")){
-				System.out.println("\nwhite: "+game.board.whiteMoves);
-				System.out.println("\nblack: "+game.board.blackMoves);
-			}
-			else if(playerInput.equals("reset")){
-				game = new Fanorona(5,9);
-				System.out.println("Starting a new game");
+			String playerInput;
+
+			boolean moveturn = true; //indicates that a move as been entered
+
+
+			if(game.activePlayer() == Piece.Type.BLACK){
+				//random
+				move = game.getRandomMove();
+				System.out.println("Black move: "+move);
 			}
 			else{
-				try {
-		        	pieceInt1 = scan.nextInt();
-		        	pieceInt2 = scan.nextInt();
+				System.out.print("Enter a move: ");
 
-		        	pieceStr1 = Integer.toString(pieceInt1);
-		        	pieceStr2 = Integer.toString(pieceInt2);
+				playerInput = "";
+				scan2 = new Scanner(System.in);
+				playerInput = scan2.nextLine();
+				scan = new Scanner(playerInput);
 
-		        	if(pieceInt1 < 10){
-		        		pieceStr1 = "0"+pieceStr1;
-		        	}
-		        	if(pieceStr1.length() != 2){
-		        		pieceStr1 = pieceStr1+="0";
-		        	}
+				if(playerInput.equals("quit")){
+					System.out.println("\nExiting\n\n");
+					scan.close();
+					scan2.close();
+					System.exit(0);
+				}
+				else if(playerInput.equals("moves")){
+					System.out.println("\nwhite: "+game.board.whiteMoves);
+					System.out.println("\nblack: "+game.board.blackMoves);
+					moveturn = false;
+				}
+				else if(playerInput.equals("reset")){
+					moveturn = false;
+					game = new Fanorona(5,9);
+					System.out.println("Starting a new game");
+				}
+				else{
 
-		        	if(pieceInt2 < 10){
-		        		pieceStr2 = "0"+pieceStr2;
-		        	}
-		        	if(pieceStr2.length() != 2){
-		        		pieceStr2 = pieceStr2+="0";
-		        	}
+					try {
+			        	pieceInt1 = scan.nextInt();
+			        	pieceInt2 = scan.nextInt();
 
-		        	playerInput = scan.nextLine();
+			        	pieceStr1 = Integer.toString(pieceInt1);
+			        	pieceStr2 = Integer.toString(pieceInt2);
+
+			        	if(pieceInt1 < 10){
+			        		pieceStr1 = "0"+pieceStr1;
+			        	}
+			        	if(pieceStr1.length() != 2){
+			        		pieceStr1 = pieceStr1+="0";
+			        	}
+
+			        	if(pieceInt2 < 10){
+			        		pieceStr2 = "0"+pieceStr2;
+			        	}
+			        	if(pieceStr2.length() != 2){
+			        		pieceStr2 = pieceStr2+="0";
+			        	}
+
+			        	playerInput = scan.nextLine();
 
 
-			      	move = pieceStr1 + " " + pieceStr2 + playerInput;
+				      	move = pieceStr1 + " " + pieceStr2 + playerInput;
+				    }
+				    catch(Exception e){
+	        			System.out.println("Error: " + e.getMessage());
+	      			}
+	      		}
+	      	}
+	      		if(moveturn){
 
 			      	int row1 = move.charAt(0)-48;
 			      	int col1 = move.charAt(1)-48;
@@ -85,6 +106,7 @@ class Main{
 			      	if(row1 > 4 || row1 < 0 || row2 > 4 || row2 < 0 || col1 < 0 || col1 > 8 || col2 < 0 || col2 > 8 || !(moveType == 'a' || moveType == 'w' || moveType == 'f')){
 			      		valid = false;
 			      	}
+
 			      	if(!valid){
 			      		System.out.println("not valid");
 			      	}
@@ -112,11 +134,7 @@ class Main{
 				      		}
 				      	}
 			      	}
-			   	}
-				catch(Exception e){
-	        		System.out.println("Error: " + e.getMessage());
-	      		}
-      		}
+			    }		    
 		  	game.prettyprint();
 		  	/* TODO Is this the correct spot for this to break? */
 		  	turn++;

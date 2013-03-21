@@ -93,6 +93,19 @@ class Fanorona implements Evaluatable{
 	}
 
 	public String getRandomMove(){
+		int row = 0;
+		int col = 0;
+		boolean successive = false;
+		/* NOTE: eventually this code should be moved to isPossibleCapturingMove */
+		if(board.blackMoves.endsWith("\n") || board.blackMoves.length() == 0){
+			//this is the first move of black's turn, any piece can be moved
+		}
+		else{
+			//this is a successive move
+			row = board.blackMoves.charAt(board.blackMoves.length()-2)-48;
+			col = board.blackMoves.charAt(board.blackMoves.length()-1)-48;
+			successive = true;
+		}
 		String ret = "";
 		for(int i = 0; i < board.rows; i++){
 			for(int j = 0; j < board.columns; j++){
@@ -100,15 +113,21 @@ class Fanorona implements Evaluatable{
 				//System.out.println("Fanorona move: "+move);
 				Piece p = board.array[i][j];
 				//System.out.println(move.length());
-				if(move.length() > 0){
-					String movetest = ""+p.row+p.column+" "+(move.charAt(1))+""+(move.charAt(2));
-					if(isPossibleCapturingMove(p.row, p.column, move.charAt(1), move.charAt(2), 'a')){
-						ret = ""+p.row+p.column+" "+(move.charAt(1))+""+(move.charAt(2))+" a";
-						break;
-					}
-					else if(isPossibleCapturingMove(p.row, p.column, move.charAt(1), move.charAt(2), 'w')){
-						ret = ""+p.row+p.column+" "+(move.charAt(1))+""+(move.charAt(2)) + " w";
-						break;
+				if(successive && (i != row || j != col)){
+
+				}
+				else{
+					if(move.length() > 0){
+						String movetest = ""+p.row+p.column+" "+(move.charAt(1))+""+(move.charAt(2));
+						//System.out.println("movetest: "+movetest);
+						if(isPossibleCapturingMove(p.row, p.column, move.charAt(1)-48, move.charAt(2)-48, 'a')){
+							ret = ""+p.row+p.column+" "+(move.charAt(1))+""+(move.charAt(2))+" a";
+							break;
+						}
+						else if(isPossibleCapturingMove(p.row, p.column, move.charAt(1)-48, move.charAt(2)-48, 'w')){
+							ret = ""+p.row+p.column+" "+(move.charAt(1))+""+(move.charAt(2)) + " w";
+							break;
+						}
 					}
 				}
 			}
