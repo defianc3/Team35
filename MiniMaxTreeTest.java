@@ -16,10 +16,6 @@ public class MiniMaxTreeTest {
 		}
 		
 		public int evaluate() {
-			return 1;
-		}
-		
-		public int getVal() {
 			return val;
 		}
 		
@@ -98,5 +94,36 @@ public class MiniMaxTreeTest {
 		assertEquals(state, rootNode.getState());
 		rootNode.generateUtilityValue();
 		assertEquals(1, rootNode.getUtilityValue());
+	}
+	
+	@Test
+	public void parentChildCreationMax() {
+		MiniMaxTree.Node childNode = rootNode.getNextChild();
+		assertNotNull(childNode);
+		assertEquals(-1000000, rootNode.getUtilityValue());
+		rootNode.generateUtilityValue();
+		assertEquals(1, rootNode.getUtilityValue());
+		assertEquals(1000000, childNode.getUtilityValue());
+		childNode.generateUtilityValue();
+		assertEquals(2, childNode.getUtilityValue());
+		assertEquals(rootNode, childNode.getParent());
+		assertEquals(childNode, rootNode.children.get(0));
+	}
+	
+	@Test
+	public void parentChildCreationMin() {
+		TestEval t = new TestEval(1);
+		MiniMaxTree mmt = new MiniMaxTree(t);
+		rootNode = mmt.new Node(null, t, false, -1000000, 1000000);
+		MiniMaxTree.Node childNode = rootNode.getNextChild();
+		assertNotNull(childNode);
+		assertEquals(1000000, rootNode.getUtilityValue());
+		rootNode.generateUtilityValue();
+		assertEquals(1, rootNode.getUtilityValue());
+		assertEquals(-1000000, childNode.getUtilityValue());
+		childNode.generateUtilityValue();
+		assertEquals(2, childNode.getUtilityValue());
+		assertEquals(rootNode, childNode.getParent());
+		assertEquals(childNode, rootNode.children.get(0));
 	}
 }

@@ -22,6 +22,7 @@ public class MiniMaxTree {
 			isMaximizeNode = _isMaximizeNode;
 			alpha = _alphaValue;
 			beta = _betaValue;
+			children = new ArrayList<Node>();
 			if (_isMaximizeNode) {
 				utilityValue = -1000000;
 			} else {
