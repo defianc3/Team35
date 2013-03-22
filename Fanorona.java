@@ -36,7 +36,7 @@ class Fanorona implements Evaluatable{
 	}
 
 	boolean isPossibleCapturingMove(int row1, int col1, int row2, int col2, char type){
-		return board.isPossibleCapturingMove(row1, col1, ""+row2+col2, type);
+		return board.isPossibleCapturingMove(row1, col1,row2,col2, type);
 	}
 
 	boolean capturingMoveAvailable(){
@@ -46,10 +46,16 @@ class Fanorona implements Evaluatable{
 
 	//returns true if a successive capture is possible, false otherwise
 	public boolean move(int row1, int col1, int row2, int col2, char type){
-	
-		String s = ""+row2+col2;
 
-		boolean valid = board.isPossibleMove(row1,col1,s, type);
+		//boolean valid = board.isPossibleMove(row1,col1,row2, col2, type);
+		boolean valid = false;
+		boolean captAvail = false;
+		if(capturingMoveAvailable() && board.isPossibleCapturingMove(row1,col1,row2,col2,type)){
+			valid = true;
+		}
+		else if(!capturingMoveAvailable() && board.isPossibleMove(row1,col1,row2,col2,type)){
+			valid = true;
+		}
 
 		//check to see if move is valid
 		if(valid){
@@ -65,7 +71,9 @@ class Fanorona implements Evaluatable{
 				board.blackMoves += ""+row1+col1+">"+row2+col2;
 			}
 
-			if(board.capturingMoveAvailable(board.array[row2][col2])){
+			board.prettyprint();
+			
+			if(board.capturingMoveAvailable(board.array[row2][col2]) && type != 'f'){
 				System.out.println("Successive capture available");
 				return true;
 			}
@@ -76,6 +84,8 @@ class Fanorona implements Evaluatable{
 			else{
 				board.blackMoves += "\n";
 			}
+			
+			board.latestDirectionMoved = "";
 
 			if(temp == Piece.Type.WHITE){
 				board.activePlayer = Piece.Type.BLACK;
@@ -93,33 +103,14 @@ class Fanorona implements Evaluatable{
 	}
 
 	public String getRandomMove(){
-		int row = 0;
-		int col = 0;
-		boolean successive = false;
-		/* NOTE: eventually this code should be moved to isPossibleCapturingMove */
-		if(board.blackMoves.endsWith("\n") || board.blackMoves.length() == 0){
-			//this is the first move of black's turn, any piece can be moved
-		}
-		else{
-			//this is a successive move
-			row = board.blackMoves.charAt(board.blackMoves.length()-2)-48;
-			col = board.blackMoves.charAt(board.blackMoves.length()-1)-48;
-			successive = true;
-		}
-		String ret = "";
-		for(int i = 0; i < board.rows; i++){
-			for(int j = 0; j < board.columns; j++){
-				String move = board.PossibleCapturingMoves(board.array[i][j]);
-				//System.out.println("Fanorona move: "+move);
-				Piece p = board.array[i][j];
-				//System.out.println(move.length());
-				if(successive && (i != row || j != col)){
 
-				}
-				else{
+		String ret = "";
+		if(capturingMoveAvailable()){
+			for(int i = 0; i < board.rows; i++){
+				for(int j = 0; j < board.columns; j++){
+					String move = board.PossibleCapturingMoves(board.array[i][j]);
+					Piece p = board.array[i][j];
 					if(move.length() > 0){
-						String movetest = ""+p.row+p.column+" "+(move.charAt(1))+""+(move.charAt(2));
-						//System.out.println("movetest: "+movetest);
 						if(isPossibleCapturingMove(p.row, p.column, move.charAt(1)-48, move.charAt(2)-48, 'a')){
 							ret = ""+p.row+p.column+" "+(move.charAt(1))+""+(move.charAt(2))+" a";
 							break;
@@ -131,9 +122,23 @@ class Fanorona implements Evaluatable{
 					}
 				}
 			}
+			return ret;
 		}
-		//System.out.println("ret: "+ret);
-		return ret;
+		else{
+			for(int i = 0; i < board.rows; i++){
+				for(int j = 0; j < board.columns; j++){
+					String move = board.possibleMoves(board.array[i][j]);
+					Piece p = board.array[i][j];
+					if(move.length() > 0){
+						if(board.isPossibleMove(p.row, p.column, move.charAt(1)-48, move.charAt(2)-48, 'f')){
+							ret = ""+p.row+p.column+" "+(move.charAt(1))+""+(move.charAt(2))+" f";
+							break;
+						}
+					}
+				}
+			}
+			return ret;
+		}
 	}
 
 	Piece.Type activePlayer(){

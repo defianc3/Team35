@@ -3,6 +3,8 @@ import java.util.Scanner;
 class Main{
 	public static void main(String args[]){
 
+		FanoronaWindow fw = new FanoronaWindow();
+
 		System.out.println("\nWelcome to Team35's Fanorona game");
 		System.out.println("X=black  0=white, N='null'(no piece)\n");
 
@@ -54,11 +56,13 @@ class Main{
 					System.out.println("\nwhite: "+game.board.whiteMoves);
 					System.out.println("\nblack: "+game.board.blackMoves);
 					moveturn = false;
+					turn--;
 				}
 				else if(playerInput.equals("reset")){
 					moveturn = false;
 					game = new Fanorona(5,9);
 					System.out.println("Starting a new game");
+					turn = 0;
 				}
 				else{
 
@@ -124,21 +128,21 @@ class Main{
 				      	}
 				      	else{
 				      		game.move(row1,col1,row2,col2,moveType);
-				      		if(game.board.numberRemaining(Piece.Type.WHITE) == 0){
-				      			System.out.println("Black victory");
-				      			break;
-				      		}
-				      		else if(game.board.numberRemaining(Piece.Type.BLACK) == 0){
-				      			System.out.println("White victory");
-				      			break;
-				      		}
 				      	}
+			      		if(game.board.numberRemaining(Piece.Type.WHITE) == 0){
+			      			System.out.println("Black victory");
+			      			break;
+			      		}
+			      		else if(game.board.numberRemaining(Piece.Type.BLACK) == 0){
+			      			System.out.println("White victory");
+			      			break;
+			      		}
 			      	}
 			    }		    
 		  	game.prettyprint();
 		  	/* TODO Is this the correct spot for this to break? */
 		  	turn++;
-		  	if (turn == 25) {
+		  	if (turn == 50) {
 		  		System.out.println("Maximum turns reached");
 		  		break;
 		  	}
