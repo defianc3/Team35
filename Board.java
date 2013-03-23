@@ -9,7 +9,10 @@ class Board{
 	public Piece.Type activePlayer;
 
 	Piece[][] array;
+	
+	String latestDirectionMoved;
 
+	//Returns the number of pieces of Type type on the board
 	public int numberRemaining(Piece.Type type){
 		int count = 0;
 		for(int i = 0; i < rows; i++){
@@ -22,6 +25,7 @@ class Board{
 		return count;
 	}
 
+	//prints out the number of pieces remaining for each player
 	public void printScore(Piece.Type ty){
 		if(ty == Piece.Type.WHITE){
 			System.out.println("White score: "+numberRemaining(ty));
@@ -31,18 +35,7 @@ class Board{
 		}
 	}
 
-	public int numberRemaining(Piece[][] arr, Piece.Type type){
-		int count = 0;
-		for(int i = 0; i < rows; i++){
-			for(int j = 0; j < columns; j++){
-				if(arr[i][j].type == type){
-					count++;
-				}
-			}
-		}
-		return count;
-	}
-
+	//Returns a deep copy of the board, preserving the current active player
 	public Board copyBoard(){
 		Board b;
 		if(activePlayer == Piece.Type.WHITE){
@@ -54,14 +47,16 @@ class Board{
 		return b;
 	}
 
+	//Creates a new board and populates it with pieces
+	//activePlayer is set to Type type
 	public Board(int row, int col, Piece.Type type){
 
 		rows = row;
 		columns = col;
-		activePlayer = Piece.Type.WHITE;
 		whiteMoves = "";
 		blackMoves = "";
 		activePlayer = type;
+		latestDirectionMoved = "";
 
 		array = new Piece[rows][columns];
 
@@ -92,14 +87,15 @@ class Board{
 		}
 	}
 
+	//Creates a new Board object and populates it with pieces of the same type as arr
 	public Board(int row, int col, Piece[][] arr, Piece.Type type){
 
 		rows = row;
 		columns = col;
-		activePlayer = Piece.Type.WHITE;
 		whiteMoves = "";
 		blackMoves = "";
 		activePlayer = type;
+		latestDirectionMoved = "";
 
 		array = new Piece[rows][columns];
 		for(int i = 0; i < rows; i++){
@@ -109,24 +105,21 @@ class Board{
 		}
 	}
 
-	void movePiece(int row, int col, int row2, int col2, char type){
+	//
+	boolean movePiece(int row, int col, int row2, int col2, char type){
 
-		String direction = "";
-		if(row == row2){
-			if(col < col2) direction = "E";
-			else direction = "W";
+		if(array[row2][col2].type != Piece.Type.NULL){
+			return false;
 		}
-		else if(col == col2){
-			if(row < row2) direction = "S";
-			else direction = "N";
+
+		String direction = getDirection(row,col,row2,col2);
+		
+		if(direction == latestDirectionMoved){
+			latestDirectionMoved = "";
+			return false;
 		}
-		else if(row < row2){
-			if(col < col2) direction = "NE";
-			else direction = "NW";
-		}
-		else if(row > row2){
-			if(col < col2) direction = "SE";
-			else direction = "SW";
+		else{
+			latestDirectionMoved = direction;
 		}
 
 		Piece.Type other;
@@ -139,8 +132,7 @@ class Board{
 		}
 
 		int temprow = row;
-		int tempcol = col;
-
+		int tempcol = col;		//these temp variables are used to hold the values of previous iterations through the following loop
 		int temprow2 = row2;
 		int tempcol2 = col2;
 
@@ -200,18 +192,11 @@ class Board{
 		array[row2][col2].setType(activePlayer);
 		array[row][col].setType(Piece.Type.NULL);
 
-		//consider what to set active player to in the case th1at the current player can make a successive capture
-
-		if(activePlayer == Piece.Type.WHITE){
-			activePlayer = Piece.Type.BLACK;
-		}
-		else{
-			activePlayer = Piece.Type.WHITE;
-		}
-
+		return true;
 	}
 
 	String connectedSpaces(Piece p){
+		
 		int row = p.row;
 		int col = p.column;
 		String s = "";
@@ -274,32 +259,97 @@ class Board{
 		return s;
 	}
 
-	public boolean isPossibleMove(int _row, int _col,String s, char type){
+	//Determines whether or not a move is allowable (if the original position is of type
+	//activePlayer, and the second position is null)
+	//public boolean isPossibleMove(int _row, int _col,String s, char type){
+	public boolean isPossibleMove(int _row, int _col,int row2, int col2, char type){
 
-		int row = (int) s.charAt(0) -48;
-		int col = (int) s.charAt(1) -48;
-
+		//if(type != 'f'){
+		//	return isPossibleCapturingMove(_row,_col,row2,col2,type);
+		//}
+		
+		//if(capturingMoveAvailable()){
+		//	return false;
+				
 		if(array[_row][_col].type != activePlayer){
 			return false;
 		}
 
-		Piece.Type t = array[_row][_col].type;
-		//System.out.println("row: "+row+"  col: "+col);
+		if(array[row2][col2].type == Piece.Type.NULL){
+			return true;
+		}
 
-		if(t == Piece.Type.WHITE){
-			if(array[row][col].type == Piece.Type.NULL){
-				return true;
-			}
-		}
-		if(t == Piece.Type.BLACK){
-			if(array[row][col].type == Piece.Type.NULL){
-				return true;
-			}
-		}
 		return false;
 	}
 
-	public boolean isPossibleCapturingMove(int _row, int _col,String s,char type){
+	public boolean isPossibleCapturingMove(int _row, int _col, int row2, int col2,char type){
+
+		boolean successive = false;
+		int prow = 0;
+		int pcol = 0;
+
+		String visitedList = "";
+
+		String activeMoves;
+		if(activePlayer == Piece.Type.WHITE){
+			activeMoves = whiteMoves;
+		}
+		else{
+			activeMoves = blackMoves;
+		}
+
+		if(activeMoves.endsWith("\n") || activeMoves.length() == 0){
+			//this is the first move of black's turn, any piece can be moved
+			//leave successive as false
+		}
+		else{
+			prow = activeMoves.charAt(activeMoves.length()-2)-48;
+			pcol = activeMoves.charAt(activeMoves.length()-1)-48; //representing the origin row and column
+			successive = true;
+			
+			int newlineIndex = activeMoves.lastIndexOf('\n');
+			if(newlineIndex == -1){
+				//'\n' not found, so set the first index to 0
+			//	newlineIndex = 0;
+			}
+			newlineIndex++;
+			String movesThisTurn = activeMoves.substring(newlineIndex, activeMoves.length());
+			int i = 0;
+			while(i < movesThisTurn.length()){
+				if(movesThisTurn.charAt(i) != '>'){
+					visitedList += movesThisTurn.charAt(i);
+				}
+				else if(i != movesThisTurn.length()-3){
+					i+=2; //found a '>', skip ahead 2 spaces
+				}
+				i++;
+			}
+		}
+		
+		String direction = getDirection(_row, _col,row2,col2);
+		
+		if(successive && direction == latestDirectionMoved){
+			return false;
+		}
+
+
+		//System.out.println("Visited moves: "+visitedList);
+
+		if(successive && (prow != _row || pcol != _col)){
+			//System.out.println("returning false");
+			return false;
+		}
+
+		if(successive){
+		//	System.out.println("row2: "+row2+"  col2: "+col2);
+			for(int i = 0; i < visitedList.length()-1; i+=2){
+		//		System.out.println("i: "+visitedList.charAt(i)+"  i2: "+visitedList.charAt(i+1));
+				if(row2 == visitedList.charAt(i)-48 && col2 == visitedList.charAt(i+1)-48){
+			//		System.out.println("returning false2");
+					return false;
+				}
+			}
+		}
 
 		Piece.Type other;
 		if(activePlayer == Piece.Type.WHITE){
@@ -313,11 +363,12 @@ class Board{
 		int temp = tester.numberRemaining(other);
 
 		//tester.prettyprint();
+		//System.out.println(s);
 
-		int row = (int) s.charAt(0) -48;
-		int col = (int) s.charAt(1) -48;
-
-		tester.movePiece(_row,_col,row,col,type);
+		boolean valid = tester.movePiece(_row,_col,row2,col2,type);
+		if(!valid){
+			return false;
+		}
 		int temp2 = tester.numberRemaining(other);
 		//System.out.println("temp: "+temp+"temp2: "+temp2);
 
@@ -344,12 +395,11 @@ class Board{
 			int row = (int) s.charAt(1) -48;
 			int col = (int) s.charAt(2) -48;
 			s = s.substring(3);
-			String move = ""+row+col;
-			if(isPossibleCapturingMove(p.row,p.column,move,'a')){
-				System.out.println(p.row+" "+p.column+" "+move);
+			if(isPossibleCapturingMove(p.row,p.column,row,col,'a')){
+			//	System.out.println(p.row+" "+p.column+" "+move);
 				return true;
 			}
-			if(isPossibleCapturingMove(p.row,p.column,move,'w')) return true;
+			if(isPossibleCapturingMove(p.row,p.column,row,col,'w')) return true;
 		}
 		return false;
 	}
@@ -359,14 +409,16 @@ class Board{
 			for(int j = 0; j < columns; j++){
 				if(array[i][j].type == activePlayer){
 					String s = possibleMoves(array[i][j]);
+					//System.out.println("possible moves from "+i+""+j+": "+s);
 					int length = s.length()/3;
 					for(int k = 0; k < length; k++){
 						int row = (int) s.charAt(1) -48;
 						int col = (int) s.charAt(2) -48;
 						s = s.substring(3);
 						String move = ""+row+col;
-						if(isPossibleCapturingMove(i,j,move,'a')) return true;
-						if(isPossibleCapturingMove(i,j,move,'w')) return true;
+						//System.out.println("testing "+move);
+						if(isPossibleCapturingMove(i,j,row,col,'a')) return true;
+						if(isPossibleCapturingMove(i,j,row,col,'w')) return true;
 					}
 				}
 			}
@@ -381,38 +433,58 @@ class Board{
 		String possible = "";
 
 		int temp = 1;
-		int count = 0;
 		for(int i = 0; i < connected.length()/3;i++){
 			String move = ""+connected.charAt(temp)+connected.charAt(temp+1);
-			temp+=3;
-			if(isPossibleMove(p.row, p.column,move,' ')){
+			if(isPossibleMove(p.row, p.column,connected.charAt(temp)-48, connected.charAt(temp+1)-48,' ')){
 				possible+=" "+move;
 			}
+			temp+=3;
 		}
 		return possible;
 	}
 
 	public String PossibleCapturingMoves(Piece p){
+		
 		String connected = possibleMoves(p);
-
-		//System.out.println(connected);
 
 		String possiblecapt = "";
 		int temp = 1;
 		for(int i = 0; i < connected.length()/3; i++){
 			String move = ""+connected.charAt(temp)+connected.charAt(temp+1);
-			//System.out.println(move);
+			int row = connected.charAt(temp)-48;
+			int col = connected.charAt(temp+1)-48;
 			temp += 3;
 
-			if(isPossibleCapturingMove(p.row, p.column,move,'a')){
+			if(isPossibleCapturingMove(p.row, p.column,row,col,'a')){
 				possiblecapt+=" "+move;
 			}
 
-			if(isPossibleCapturingMove(p.row, p.column,move,'w')){
+			if(isPossibleCapturingMove(p.row, p.column,row,col,'w')){
 				possiblecapt+=" "+move;
 			}
 		}
 		return possiblecapt;
+	}
+	
+	public String getDirection(int _row, int _col, int row2, int col2){
+		String direction = "";
+		if(_row == row2){
+			if(_col < col2) direction = "E";
+			else direction = "W";
+		}
+		else if(_col == col2){
+			if(_row < row2) direction = "S";
+			else direction = "N";
+		}
+		else if(_row < row2){
+			if(_col < col2) direction = "NE";
+			else direction = "NW";
+		}
+		else if(_row > row2){
+			if(_col < col2) direction = "SE";
+			else direction = "SW";
+		}	
+		return direction;
 	}
 
 
@@ -420,6 +492,11 @@ class Board{
 
 		String line2 = "--------------------------------------------";
 
+		int t = 0;
+		for(int i = 0; i < columns; i++){
+			System.out.print(i+"    ");
+		}
+		System.out.println();
 		char c = 'A';
 		for(int i = 0; i < columns; i++){
 			System.out.print(c + "    ");
@@ -435,7 +512,8 @@ class Board{
 					System.out.print("O");
 				}
 				if(array[i][j].type == Piece.Type.NULL){
-					System.out.print("N");
+					//System.out.print("N");
+					System.out.print(" ");
 				}
 				if(j != columns-1){
 					System.out.print("----");
