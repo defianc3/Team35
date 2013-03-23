@@ -9,9 +9,12 @@ public class MiniMaxTreeTest {
 	
 	class TestEval implements Evaluatable {
 		
-		public int val;
+		int initialVal;
+		int val;
+		int addition = 1;
 		
 		public TestEval(int _val) {
+			initialVal = _val;
 			val = _val;
 		}
 		
@@ -20,20 +23,26 @@ public class MiniMaxTreeTest {
 		}
 		
 		public TestEval getNextState() {
-			TestEval t = new TestEval(val + 1);
-			return t;
+			if (addition < 3) {
+				TestEval t = new TestEval(val + addition);
+				addition += 1;
+				return t;
+			} else {
+				return null;
+			}
 		}
 	}
 		
 	MiniMaxTree.Node rootNode;
 	Evaluatable state;
+	MiniMaxTree mMT;
 	
 	@Before
 	public void setUp() throws Exception {
 		TestEval t = new TestEval(1);
 		state = t;
-		MiniMaxTree mmt = new MiniMaxTree(t);
-		rootNode = mmt.new Node(null, t, true, -1000000, 1000000);
+		mMT = new MiniMaxTree(t);
+		rootNode = mMT.new Node(null, t, true, -1000000, 1000000);
 	}
 	
 	@Test
@@ -125,5 +134,10 @@ public class MiniMaxTreeTest {
 		assertEquals(2, childNode.getUtilityValue());
 		assertEquals(rootNode, childNode.getParent());
 		assertEquals(childNode, rootNode.children.get(0));
+	}
+	
+	@Test
+	public void twoDeepTreeGen() {
+		Evaluatable tempTE = mMT.processToDepth(2);
 	}
 }

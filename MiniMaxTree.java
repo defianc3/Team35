@@ -116,31 +116,61 @@ public class MiniMaxTree {
 		/* TODO How to determine if first row is max or min? */
 		root = new Node(null, initialState, true, -1000000, 1000000);
 	}
-	
-	private void generateTree(Node node, int depth) {
-		if (depth > 1) {
-			/* Non-leaf nodes */
-			Node p = node.getParent(); // For readability
-			if ((p.isMaximizerNode() &&
-					(p.getUtilityValue() > p.getBeta())) ||
-				!(p.isMaximizerNode() &&
-						(p.getUtilityValue() < p.getAlpha()))) {
-				Node tempNode = node.getNextChild();
-				if (tempNode != null) {
-					generateTree(tempNode, depth-1);
+
+	private void genTree(Node node, int currentDepth, int depth, 
+						 boolean ignoreRemaining) {
+		if (depth == 1) {
+			/* To handle the case where only the root node is processed */
+			node.generateUtilityValue();
+			return;
+		}
+		if ((currentDepth == depth) && ignoreRemaining) {
+			return;
+		}
+		if (ignoreRemaining) {
+			/* No need to process children */
+			genTree(node.getParent(), currentDepth + 1, depth, false);
+			/* TODO Should the above always be false? */
+		}
+		if (currentDepth > 1) {
+			Node childNode = node.getNextChild();
+			if (childNode == null) {
+				if (node.getParent() == null) {
+					return;
 				}
-				/* TODO Should null be a special case? */
+				/* node contains a win or loss state */
+				node.generateUtilityValue();
+				/* Utility value should be +-1000000 */
+				genTree(node.getParent(), currentDepth + 1, depth, true);
+			} else {
+				genTree(childNode, currentDepth - 1, depth, false);
 			}
-		} else {
-			/* Leaf nodes */
-			int utilityValue = node.generateUtilityValue();
-			node.parent.setNewUtilityValueIfBetter(utilityValue);
-			generateTree(node.getParent(), depth+1);
+		} else { //currentDepth == 1
+			node.generateUtilityValue();
+			node.getParent().setNewUtilityValueIfBetter
+							 (node.generateUtilityValue());
+			if (node.getParent().isMaximizerNode() &&
+					(node.getUtilityValue() > node.getBeta())) {
+				/* If the parent is a maximizer node, and the utility value is
+				 * higher than beta, ignore the remaining children of the
+				 * parent */
+				genTree(node.getParent(), currentDepth + 1, depth, true);
+			} else if (!(node.getParent().isMaximizerNode()) &&
+					(node.getUtilityValue() < node.getAlpha())) {
+				/* If the parent is a minimizer node, and the utility value is
+				 * lower than alpha, ignore the remaining children of the
+				 * parent. */
+				genTree(node.getParent(), currentDepth + 1, depth, true);
+			} else {
+				/* The remaining children are not ignored */
+				genTree(node.getParent(), currentDepth + 1, depth, false);
+			}
+			
 		}
 	}
 	
 	Evaluatable processToDepth(int howDeep) {
-		generateTree(root, howDeep);
+		genTree(root, howDeep, howDeep, false);
 		return root.getState();
 	}
 }
