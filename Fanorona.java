@@ -22,12 +22,24 @@ class Fanorona implements Evaluatable{
 
 	public Board board;
 
+	long player1Time;
+	long player2Time;
+
 	Fanorona(int row, int col){
 		board = new Board(row, col,Piece.Type.WHITE);
+		player1Time = 0;
+		player2Time = 0;
 	}
 	
 	Fanorona(int row, int col, Board b, Piece.Type active){
 		board = new Board(row,col,b.array,active);
+		player1Time = 0;
+		player2Time = 0;
+	}
+
+	public void printTime(){
+		System.out.println("White time: "+player1Time/1000.0);
+		System.out.println("Black time: "+player2Time/1000.0+"\n");
 	}
 
 	void prettyprint(){
@@ -45,6 +57,7 @@ class Fanorona implements Evaluatable{
 	void printScore(){
 		board.printScore(Piece.Type.WHITE);
 		board.printScore(Piece.Type.BLACK);
+		System.out.println();
 	}
 
 	boolean isPossibleCapturingMove(int row1, int col1, int row2, int col2, char type){

@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.Date;
 
 class Main{
 	public static void main(String args[]){
@@ -12,6 +13,10 @@ class Main{
 
 		int turn = 0;
 		while(true){
+
+			long time1 = new Date().getTime();
+			long time2 = -1;
+
 			game.printScore();
 			String move = "";
 			if(game.capturingMoveAvailable()) System.out.println("Capturing move required");
@@ -40,7 +45,7 @@ class Main{
 				System.out.println("Black move: "+move);
 				
 				
-				
+				time2 = new Date().getTime();
 				
 			}
 			else{
@@ -50,6 +55,8 @@ class Main{
 				scan2 = new Scanner(System.in);
 				playerInput = scan2.nextLine();
 				scan = new Scanner(playerInput);
+
+				time2 = new Date().getTime();
 
 				if(playerInput.equals("quit")){
 					System.out.println("\nExiting\n\n");
@@ -120,6 +127,14 @@ class Main{
 		      		System.out.println("not valid");
 		      	}
 		      	else{
+
+		      		if(game.activePlayer() == Piece.Type.WHITE){
+		      			game.player1Time += (time2-time1);
+		      		}
+		      		else{
+		      			game.player2Time += (time2-time1);
+		      		}
+
 		      		if(game.capturingMoveAvailable()){
 			      		if(game.isPossibleCapturingMove(row1, col1, row2, col2, moveType)){
 			      			boolean successiveMove = game.move(row1, col1, row2, col2, moveType);
@@ -146,6 +161,7 @@ class Main{
 		      	}
 		    }		    
 		  	game.prettyprint();
+		  	game.printTime();
 		  	/* TODO Is this the correct spot for this to break? */
 		  	if(valid && moveturn){
 		  		turn++;
