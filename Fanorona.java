@@ -25,9 +25,21 @@ class Fanorona implements Evaluatable{
 	Fanorona(int row, int col){
 		board = new Board(row, col,Piece.Type.WHITE);
 	}
+	
+	Fanorona(int row, int col, Board b, Piece.Type active){
+		board = new Board(row,col,b.array,active);
+	}
 
 	void prettyprint(){
 		board.prettyprint();
+	}
+	
+	public Fanorona copyGame(){
+		return new Fanorona(board.rows, board.columns, board.copyBoard(), board.activePlayer);
+	}
+	
+	public Board copyBoard(){
+		return board.copyBoard();
 	}
 
 	void printScore(){
@@ -49,7 +61,7 @@ class Fanorona implements Evaluatable{
 
 		//boolean valid = board.isPossibleMove(row1,col1,row2, col2, type);
 		boolean valid = false;
-		boolean captAvail = false;
+		//boolean captAvail = false;
 		if(capturingMoveAvailable() && board.isPossibleCapturingMove(row1,col1,row2,col2,type)){
 			valid = true;
 		}
@@ -71,7 +83,7 @@ class Fanorona implements Evaluatable{
 				board.blackMoves += ""+row1+col1+">"+row2+col2;
 			}
 
-			board.prettyprint();
+			//board.prettyprint();
 			
 			if(board.capturingMoveAvailable(board.array[row2][col2]) && type != 'f'){
 				System.out.println("Successive capture available");

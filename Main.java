@@ -3,8 +3,6 @@ import java.util.Scanner;
 class Main{
 	public static void main(String args[]){
 
-		FanoronaWindow fw = new FanoronaWindow();
-
 		System.out.println("\nWelcome to Team35's Fanorona game");
 		System.out.println("X=black  0=white, N='null'(no piece)\n");
 
@@ -35,8 +33,15 @@ class Main{
 
 			if(game.activePlayer() == Piece.Type.BLACK){
 				//random
+				
+				//System.out.println("evaluation: "+game.evaluate());
+				
 				move = game.getRandomMove();
 				System.out.println("Black move: "+move);
+				
+				
+				
+				
 			}
 			else{
 				System.out.print("Enter a move: ");
@@ -97,51 +102,54 @@ class Main{
 	      			}
 	      		}
 	      	}
-	      		if(moveturn){
+			boolean valid = true;
+      		if(moveturn){
 
-			      	int row1 = move.charAt(0)-48;
-			      	int col1 = move.charAt(1)-48;
-			      	int row2 = move.charAt(3)-48;
-			      	int col2 = move.charAt(4)-48;
-			      	char moveType = move.charAt(6);
+		      	int row1 = move.charAt(0)-48;
+		      	int col1 = move.charAt(1)-48;
+		      	int row2 = move.charAt(3)-48;
+		      	int col2 = move.charAt(4)-48;
+		      	char moveType = move.charAt(6);
+		      	
 
-			      	boolean valid = true;
+		      	if(row1 > 4 || row1 < 0 || row2 > 4 || row2 < 0 || col1 < 0 || col1 > 8 || col2 < 0 || col2 > 8 || !(moveType == 'a' || moveType == 'w' || moveType == 'f')){
+		      		valid = false;
+		      	}
 
-			      	if(row1 > 4 || row1 < 0 || row2 > 4 || row2 < 0 || col1 < 0 || col1 > 8 || col2 < 0 || col2 > 8 || !(moveType == 'a' || moveType == 'w' || moveType == 'f')){
-			      		valid = false;
-			      	}
+		      	if(!valid){
+		      		System.out.println("not valid");
+		      	}
+		      	else{
+		      		if(game.capturingMoveAvailable()){
+			      		if(game.isPossibleCapturingMove(row1, col1, row2, col2, moveType)){
+			      			boolean successiveMove = game.move(row1, col1, row2, col2, moveType);
+			      			if(successiveMove){
 
-			      	if(!valid){
-			      		System.out.println("not valid");
+			      			}
+			      		}
+			      		else{
+			      			System.out.println("A capturing move must be entered\n");
+			      			valid = false;
+			      		}
 			      	}
 			      	else{
-			      		if(game.capturingMoveAvailable()){
-				      		if(game.isPossibleCapturingMove(row1, col1, row2, col2, moveType)){
-				      			boolean successiveMove = game.move(row1, col1, row2, col2, moveType);
-				      			if(successiveMove){
-
-				      			}
-				      		}
-				      		else{
-				      			System.out.println("A capturing move must be entered\n");
-				      		}
-				      	}
-				      	else{
-				      		game.move(row1,col1,row2,col2,moveType);
-				      	}
-			      		if(game.board.numberRemaining(Piece.Type.WHITE) == 0){
-			      			System.out.println("Black victory");
-			      			break;
-			      		}
-			      		else if(game.board.numberRemaining(Piece.Type.BLACK) == 0){
-			      			System.out.println("White victory");
-			      			break;
-			      		}
+			      		game.move(row1,col1,row2,col2,moveType);
 			      	}
-			    }		    
+		      		if(game.board.numberRemaining(Piece.Type.WHITE) == 0){
+		      			System.out.println("Black victory");
+		      			break;
+		      		}
+		      		else if(game.board.numberRemaining(Piece.Type.BLACK) == 0){
+		      			System.out.println("White victory");
+		      			break;
+		      		}
+		      	}
+		    }		    
 		  	game.prettyprint();
 		  	/* TODO Is this the correct spot for this to break? */
-		  	turn++;
+		  	if(valid && moveturn){
+		  		turn++;
+		  	}
 		  	if (turn == 50) {
 		  		System.out.println("Maximum turns reached");
 		  		break;
