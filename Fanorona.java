@@ -55,7 +55,7 @@ class Fanorona implements Evaluatable{
 	
 	private Fanorona getState(int n){
 		String move = numberOfMoves3(n);
-		System.out.print("to next state: "+move+"  evaluates to: ");
+		//System.out.print("to next state: "+move+"  evaluates to: ");
 		int temp = 0;
 		Fanorona newState = copyGame();
 		for(int i = 0; i < move.length()/7; i++){
@@ -403,6 +403,11 @@ class Fanorona implements Evaluatable{
 	@Override
 	public Evaluatable getNextState() {
 		// TODO Auto-generated method stub
+		recalculateNumberOfMoves();
+		int newlast = lastStateReturned+1;
+		if(newlast > numberOfPossibleMoves){
+			return null;
+		}
 		return getState(++lastStateReturned);
 		//return null;
 	}
