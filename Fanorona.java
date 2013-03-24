@@ -31,6 +31,8 @@ class Fanorona implements Evaluatable{
 	String lastStringReturned;
 	
 	static int cc;
+	
+	static String tempMove;
 
 	Fanorona(int row, int col){
 		board = new Board(row, col,Piece.Type.WHITE);
@@ -54,8 +56,9 @@ class Fanorona implements Evaluatable{
 	}
 	
 	
-	public String numberOfMoves2(int row, int column, boolean recursion,int c,int goal){
+	public String numberOfMoves2(int row, int column, boolean recursion,int c,int goal,String prevMove){
 		int count = 0;
+		String move2 = "";
 		if(this.board.capturingMoveAvailable(this.board.array[row][column])){
 			String possibleMoves = this.board.PossibleCapturingMovesWithDirection(this.board.array[row][column]);
 			//System.out.print("possible moves: "+possibleMoves);
@@ -63,14 +66,16 @@ class Fanorona implements Evaluatable{
 			int temp = 0;
 			for(int k = 0; k < possibleMoves.length()/8; k++){
 				String move = possibleMoves.substring(temp+1,temp+8);
+				move2 = move;
 				String retval = "";
 				if(moveHasSuccessiveCaptures(move)){
+					tempMove = move+">";
 					Fanorona newGame = copyGame();
 					int tempRow = getSecondRow(move);	//hold the destination position so i can call recursively
 					int tempCol = getSecondColumn(move);
 					newGame.move(getFirstRow(move), getFirstColumn(move), getSecondRow(move), getSecondColumn(move), getMoveType(move));
 					//count += newGame.numberOfMoves2(tempRow, tempCol, true,c,goal);
-					String result = numberOfMoves2(tempRow,tempCol,false,c,goal);
+					String result = newGame.numberOfMoves2(tempRow,tempCol,false,c,goal,move2);
 					boolean number = true;
 					for(int L = 0; L < result.length(); L++){
 						if(!Character.isDigit(result.charAt(L))){
@@ -80,12 +85,17 @@ class Fanorona implements Evaluatable{
 					if(number){
 						count += Integer.parseInt(result);
 						cc += Integer.parseInt(result);
+						if(cc==goal){
+							System.out.println(this.board.blackMoves);
+							return result;
+						}
 					}
 					else if(cc == goal){
 						return result;
 					}
 				}
 				else{
+					tempMove+=">"+move2;
 					count++;
 					cc++;
 					if(cc == goal) return move;
@@ -102,14 +112,16 @@ class Fanorona implements Evaluatable{
 			for(int k = 0; k < possibleMoves.length()/8; k++){
 				//also generalize this code
 				String move = possibleMoves.substring(temp+1,temp+8);
+				move2 = move;
+				tempMove += ">"+move;
 				count++;
 				cc++;
 				if(cc == goal){
-					return move;
+					return tempMove;
 				}
 			}
 		}
-		return ""+c;
+		return tempMove;
 	}
 	
 	public String numberOfMoves2(int c,int goal){
@@ -117,9 +129,10 @@ class Fanorona implements Evaluatable{
 		cc = 0;
 		for(int i = 0; i < board.rows; i++){
 			for(int j = 0; j < board.columns; j++){
+				tempMove = "";
 				if(board.capturingMoveAvailable(board.array[i][j])){
 					//count += numberOfMoves2(i,j,false,c,goal);
-					String result = numberOfMoves2(i,j,false,c,goal);
+					String result = numberOfMoves2(i,j,false,c,goal,"");
 					boolean number = true;
 					for(int k = 0; k < result.length(); k++){
 						if(!Character.isDigit(result.charAt(k))){
@@ -131,7 +144,7 @@ class Fanorona implements Evaluatable{
 						cc+=Integer.parseInt(result);
 					}
 					else if(cc == goal){
-						return result;
+						return tempMove;
 					}
 				}
 				else if(!capturingMoveAvailable()){
@@ -198,6 +211,89 @@ class Fanorona implements Evaluatable{
 		else{
 			return false;
 		}
+	}
+	
+	
+	public String numberOfMoves3(int row, int column, boolean recursion, int goal, String tempString){
+		int count = 0;
+		if(this.board.capturingMoveAvailable(this.board.array[row][column])){
+			String possibleMoves = this.board.PossibleCapturingMovesWithDirection(this.board.array[row][column]);
+			//System.out.print("possible moves: "+possibleMoves);
+			//System.out.println("    length: "+possibleMoves.length());
+			int temp = 0;
+			for(int k = 0; k < possibleMoves.length()/8; k++){
+				String move = possibleMoves.substring(temp+1,temp+8);
+				if(moveHasSuccessiveCaptures(move)){
+					if(tempString.length() == 0){
+						tempString += move;
+					}
+					else{
+						tempString += ">"+move;
+					}
+					Fanorona newGame = copyGame();
+					int tempRow = getSecondRow(move);	//hold the destination position so i can call recursively
+					int tempCol = getSecondColumn(move);
+					newGame.move(getFirstRow(move), getFirstColumn(move), getSecondRow(move), getSecondColumn(move), getMoveType(move));
+					String tempCount = newGame.numberOfMoves3(tempRow, tempCol, true,goal,tempString);
+					tempString = tempCount;
+					if(cc == goal) return tempString;
+				}
+				else{
+					count++;
+					cc++;
+					if(cc == goal){
+						if(tempString.length() == 0){
+							return move;
+						}
+						else{
+							return tempString + ">"+move;
+						}
+					}
+				}
+				temp+=8;
+				/*TODO make this code more general. now it just does the same thing as count += length/8 */
+			}
+		}
+		else if(!recursion){
+			String possibleMoves = this.board.possibleMovesWithDirection(this.board.array[row][column]);
+			for(int k = 0; k < possibleMoves.length()/8; k++){
+				//also generalize this code
+				count++;
+				cc++;
+			}
+		}
+		return "";
+	}
+	
+	public String numberOfMoves3(int goal){
+		cc = 0;
+		int count = 0;
+		String eMove = "";
+		for(int i = 0; i < board.rows; i++){
+			for(int j = 0; j < board.columns; j++){
+				eMove = "";
+				tempMove = "";
+				if(board.capturingMoveAvailable(board.array[i][j])){
+					//count += numberOfMoves3(i,j,false,goal);
+					eMove = numberOfMoves3(i,j,false,goal,eMove);
+					if(cc == goal) return eMove;
+				}
+				else if(!capturingMoveAvailable()){
+					String possibleMoves = board.possibleMovesWithDirection(board.array[i][j]);
+					//System.out.println("Possible moves: "+possibleMoves);
+					int temp = 0;
+					for(int k = 0; k < possibleMoves.length()/8; k++){
+						//also generalize this code
+						String move = possibleMoves.substring(temp+1,temp+8);
+						temp+=8;
+						count++;
+						cc++;
+						if(cc == goal) return move;
+					}
+				}
+			}
+		}
+		return tempMove;
 	}
 	
 	public int numberOfMoves(int row, int column, boolean recursion){
@@ -270,7 +366,10 @@ class Fanorona implements Evaluatable{
 	}
 	
 	public Fanorona copyGame(){
-		return new Fanorona(board.rows, board.columns, board.copyBoard(), board.activePlayer);
+		Fanorona f = new Fanorona(board.rows, board.columns, board.copyBoard(), board.activePlayer);
+		f.board.whiteMoves = this.board.whiteMoves;
+		f.board.blackMoves = this.board.blackMoves;
+		return f;
 	}
 	
 	public Board copyBoard(){

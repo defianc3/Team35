@@ -16,7 +16,7 @@ class Main{
 			
 			System.out.println(game.numberOfMoves());
 			for(int i = 0; i < game.numberOfMoves(); i++){
-				System.out.println(i+"  "+game.numberOfMoves2(0, i+1));
+				System.out.println(i+"  "+game.numberOfMoves3(i+1));
 			}
 
 			long time1 = new Date().getTime();

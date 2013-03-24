@@ -44,6 +44,8 @@ class Board{
 		else{
 			b = new Board(rows, columns, array, Piece.Type.BLACK);
 		}
+		b.whiteMoves = this.whiteMoves;
+		b.blackMoves = this.blackMoves;
 		return b;
 	}
 
