@@ -411,4 +411,26 @@ class Fanorona implements Evaluatable{
 		return getState(++lastStateReturned);
 		//return null;
 	}
+	
+	public String getMove(boolean type){
+		
+		String movesList;
+		if(type){
+			movesList = board.whiteMoves;
+		}
+		else{
+			movesList = board.blackMoves;
+		}
+		
+		int temp = movesList.lastIndexOf('\n');
+		if(temp == -1){
+			return movesList;
+		}
+		movesList = movesList.substring(0,temp);
+		temp = movesList.lastIndexOf('\n');
+		if(temp == -1){
+			return movesList;
+		}
+		return movesList.substring(temp,movesList.length());
+	}
 }

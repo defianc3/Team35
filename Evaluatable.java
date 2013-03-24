@@ -9,4 +9,6 @@ public interface Evaluatable {
 	 * Expected to be called repeatedly until there are no more states.
 	 */
 	Evaluatable getNextState();
+	
+	String getMove(boolean type);
 }

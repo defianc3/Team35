@@ -53,6 +53,17 @@ class Main{
 				MiniMaxTree mmt = new MiniMaxTree(game.copyGame());
 				mmt.processToDepth(3);
 				
+				String bestMove = "";
+				int minimum = 100000;
+				for(int i = 0; i < mmt.root.children.size();i++){
+					if(mmt.root.children.get(i).getUtilityValue() < minimum){
+						bestMove = mmt.root.children.get(i).getState().getMove(false);
+						minimum = mmt.root.children.get(i).getUtilityValue();
+					}
+				}
+				
+				System.out.println("best move: "+bestMove);
+				
 				
 				move = game.getRandomMove();
 				System.out.println("Black move: "+move);
