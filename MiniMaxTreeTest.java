@@ -1,8 +1,51 @@
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+
 import org.junit.Before;
 import org.junit.Test;
 
+
+class TreeEval implements Evaluatable {
+	
+	ArrayList<Integer> childValues = new ArrayList<Integer>();
+	private static int lastRetreived;
+	int value;		
+
+	TreeEval(int _value) {
+		childValues.add(2);
+		childValues.add(3);
+		childValues.add(4);
+		childValues.add(6);
+		childValues.add(null);
+		childValues.add(3);
+		childValues.add(7);
+		childValues.add(9); //Last node for simple tree
+		/*childValues.add(10);
+		childValues.add(null);
+		childValues.add(null);
+		childValues.add(null); */
+		
+		value = _value;
+	}
+	
+	@Override
+	public int evaluate() {
+		return value;
+	}
+
+	@Override
+	public Evaluatable getNextState() {
+		Integer returnVal = childValues.get(lastRetreived);
+		lastRetreived++;
+		if (returnVal == null) {
+			return null;
+		} else {
+			return new TreeEval(returnVal);
+		}
+	}
+	
+}
 
 public class MiniMaxTreeTest {
 	
@@ -32,6 +75,8 @@ public class MiniMaxTreeTest {
 			}
 		}
 	}
+	
+
 		
 	MiniMaxTree.Node rootNode;
 	Evaluatable state;
@@ -139,5 +184,12 @@ public class MiniMaxTreeTest {
 	@Test
 	public void twoDeepTreeGen() {
 		Evaluatable tempTE = mMT.processToDepth(2);
+	}
+	
+	@Test
+	public void fourDeepTreeGen() {
+		Evaluatable tempE = new TreeEval(1);
+		mMT = new MiniMaxTree(tempE);
+		mMT.processToDepth(4);
 	}
 }

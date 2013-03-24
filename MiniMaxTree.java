@@ -138,9 +138,15 @@ public class MiniMaxTree {
 				if (node.getParent() == null) {
 					return;
 				}
-				/* node contains a win or loss state */
-				node.generateUtilityValue();
-				/* Utility value should be +-1000000 */
+				if (node.children.size() == 0)  {
+					/* node contains a win or loss state */
+					node.generateUtilityValue();
+					/* Utility value should be +-1000000 */
+				} else {
+					/* Done processing children */
+					/* Do something about that here */
+				}
+				
 				genTree(node.getParent(), currentDepth + 1, depth, true);
 			} else {
 				genTree(childNode, currentDepth - 1, depth, false);
