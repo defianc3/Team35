@@ -19,9 +19,9 @@ class Main{
 			//	System.out.println(i+"  "+game.numberOfMoves3(i+1));
 			//}
 			
-			for(int i = 0; i < game.numberOfMoves(); i++){
-				System.out.println(game.getNextState().evaluate());
-			}
+			//for(int i = 0; i < game.numberOfMoves(); i++){
+			//	System.out.println(game.getNextState().evaluate());
+			//}
 
 			long time1 = new Date().getTime();
 			long time2 = -1;
@@ -51,7 +51,7 @@ class Main{
 				System.out.println("evaluation: "+game.evaluate());
 				
 				MiniMaxTree mmt = new MiniMaxTree(game.copyGame());
-//				mmt.processToDepth(3);
+				mmt.processToDepth(3);
 				
 				
 				move = game.getRandomMove();
