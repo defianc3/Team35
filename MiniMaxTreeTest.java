@@ -183,6 +183,11 @@ public class MiniMaxTreeTest {
 	}
 	
 	@Test
+	public void oneDeepTreeGen() {
+		Evaluatable tempTE = mMT.processToDepth(1);
+	}
+	
+	@Test
 	public void twoDeepTreeGen() {
 		Evaluatable tempTE = mMT.processToDepth(2);
 	}
