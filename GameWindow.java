@@ -14,37 +14,43 @@ import javax.swing.JPanel;
 import javax.swing.JViewport;
 import javax.swing.Timer;
 
-public class GameWindow extends JFrame implements ActionListener {
-	private static final long serialVersionUID = 1L;
+public class GameWindow extends JFrame {
+	private static final long serialVersionUID = 1L; //To suppress warning
 	static JFrame frame;
 	JPanel panel;
 	Graphics graphics;
 	Graphics2D graphics2D;
-	int clicks = 0;
+	Rectangle rec;
+	int maxX;
+	int maxY;
+	final DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+	
 	GameWindow() {
 		createWindow();
 	}
 	
 	public final void createWindow() {
-		frame = new JFrame();
-		panel = new JPanel();
-		panel.setLayout(new GridLayout(3,3));
-		graphics = this.getGraphics();
-		graphics2D = (Graphics2D) graphics;
-		
 		setTitle("Fanorona");
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(400,400);
+		setSize(600, 600);
 		setLocationRelativeTo(null);
-   
-        final DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");  
+		rec = new Rectangle();
+		if (getParent() instanceof JViewport) {
+	        JViewport vp = (JViewport) getParent();
+	        rec = vp.getViewRect();
+	    } else {
+	        rec = new Rectangle(0, 0, getWidth(), getHeight());
+	    }
+		maxX = (int) rec.getMaxX();
+		maxY = (int) rec.getMaxY();
+		
         ActionListener timerListener = new ActionListener()  
         {  
             public void actionPerformed(ActionEvent e)  
             {  
-                Date date = new Date();  
-                String time = timeFormat.format(date);                
-                updateTime(Integer.toString(date.getSeconds()));
+            	clearTime();
+                updateScreen(false);
             }  
         };  
         Timer timer = new Timer(1000, timerListener);  
@@ -56,11 +62,9 @@ public class GameWindow extends JFrame implements ActionListener {
 			@Override
             public void mousePressed(MouseEvent event) {
                 if (event.getButton() == MouseEvent.BUTTON1) {
-                    int x = event.getX();
-                    int y = event.getY();
-                    clicks++;
-                    drawBoard();
-                    updateTime("1235");
+                    /*int x = event.getX();
+                    int y = event.getY();*/
+                    updateScreen(true);
                 }
 
                 if (event.getButton() == MouseEvent.BUTTON3) {
@@ -68,59 +72,46 @@ public class GameWindow extends JFrame implements ActionListener {
                 }
 			}
 		});
+		setVisible(true);
+		graphics = this.getGraphics();
+		graphics2D = (Graphics2D) graphics;
+		/* To clear the window initially, a paused is needed
+		 * otherwise the graphics objects are not usable */
+		try {
+			Thread.sleep(400);
+			clearWindow();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
 	}
 	
 	private void clearWindow() {
-		graphics = this.getGraphics();
-		graphics2D = (Graphics2D) graphics;
-		Rectangle rec = new Rectangle();
-		if (getParent() instanceof JViewport) {
-	        JViewport vp = (JViewport) getParent();
-	        rec = vp.getViewRect();
-	    } else {
-	        rec = new Rectangle(0, 0, getWidth(), getHeight());
-	    }
-		graphics2D.clearRect(0, 0, (int)rec.getMaxX(), (int)rec.getMaxY());
+		graphics.setColor(Color.GRAY);
+        graphics.fillRect(0, 0, maxX, maxY);
+        graphics.setColor(Color.BLACK);
 	}
 	
-	public void updateTime(String time) {
-		graphics = this.getGraphics();
-		graphics2D = (Graphics2D) graphics;
-		clearWindow();
-		graphics2D.drawString(time, 40, 40);
+	private void clearTime() {
+		graphics.setColor(Color.GRAY);
+        graphics.fillRect(maxX-250, 0, 240, 45);
+        graphics.setColor(Color.BLACK);
 	}
 	
-	public void drawBoard() {
-		graphics = this.getGraphics();
-		graphics2D = (Graphics2D) graphics;
-		Rectangle rec = new Rectangle();
-		if (getParent() instanceof JViewport) {
-	        JViewport vp = (JViewport) getParent();
-	        rec = vp.getViewRect();
-	    } else {
-	        rec = new Rectangle(0, 0, getWidth(), getHeight());
-	    }
-		
-		int winWidth = (int) rec.getMaxX();
-		int winHeight = (int) rec.getMaxY();
-		int xOrg = rec.x;
-		int yOrg = rec.y;
-		
+	public void updateScreen(boolean clicked) {
+		Date date = new Date();  
+        String time = timeFormat.format(date);
 		RenderingHints renderHints = new RenderingHints(
 				RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
-		
 		graphics2D.setRenderingHints(renderHints);
-		graphics2D.clearRect(0, 0, winWidth, winHeight);
+		if (clicked) {
+			clearWindow();
+		} else {
+			clearTime();
+		}
 		
-		
-		graphics2D.drawLine(winHeight-20, yOrg+20, winWidth-20, winHeight-20);
-	}
-
-
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		graphics2D.drawString("Remaining move time: ", maxX-250, 40);
+		graphics2D.drawString(time + " sec", maxX-100, 40);
+		graphics2D.drawLine(20, 50, maxX-20, maxY-20);
 	}
 }
