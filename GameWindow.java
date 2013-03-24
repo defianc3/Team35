@@ -104,25 +104,27 @@ public class GameWindow extends JFrame {
 	}
 	
 	public void drawGrid() {
-		/* 40 pixel margin on all sides */
-		/* Top left point is (40, 70) */
-		int xSpacing = (maxX - 2*40)/xBoardDim;
-		int ySpacing = (((maxY-30) - 2*40)/yBoardDim)/2;
+		/* Do not process bad dimensions */
+		if ((xBoardDim == 1) || (yBoardDim == 1)) {
+			return;
+		}
+		
+		int xSpacing = (maxX - 2*40)/(xBoardDim - 1);
+		int ySpacing = ((maxY-30) - 2*40)/(yBoardDim - 1);
+		/* Top left corner of board hard-coded to (40,70) */
 		int xGridMin = 40;
 		int yGridMin = 70;
-		int xGridMax = xBoardDim * xSpacing + xGridMin;
-		int yGridMax = yBoardDim * ySpacing + yGridMin;
+		int xGridMax = xGridMin + ((xBoardDim - 1) * xSpacing);
+		int yGridMax = yGridMin + ((yBoardDim - 1) * ySpacing);
 		int xCurrent = xGridMin;
 		int yCurrent = yGridMin;
-		
-		System.out.println("\nyGridMax: " + Integer.toString(yGridMax));
-		System.out.println("yGridMin: " + Integer.toString(yGridMin));
-		System.out.println("xSpacing: " + Integer.toString(xSpacing));
-		xGridMax = 553;
-		yGridMax = 266;
-		int i = 0;
+
 		boolean altLeft = true;
-		while(i < 60) {
+		boolean flipAlt = false;
+		if (xBoardDim % 2 == 0) {
+			flipAlt = true;
+		}
+		while(true) {
 			if (yCurrent != yGridMax) {
 				//Draw down line
 				graphics2D.drawLine(xCurrent, yCurrent, xCurrent,
@@ -138,25 +140,24 @@ public class GameWindow extends JFrame {
 				graphics2D.drawLine(xCurrent, yCurrent, xCurrent + xSpacing,
 						yCurrent + ySpacing);
 			}
-			if (xCurrent != xGridMin) {
-				//Draw left line (needed?)
-			}
 			if (xCurrent != xGridMax) {
 				//Draw right line
 				graphics2D.drawLine(xCurrent, yCurrent, xCurrent + xSpacing,
 						yCurrent);
 			}
-			if ((xCurrent == xGridMax) && (yCurrent == yGridMax)) {
+			if ((xCurrent >= xGridMax) && (yCurrent >= yGridMax)) {
 				break;
 			}
-			xCurrent += xSpacing;
-			System.out.println("xCurrent: " + Integer.toString(xCurrent));
 			if (xCurrent == xGridMax) {
+				if (flipAlt) {
+					altLeft = !altLeft;
+				}
 				xCurrent = xGridMin;
 				yCurrent += ySpacing;
+			} else {
+				xCurrent += xSpacing;
 			}
 			altLeft = !altLeft;
-			i++;
 		}
 	}
 	
