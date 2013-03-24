@@ -23,9 +23,14 @@ public class GameWindow extends JFrame {
 	Rectangle rec;
 	int maxX;
 	int maxY;
+	int xBoardDim;
+	int yBoardDim;
+	
 	final DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 	
-	GameWindow() {
+	GameWindow(int _xBoardDim, int _yBoardDim) {
+		xBoardDim = _xBoardDim;
+		yBoardDim = _yBoardDim;
 		createWindow();
 	}
 	
@@ -78,8 +83,9 @@ public class GameWindow extends JFrame {
 		/* To clear the window initially, a paused is needed
 		 * otherwise the graphics objects are not usable */
 		try {
-			Thread.sleep(400);
+			Thread.sleep(1000);
 			clearWindow();
+			drawGrid();
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
@@ -97,6 +103,63 @@ public class GameWindow extends JFrame {
         graphics.setColor(Color.BLACK);
 	}
 	
+	public void drawGrid() {
+		/* 40 pixel margin on all sides */
+		/* Top left point is (40, 70) */
+		int xSpacing = (maxX - 2*40)/xBoardDim;
+		int ySpacing = (((maxY-30) - 2*40)/yBoardDim)/2;
+		int xGridMin = 40;
+		int yGridMin = 70;
+		int xGridMax = xBoardDim * xSpacing + xGridMin;
+		int yGridMax = yBoardDim * ySpacing + yGridMin;
+		int xCurrent = xGridMin;
+		int yCurrent = yGridMin;
+		
+		System.out.println("\nyGridMax: " + Integer.toString(yGridMax));
+		System.out.println("yGridMin: " + Integer.toString(yGridMin));
+		System.out.println("xSpacing: " + Integer.toString(xSpacing));
+		xGridMax = 553;
+		yGridMax = 266;
+		int i = 0;
+		boolean altLeft = true;
+		while(i < 60) {
+			if (yCurrent != yGridMax) {
+				//Draw down line
+				graphics2D.drawLine(xCurrent, yCurrent, xCurrent,
+						yCurrent + ySpacing);
+			}
+			if ((xCurrent != xGridMin) && (yCurrent != yGridMax) && altLeft) {
+				//Draw left diagonal
+				graphics2D.drawLine(xCurrent, yCurrent, xCurrent - xSpacing,
+						yCurrent + ySpacing);
+			}
+			if ((xCurrent != xGridMax) && (yCurrent != yGridMax) && altLeft) {
+				//Draw right diagonal
+				graphics2D.drawLine(xCurrent, yCurrent, xCurrent + xSpacing,
+						yCurrent + ySpacing);
+			}
+			if (xCurrent != xGridMin) {
+				//Draw left line (needed?)
+			}
+			if (xCurrent != xGridMax) {
+				//Draw right line
+				graphics2D.drawLine(xCurrent, yCurrent, xCurrent + xSpacing,
+						yCurrent);
+			}
+			if ((xCurrent == xGridMax) && (yCurrent == yGridMax)) {
+				break;
+			}
+			xCurrent += xSpacing;
+			System.out.println("xCurrent: " + Integer.toString(xCurrent));
+			if (xCurrent == xGridMax) {
+				xCurrent = xGridMin;
+				yCurrent += ySpacing;
+			}
+			altLeft = !altLeft;
+			i++;
+		}
+	}
+	
 	public void updateScreen(boolean clicked) {
 		Date date = new Date();  
         String time = timeFormat.format(date);
@@ -106,12 +169,14 @@ public class GameWindow extends JFrame {
 		graphics2D.setRenderingHints(renderHints);
 		if (clicked) {
 			clearWindow();
+			drawGrid();
 		} else {
 			clearTime();
 		}
 		
+		
 		graphics2D.drawString("Remaining move time: ", maxX-250, 40);
 		graphics2D.drawString(time + " sec", maxX-100, 40);
-		graphics2D.drawLine(20, 50, maxX-20, maxY-20);
+		//graphics2D.drawLine(20, 50, maxX-20, maxY-20);
 	}
 }
