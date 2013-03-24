@@ -28,6 +28,8 @@ class Fanorona implements Evaluatable{
 	int numberOfPossibleMoves;
 	int lastEvaluated;
 	
+	int lastStateReturned;
+	
 	String lastStringReturned;
 	
 	static int cc;
@@ -38,6 +40,7 @@ class Fanorona implements Evaluatable{
 		board = new Board(row, col,Piece.Type.WHITE);
 		player1Time = 0;
 		player2Time = 0;
+		lastStateReturned = 0;
 	}
 	
 	public void setCC(int val){
@@ -51,119 +54,17 @@ class Fanorona implements Evaluatable{
 	}
 	
 	private Fanorona getState(int n){
-		
-		return this;
-	}
-	
-	
-	public String numberOfMoves2(int row, int column, boolean recursion,int c,int goal,String prevMove){
-		int count = 0;
-		String move2 = "";
-		if(this.board.capturingMoveAvailable(this.board.array[row][column])){
-			String possibleMoves = this.board.PossibleCapturingMovesWithDirection(this.board.array[row][column]);
-			//System.out.print("possible moves: "+possibleMoves);
-			//System.out.println("    length: "+possibleMoves.length());
-			int temp = 0;
-			for(int k = 0; k < possibleMoves.length()/8; k++){
-				String move = possibleMoves.substring(temp+1,temp+8);
-				move2 = move;
-				String retval = "";
-				if(moveHasSuccessiveCaptures(move)){
-					tempMove = move+">";
-					Fanorona newGame = copyGame();
-					int tempRow = getSecondRow(move);	//hold the destination position so i can call recursively
-					int tempCol = getSecondColumn(move);
-					newGame.move(getFirstRow(move), getFirstColumn(move), getSecondRow(move), getSecondColumn(move), getMoveType(move));
-					//count += newGame.numberOfMoves2(tempRow, tempCol, true,c,goal);
-					String result = newGame.numberOfMoves2(tempRow,tempCol,false,c,goal,move2);
-					boolean number = true;
-					for(int L = 0; L < result.length(); L++){
-						if(!Character.isDigit(result.charAt(L))){
-							number = false;
-						}
-					}
-					if(number){
-						count += Integer.parseInt(result);
-						cc += Integer.parseInt(result);
-						if(cc==goal){
-							System.out.println(this.board.blackMoves);
-							return result;
-						}
-					}
-					else if(cc == goal){
-						return result;
-					}
-				}
-				else{
-					tempMove+=">"+move2;
-					count++;
-					cc++;
-					if(cc == goal) return move;
-				}
-				temp+=8;
-				if(cc== goal) return move;
-				/*TODO make this code more general. now it just does the same thing as count += length/8 */
-			}
+		String move = numberOfMoves3(n);
+		System.out.print("to next state: "+move+"  evaluates to: ");
+		int temp = 0;
+		Fanorona newState = copyGame();
+		for(int i = 0; i < move.length()/7; i++){
+			String move2 = move.substring(temp,temp+7);
+			temp+=8;
+			newState.move(getFirstRow(move2),getFirstColumn(move2),getSecondRow(move2),getSecondColumn(move2),getMoveType(move2));
 		}
-		else if(!recursion){
-			String possibleMoves = this.board.possibleMovesWithDirection(this.board.array[row][column]);
-			//System.out.println("Possible moves: "+possibleMoves);
-			int temp = 0;
-			for(int k = 0; k < possibleMoves.length()/8; k++){
-				//also generalize this code
-				String move = possibleMoves.substring(temp+1,temp+8);
-				move2 = move;
-				tempMove += ">"+move;
-				count++;
-				cc++;
-				if(cc == goal){
-					return tempMove;
-				}
-			}
-		}
-		return tempMove;
-	}
-	
-	public String numberOfMoves2(int c,int goal){
-		int count = 0;
-		cc = 0;
-		for(int i = 0; i < board.rows; i++){
-			for(int j = 0; j < board.columns; j++){
-				tempMove = "";
-				if(board.capturingMoveAvailable(board.array[i][j])){
-					//count += numberOfMoves2(i,j,false,c,goal);
-					String result = numberOfMoves2(i,j,false,c,goal,"");
-					boolean number = true;
-					for(int k = 0; k < result.length(); k++){
-						if(!Character.isDigit(result.charAt(k))){
-							number = false;
-						}
-					}
-					if(number){
-						count += Integer.parseInt(result);
-						cc+=Integer.parseInt(result);
-					}
-					else if(cc == goal){
-						return tempMove;
-					}
-				}
-				else if(!capturingMoveAvailable()){
-					String possibleMoves = board.possibleMovesWithDirection(board.array[i][j]);
-					//System.out.println("Possible moves: "+possibleMoves);
-					int temp = 0;
-					for(int k = 0; k < possibleMoves.length()/8; k++){
-						//also generalize this code
-						String move = possibleMoves.substring(temp+1,temp+8);
-						count++;
-						cc++;
-						if(cc == goal) return move;
-					}
-				}
-			}
-		}
-		return "Error";
-	}
-	
+		return newState;
+	}	
 	
 	private int getFirstRow(String move){
 		//defined assuming standard 9x5 board
@@ -409,6 +310,7 @@ class Fanorona implements Evaluatable{
 			//System.out.println("valid");
 			Piece.Type temp = board.activePlayer;
 			board.movePiece(row1,col1,row2,col2,type);
+			lastStateReturned = 0;
 			board.activePlayer = temp;
 
 			if(board.activePlayer == Piece.Type.WHITE){
@@ -501,7 +403,7 @@ class Fanorona implements Evaluatable{
 	@Override
 	public Evaluatable getNextState() {
 		// TODO Auto-generated method stub
-		return getState(0);
+		return getState(++lastStateReturned);
 		//return null;
 	}
 }
