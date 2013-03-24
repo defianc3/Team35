@@ -13,6 +13,11 @@ class Main{
 
 		int turn = 0;
 		while(true){
+			
+			System.out.println(game.numberOfMoves());
+			for(int i = 0; i < game.numberOfMoves(); i++){
+				System.out.println(i+"  "+game.numberOfMoves2(0, i+1));
+			}
 
 			long time1 = new Date().getTime();
 			long time2 = -1;
@@ -39,7 +44,11 @@ class Main{
 			if(game.activePlayer() == Piece.Type.BLACK){
 				//random
 				
-				//System.out.println("evaluation: "+game.evaluate());
+				System.out.println("evaluation: "+game.evaluate());
+				
+				MiniMaxTree mmt = new MiniMaxTree(game.copyGame());
+//				mmt.processToDepth(3);
+				
 				
 				move = game.getRandomMove();
 				System.out.println("Black move: "+move);

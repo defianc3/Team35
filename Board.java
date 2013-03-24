@@ -442,6 +442,22 @@ class Board{
 		}
 		return possible;
 	}
+	
+	String possibleMovesWithDirection(Piece p){
+		String connected = connectedSpaces(p);
+
+		String possible = "";
+
+		int temp = 1;
+		for(int i = 0; i < connected.length()/3;i++){
+			String move = ""+connected.charAt(temp)+connected.charAt(temp+1);
+			if(isPossibleMove(p.row, p.column,connected.charAt(temp)-48, connected.charAt(temp+1)-48,' ')){
+				possible+=" "+p.row+""+p.column+" "+move+" f";
+			}
+			temp+=3;
+		}
+		return possible;
+	}
 
 	public String PossibleCapturingMoves(Piece p){
 		
@@ -461,6 +477,29 @@ class Board{
 
 			if(isPossibleCapturingMove(p.row, p.column,row,col,'w')){
 				possiblecapt+=" "+move;
+			}
+		}
+		return possiblecapt;
+	}
+	
+	public String PossibleCapturingMovesWithDirection(Piece p){
+		
+		String connected = possibleMoves(p);
+
+		String possiblecapt = "";
+		int temp = 1;
+		for(int i = 0; i < connected.length()/3; i++){
+			String move = ""+connected.charAt(temp)+connected.charAt(temp+1);
+			int row = connected.charAt(temp)-48;
+			int col = connected.charAt(temp+1)-48;
+			temp += 3;
+
+			if(isPossibleCapturingMove(p.row, p.column,row,col,'a')){
+				possiblecapt+=" "+p.row+""+p.column+" "+move+" a";
+			}
+
+			if(isPossibleCapturingMove(p.row, p.column,row,col,'w')){
+				possiblecapt+=" "+p.row+""+p.column+" "+move+" w";
 			}
 		}
 		return possiblecapt;

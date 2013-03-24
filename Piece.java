@@ -29,5 +29,7 @@ class Piece{
 		type = p.type;
 		row = p.row;
 		column = p.column;
+		stronglyConnected = p.stronglyConnected;
+		possibleMoves = p.possibleMoves;
 	}
 }
