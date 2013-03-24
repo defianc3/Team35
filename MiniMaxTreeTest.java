@@ -20,7 +20,8 @@ class TreeEval implements Evaluatable {
 		childValues.add(null);
 		childValues.add(3);
 		childValues.add(7);
-		childValues.add(9); //Last node for simple tree
+		childValues.add(null);
+		childValues.add(null); //Last node for simple tree
 		/*childValues.add(10);
 		childValues.add(null);
 		childValues.add(null);

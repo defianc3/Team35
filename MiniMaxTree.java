@@ -130,6 +130,7 @@ public class MiniMaxTree {
 		if (ignoreRemaining) {
 			/* No need to process children */
 			genTree(node.getParent(), currentDepth + 1, depth, false);
+			return;
 			/* TODO Should the above always be false? */
 		}
 		if (currentDepth > 1) {
@@ -143,13 +144,16 @@ public class MiniMaxTree {
 					node.generateUtilityValue();
 					/* Utility value should be +-1000000 */
 				} else {
-					/* Done processing children */
+					/* Done processing children of node */
 					/* Do something about that here */
+					node.getParent().setNewUtilityValueIfBetter(
+							node.getUtilityValue());
+					genTree(node.getParent(), currentDepth + 1, depth, false);
+					return;
 				}
-				
-				genTree(node.getParent(), currentDepth + 1, depth, true);
 			} else {
 				genTree(childNode, currentDepth - 1, depth, false);
+				return;
 			}
 		} else { //currentDepth == 1
 			node.generateUtilityValue();
@@ -161,15 +165,18 @@ public class MiniMaxTree {
 				 * higher than beta, ignore the remaining children of the
 				 * parent */
 				genTree(node.getParent(), currentDepth + 1, depth, true);
+				return;
 			} else if (!(node.getParent().isMaximizerNode()) &&
 					(node.getUtilityValue() < node.getAlpha())) {
 				/* If the parent is a minimizer node, and the utility value is
 				 * lower than alpha, ignore the remaining children of the
 				 * parent. */
 				genTree(node.getParent(), currentDepth + 1, depth, true);
+				return;
 			} else {
 				/* The remaining children are not ignored */
 				genTree(node.getParent(), currentDepth + 1, depth, false);
+				return;
 			}
 			
 		}
