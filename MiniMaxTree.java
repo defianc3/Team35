@@ -11,7 +11,7 @@ public class MiniMaxTree {
 		ArrayList<Node> children;
 		int alpha;
 		int beta;
-		
+
 		Node(Node _parent,
 				Evaluatable _state,
 				boolean _isMaximizeNode,
@@ -29,7 +29,7 @@ public class MiniMaxTree {
 				utilityValue = 1000000;
 			}
 		}
-		
+
 		Node getNextChild() {
 			Evaluatable tempState = state.getNextState();
 			if (tempState == null) {
@@ -45,27 +45,27 @@ public class MiniMaxTree {
 				tempBeta = utilityValue;
 			}
 			Node tempNode = new Node(this,
-										tempState,
-										!(isMaximizeNode),
-										tempAlpha,
-										tempBeta);
+					tempState,
+					!(isMaximizeNode),
+					tempAlpha,
+					tempBeta);
 			children.add(tempNode);
 			return tempNode;
 		}
-		
+
 		int generateUtilityValue() {
 			utilityValue = state.evaluate();
 			return utilityValue;
 		}
-		
+
 		int getUtilityValue() {
 			return utilityValue;
 		}
-		
+
 		void setUtilityValue(int newValue) {
 			utilityValue = newValue;
 		}
-		
+
 		boolean setNewUtilityValueIfBetter(int newValue) {
 			if (isMaximizeNode) {
 				if (newValue > utilityValue) {
@@ -81,15 +81,15 @@ public class MiniMaxTree {
 				return false;
 			}
 		}
-		
+
 		boolean isMaximizerNode() {
 			return isMaximizeNode;
 		}
-		
+
 		Node getParent() {
 			return parent;
 		}
-		
+
 		int getAlpha() {
 			return alpha;
 		}
@@ -105,20 +105,18 @@ public class MiniMaxTree {
 		void setBeta(int beta) {
 			this.beta = beta;
 		}
-		
+
 		Evaluatable getState() {
 			return state;
 		}
-		
 	}
 	
 	MiniMaxTree(Evaluatable initialState) {
-		/* TODO How to determine if first row is max or min? */
 		root = new Node(null, initialState, true, -1000000, 1000000);
 	}
 
 	private void genTree(Node node, int currentDepth, int depth, 
-						 boolean ignoreRemaining) {
+			boolean ignoreRemaining) {
 		if (depth == 1) {
 			/* To handle the case where only the root node is processed */
 			node.generateUtilityValue();
@@ -131,7 +129,6 @@ public class MiniMaxTree {
 			/* No need to process children */
 			genTree(node.getParent(), currentDepth + 1, depth, false);
 			return;
-			/* TODO Should the above always be false? */
 		}
 		if (currentDepth > 1) {
 			Node childNode = node.getNextChild();
@@ -145,7 +142,6 @@ public class MiniMaxTree {
 					/* Utility value should be +-1000000 */
 				} else {
 					/* Done processing children of node */
-					/* Do something about that here */
 					node.getParent().setNewUtilityValueIfBetter(
 							node.getUtilityValue());
 					genTree(node.getParent(), currentDepth + 1, depth, false);
@@ -158,7 +154,7 @@ public class MiniMaxTree {
 		} else { //currentDepth == 1
 			node.generateUtilityValue();
 			node.getParent().setNewUtilityValueIfBetter
-							 (node.generateUtilityValue());
+			(node.generateUtilityValue());
 			if (node.getParent().isMaximizerNode() &&
 					(node.getUtilityValue() > node.getBeta())) {
 				/* If the parent is a maximizer node, and the utility value is
@@ -178,7 +174,7 @@ public class MiniMaxTree {
 				genTree(node.getParent(), currentDepth + 1, depth, false);
 				return;
 			}
-			
+
 		}
 	}
 	
