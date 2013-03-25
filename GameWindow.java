@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferStrategy;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,7 +20,6 @@ public class GameWindow extends JFrame {
 	static JFrame frame;
 	JPanel panel;
 	Graphics graphics;
-	Graphics2D graphics2D;
 	Rectangle rec;
 	int xGridMin = 40;
 	int yGridMin = 70;
@@ -28,13 +28,21 @@ public class GameWindow extends JFrame {
 	int xBoardDim;
 	int yBoardDim;
 	boolean pointSelected = false;
-	int radius = 20;
+	int radius;
 	
 	final DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 	
 	GameWindow(int _xBoardDim, int _yBoardDim) {
 		xBoardDim = _xBoardDim;
 		yBoardDim = _yBoardDim;
+		
+		int xSpacing = (maxX - 2*40)/(xBoardDim - 1);
+		int ySpacing = ((maxY-30) - 2*40)/(yBoardDim - 1);
+		if (xSpacing >= ySpacing) {
+			radius = (int) (0.75 * (double) (ySpacing * -1));
+		} else {
+			radius = (int) (0.75 * (double) xSpacing);
+		}
 		createWindow();
 	}
 	
@@ -80,7 +88,6 @@ public class GameWindow extends JFrame {
 		});
 		setVisible(true);
 		graphics = this.getGraphics();
-		graphics2D = (Graphics2D) graphics;
 		/* To clear the window initially, a pause is needed
 		 * otherwise the graphics objects are not usable */
 		try {
@@ -119,9 +126,9 @@ public class GameWindow extends JFrame {
 		}
 		drawIndicator(xTemp, yTemp, x, y);
 
-		graphics2D.drawString("Point nearest click: " +
+		graphics.drawString("Point nearest click: " +
 				Integer.toString(xTemp), 20, 40);
-		graphics2D.drawString("Point nearest click: " +
+		graphics.drawString("Point nearest click: " +
 				Integer.toString(yTemp), 20, 60);
 	}
 
@@ -137,13 +144,13 @@ public class GameWindow extends JFrame {
 		if (distance <= radius) {
 			pointSelected = true;
 			graphics.setColor(Color.RED);
-			graphics2D.drawLine(xTemp - radius, yTemp - radius,
+			graphics.drawLine(xTemp - radius, yTemp - radius,
 					xTemp + radius, yTemp - radius); //Top
-			graphics2D.drawLine(xTemp - radius, yTemp - radius,
+			graphics.drawLine(xTemp - radius, yTemp - radius,
 					xTemp - radius, yTemp + radius); //Left
-			graphics2D.drawLine(xTemp + radius, yTemp - radius,
+			graphics.drawLine(xTemp + radius, yTemp - radius,
 					xTemp + radius, yTemp + radius); //Right
-			graphics2D.drawLine(xTemp - radius, yTemp + radius,
+			graphics.drawLine(xTemp - radius, yTemp + radius,
 					xTemp + radius, yTemp + radius); //Bottom
 			graphics.setColor(Color.BLACK);
 		} else {
@@ -184,22 +191,22 @@ public class GameWindow extends JFrame {
 		while(true) {
 			if (yCurrent != yGridMax) {
 				//Draw down line
-				graphics2D.drawLine(xCurrent, yCurrent, xCurrent,
+				graphics.drawLine(xCurrent, yCurrent, xCurrent,
 						yCurrent + ySpacing);
 			}
 			if ((xCurrent != xGridMin) && (yCurrent != yGridMax) && altLeft) {
 				//Draw left diagonal
-				graphics2D.drawLine(xCurrent, yCurrent, xCurrent - xSpacing,
+				graphics.drawLine(xCurrent, yCurrent, xCurrent - xSpacing,
 						yCurrent + ySpacing);
 			}
 			if ((xCurrent != xGridMax) && (yCurrent != yGridMax) && altLeft) {
 				//Draw right diagonal
-				graphics2D.drawLine(xCurrent, yCurrent, xCurrent + xSpacing,
+				graphics.drawLine(xCurrent, yCurrent, xCurrent + xSpacing,
 						yCurrent + ySpacing);
 			}
 			if (xCurrent != xGridMax) {
 				//Draw right line
-				graphics2D.drawLine(xCurrent, yCurrent, xCurrent + xSpacing,
+				graphics.drawLine(xCurrent, yCurrent, xCurrent + xSpacing,
 						yCurrent);
 			}
 			if ((xCurrent >= xGridMax) && (yCurrent >= yGridMax)) {
@@ -221,10 +228,10 @@ public class GameWindow extends JFrame {
 	public void updateScreen(boolean clicked) {
 		Date date = new Date();  
         String time = timeFormat.format(date);
-		RenderingHints renderHints = new RenderingHints(
+		/*RenderingHints renderHints = new RenderingHints(
 				RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
-		graphics2D.setRenderingHints(renderHints);
+		graphics.setRenderingHints(renderHints);*/
 		if (clicked) {
 			clearWindow();
 			drawGrid();
@@ -233,7 +240,7 @@ public class GameWindow extends JFrame {
 		}
 		
 		
-		graphics2D.drawString("Remaining move time: ", maxX-250, 40);
-		graphics2D.drawString(time + " sec", maxX-100, 40);
+		graphics.drawString("Remaining move time: ", maxX-250, 40);
+		graphics.drawString(time + " sec", maxX-100, 40);
 	}
 }
