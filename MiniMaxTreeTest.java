@@ -45,6 +45,11 @@ class TreeEval implements Evaluatable {
 			return new TreeEval(returnVal);
 		}
 	}
+
+	@Override
+	public String getMove(boolean type) {
+		return null;
+	}
 	
 }
 
@@ -74,6 +79,11 @@ public class MiniMaxTreeTest {
 			} else {
 				return null;
 			}
+		}
+
+		@Override
+		public String getMove(boolean type) {
+			return null;
 		}
 	}
 	
