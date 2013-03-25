@@ -21,6 +21,8 @@ public class GameWindow extends JFrame {
 	Graphics graphics;
 	Graphics2D graphics2D;
 	Rectangle rec;
+	int xGridMin = 40;
+	int yGridMin = 70;
 	int maxX;
 	int maxY;
 	int xBoardDim;
@@ -67,9 +69,8 @@ public class GameWindow extends JFrame {
 			@Override
             public void mousePressed(MouseEvent event) {
                 if (event.getButton() == MouseEvent.BUTTON1) {
-                    /*int x = event.getX();
-                    int y = event.getY();*/
-                    updateScreen(true);
+                	updateScreen(true);
+                    processClick(event.getX(), event.getY());
                 }
 
                 if (event.getButton() == MouseEvent.BUTTON3) {
@@ -89,6 +90,31 @@ public class GameWindow extends JFrame {
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
+	}
+	
+	private void processClick(int x, int y) {
+		int xSpacing = (maxX - 2*40)/(xBoardDim - 1);
+		int ySpacing = ((maxY-30) - 2*40)/(yBoardDim - 1);
+		int xGridMax = xGridMin + ((xBoardDim - 1) * xSpacing);
+		int yGridMax = yGridMin + ((yBoardDim - 1) * ySpacing);
+		if (x < xGridMin) {
+			x = 0;
+		} else if (x > xGridMax) {
+			x = xBoardDim;
+		} else {
+			double xDouble = (double) x;
+			x = (int) Math.round(((xDouble - (double)xGridMin) / (double)xSpacing));
+		}
+		if (y <= yGridMin) {
+			y = 0;
+		} else if (y > yGridMax) {
+			y = xBoardDim;
+		} else {
+			double yDouble = (double) y;
+			y = (int) Math.round(((yDouble - (double)yGridMin) / (double)ySpacing));
+		}
+		graphics2D.drawString("Point nearest click: " + Integer.toString(x), 20, 40);
+		graphics2D.drawString("Point nearest click: " + Integer.toString(y), 20, 60);
 	}
 	
 	private void clearWindow() {
@@ -111,9 +137,6 @@ public class GameWindow extends JFrame {
 		
 		int xSpacing = (maxX - 2*40)/(xBoardDim - 1);
 		int ySpacing = ((maxY-30) - 2*40)/(yBoardDim - 1);
-		/* Top left corner of board hard-coded to (40,70) */
-		int xGridMin = 40;
-		int yGridMin = 70;
 		int xGridMax = xGridMin + ((xBoardDim - 1) * xSpacing);
 		int yGridMax = yGridMin + ((yBoardDim - 1) * ySpacing);
 		int xCurrent = xGridMin;
@@ -178,6 +201,5 @@ public class GameWindow extends JFrame {
 		
 		graphics2D.drawString("Remaining move time: ", maxX-250, 40);
 		graphics2D.drawString(time + " sec", maxX-100, 40);
-		//graphics2D.drawLine(20, 50, maxX-20, maxY-20);
 	}
 }
