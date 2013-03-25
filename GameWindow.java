@@ -123,8 +123,8 @@ public class GameWindow extends JFrame {
 		pointSelected = true;
 		int xSpacing = (maxX - 2*40)/(xBoardDim - 1);
 		int ySpacing = ((maxY-30) - 2*40)/(yBoardDim - 1);
-		int xTemp = xGridMin + (xSpacing * (xCoord + 1));
-		int yTemp = yGridMin + (ySpacing * (yCoord + 1));
+		int xTemp = xGridMin + xSpacing * xCoord;
+		int yTemp = yGridMin + ySpacing * yCoord;
 		graphics.setColor(Color.RED);
 		graphics2D.drawLine(xTemp - radius, yTemp - radius, xTemp + radius, yTemp - radius); //Top
 		graphics2D.drawLine(xTemp - radius, yTemp - radius, xTemp - radius, yTemp + radius); //Left
