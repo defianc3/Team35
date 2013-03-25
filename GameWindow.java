@@ -80,7 +80,7 @@ public class GameWindow extends JFrame {
 		setVisible(true);
 		graphics = this.getGraphics();
 		graphics2D = (Graphics2D) graphics;
-		/* To clear the window initially, a paused is needed
+		/* To clear the window initially, a pause is needed
 		 * otherwise the graphics objects are not usable */
 		try {
 			Thread.sleep(1000);
