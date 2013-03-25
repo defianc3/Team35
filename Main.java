@@ -98,8 +98,8 @@ class Main{
 					System.exit(0);
 				}
 				else if(playerInput.equals("moves")){
-					System.out.println("\nwhite: "+game.board.whiteMovesFull);
-					System.out.println("\nblack: "+game.board.blackMovesFull);
+					//System.out.println("\nwhite: "+game.board.whiteMovesFull);
+					//System.out.println("\nblack: "+game.board.blackMovesFull);
 					moveturn = false;
 					turn--;
 				}
