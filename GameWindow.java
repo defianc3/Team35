@@ -27,6 +27,8 @@ public class GameWindow extends JFrame {
 	int maxY;
 	int xBoardDim;
 	int yBoardDim;
+	boolean pointSelected = false;
+	int radius = 20;
 	
 	final DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 	
@@ -111,8 +113,24 @@ public class GameWindow extends JFrame {
 			double yDouble = (double) y;
 			y = (int) Math.round(((yDouble - (double)yGridMin) / (double)ySpacing));
 		}
+		drawIndicator(x, y);
+		
 		graphics2D.drawString("Point nearest click: " + Integer.toString(x), 20, 40);
 		graphics2D.drawString("Point nearest click: " + Integer.toString(y), 20, 60);
+	}
+	
+	private void drawIndicator(int xCoord, int yCoord) {
+		pointSelected = true;
+		int xSpacing = (maxX - 2*40)/(xBoardDim - 1);
+		int ySpacing = ((maxY-30) - 2*40)/(yBoardDim - 1);
+		int xTemp = xGridMin + (xSpacing * (xCoord + 1));
+		int yTemp = yGridMin + (ySpacing * (yCoord + 1));
+		graphics.setColor(Color.RED);
+		graphics2D.drawLine(xTemp - radius, yTemp - radius, xTemp + radius, yTemp - radius); //Top
+		graphics2D.drawLine(xTemp - radius, yTemp - radius, xTemp - radius, yTemp + radius); //Left
+		graphics2D.drawLine(xTemp + radius, yTemp - radius, xTemp + radius, yTemp + radius); //Right
+		graphics2D.drawLine(xTemp - radius, yTemp + radius, xTemp + radius, yTemp + radius); //Bottom
+		graphics.setColor(Color.BLACK);
 	}
 	
 	private void clearWindow() {
