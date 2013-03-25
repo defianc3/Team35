@@ -97,40 +97,58 @@ public class GameWindow extends JFrame {
 		int ySpacing = ((maxY-30) - 2*40)/(yBoardDim - 1);
 		int xGridMax = xGridMin + ((xBoardDim - 1) * xSpacing);
 		int yGridMax = yGridMin + ((yBoardDim - 1) * ySpacing);
+		int xTemp;
+		int yTemp;
 		if (x <= xGridMin) {
-			x = 0;
+			xTemp = 0;
 		} else if (x >= xGridMax) {
-			x = xBoardDim - 1;
+			xTemp = xBoardDim - 1;
 		} else {
 			double xDouble = (double) x;
-			x = (int) Math.round(((xDouble - (double)xGridMin) / (double)xSpacing));
+			xTemp = (int) Math.round(((xDouble -
+					(double)xGridMin) / (double)xSpacing));
 		}
 		if (y <= yGridMin) {
-			y = 0;
+			yTemp = 0;
 		} else if (y >= yGridMax) {
-			y = yBoardDim - 1;
+			yTemp = yBoardDim - 1;
 		} else {
 			double yDouble = (double) y;
-			y = (int) Math.round(((yDouble - (double)yGridMin) / (double)ySpacing));
+			yTemp = (int) Math.round(((yDouble -
+					(double)yGridMin) / (double)ySpacing));
 		}
-		drawIndicator(x, y);
-		
-		graphics2D.drawString("Point nearest click: " + Integer.toString(x), 20, 40);
-		graphics2D.drawString("Point nearest click: " + Integer.toString(y), 20, 60);
+		drawIndicator(xTemp, yTemp, x, y);
+
+		graphics2D.drawString("Point nearest click: " +
+				Integer.toString(xTemp), 20, 40);
+		graphics2D.drawString("Point nearest click: " +
+				Integer.toString(yTemp), 20, 60);
 	}
-	
-	private void drawIndicator(int xCoord, int yCoord) {
-		pointSelected = true;
+
+	private void drawIndicator(int xCoord, int yCoord, int xActual,
+			int yActual) {
 		int xSpacing = (maxX - 2*40)/(xBoardDim - 1);
 		int ySpacing = ((maxY-30) - 2*40)/(yBoardDim - 1);
 		int xTemp = xGridMin + xSpacing * xCoord;
 		int yTemp = yGridMin + ySpacing * yCoord;
-		graphics.setColor(Color.RED);
-		graphics2D.drawLine(xTemp - radius, yTemp - radius, xTemp + radius, yTemp - radius); //Top
-		graphics2D.drawLine(xTemp - radius, yTemp - radius, xTemp - radius, yTemp + radius); //Left
-		graphics2D.drawLine(xTemp + radius, yTemp - radius, xTemp + radius, yTemp + radius); //Right
-		graphics2D.drawLine(xTemp - radius, yTemp + radius, xTemp + radius, yTemp + radius); //Bottom
-		graphics.setColor(Color.BLACK);
+
+		double distance = Math.sqrt(((xTemp - xActual) * (xTemp - xActual)) +
+				((yTemp - yActual) * (yTemp - yActual)));
+		if (distance <= radius) {
+			pointSelected = true;
+			graphics.setColor(Color.RED);
+			graphics2D.drawLine(xTemp - radius, yTemp - radius,
+					xTemp + radius, yTemp - radius); //Top
+			graphics2D.drawLine(xTemp - radius, yTemp - radius,
+					xTemp - radius, yTemp + radius); //Left
+			graphics2D.drawLine(xTemp + radius, yTemp - radius,
+					xTemp + radius, yTemp + radius); //Right
+			graphics2D.drawLine(xTemp - radius, yTemp + radius,
+					xTemp + radius, yTemp + radius); //Bottom
+			graphics.setColor(Color.BLACK);
+		} else {
+			pointSelected = false;
+		}
 	}
 	
 	private void clearWindow() {
