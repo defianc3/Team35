@@ -60,9 +60,7 @@ public class GameWindow extends JFrame {
                 updateScreen(false);
             }  
         };  
-        Timer timer = new Timer(1000, timerListener);  
-        // to make sure it doesn't wait one second at the start  
-        //timer.setInitialDelay(0);  
+        Timer timer = new Timer(1000, timerListener);   
         timer.start();
 		
 		addMouseListener(new MouseAdapter() {
@@ -97,18 +95,18 @@ public class GameWindow extends JFrame {
 		int ySpacing = ((maxY-30) - 2*40)/(yBoardDim - 1);
 		int xGridMax = xGridMin + ((xBoardDim - 1) * xSpacing);
 		int yGridMax = yGridMin + ((yBoardDim - 1) * ySpacing);
-		if (x < xGridMin) {
+		if (x <= xGridMin) {
 			x = 0;
-		} else if (x > xGridMax) {
-			x = xBoardDim;
+		} else if (x >= xGridMax) {
+			x = xBoardDim - 1;
 		} else {
 			double xDouble = (double) x;
 			x = (int) Math.round(((xDouble - (double)xGridMin) / (double)xSpacing));
 		}
 		if (y <= yGridMin) {
 			y = 0;
-		} else if (y > yGridMax) {
-			y = xBoardDim;
+		} else if (y >= yGridMax) {
+			y = xBoardDim - 1;
 		} else {
 			double yDouble = (double) y;
 			y = (int) Math.round(((yDouble - (double)yGridMin) / (double)ySpacing));
