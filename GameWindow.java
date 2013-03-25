@@ -108,7 +108,7 @@ public class GameWindow extends JFrame {
 		if (y <= yGridMin) {
 			y = 0;
 		} else if (y >= yGridMax) {
-			y = xBoardDim - 1;
+			y = yBoardDim - 1;
 		} else {
 			double yDouble = (double) y;
 			y = (int) Math.round(((yDouble - (double)yGridMin) / (double)ySpacing));
