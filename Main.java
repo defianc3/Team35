@@ -8,20 +8,16 @@ class Main{
 		System.out.println("X=black  0=white, N='null'(no piece)\n");
 
 		Fanorona game = new Fanorona(5,9);
+		
+		//GameWindow gw = new GameWindow(5,5);
 
 		game.prettyprint();
 
 		int turn = 0;
+		int numberOfBlackMovesThisTurn = 0;
 		while(true){
 			
 			System.out.println(game.numberOfMoves());
-			//for(int i = 0; i < game.numberOfMoves(); i++){
-			//	System.out.println(i+"  "+game.numberOfMoves3(i+1));
-			//}
-			
-			//for(int i = 0; i < game.numberOfMoves(); i++){
-			//	System.out.println(game.getNextState().evaluate());
-			//}
 
 			long time1 = new Date().getTime();
 			long time2 = -1;
@@ -51,7 +47,7 @@ class Main{
 				System.out.println("evaluation: "+game.evaluate());
 				
 				MiniMaxTree mmt = new MiniMaxTree(game.copyGame());
-				mmt.processToDepth(3);
+				mmt.processToDepth(2);
 				
 				String bestMove = "";
 				int minimum = 100000;
@@ -64,8 +60,18 @@ class Main{
 				
 				System.out.println("best move: "+bestMove);
 				
+				for(int k = 0; k <= numberOfBlackMovesThisTurn; k++){
+					int temp = bestMove.indexOf('>');
+					if(temp == -1){
+						move = bestMove;
+						break;
+					}
+					move = bestMove.substring(0,temp);
+					bestMove = bestMove.substring(temp+1,bestMove.length());
+				}
 				
-				move = game.getRandomMove();
+				numberOfBlackMovesThisTurn++;
+				//move = game.getRandomMove();
 				System.out.println("Black move: "+move);
 				
 				
@@ -89,8 +95,8 @@ class Main{
 					System.exit(0);
 				}
 				else if(playerInput.equals("moves")){
-					System.out.println("\nwhite: "+game.board.whiteMoves);
-					System.out.println("\nblack: "+game.board.blackMoves);
+					System.out.println("\nwhite: "+game.board.whiteMovesFull);
+					System.out.println("\nblack: "+game.board.blackMovesFull);
 					moveturn = false;
 					turn--;
 				}
@@ -161,7 +167,11 @@ class Main{
 
 		      		if(game.capturingMoveAvailable()){
 			      		if(game.isPossibleCapturingMove(row1, col1, row2, col2, moveType)){
+			      			Piece.Type previous = game.activePlayer();
 			      			boolean successiveMove = game.move(row1, col1, row2, col2, moveType);
+			      			if(previous == Piece.Type.BLACK && game.activePlayer() == Piece.Type.WHITE){
+			      				numberOfBlackMovesThisTurn = 0;
+			      			}
 			      			if(successiveMove){
 
 			      			}
@@ -186,7 +196,6 @@ class Main{
 		    }		    
 		  	game.prettyprint();
 		  	game.printTime();
-		  	/* TODO Is this the correct spot for this to break? */
 		  	if(valid && moveturn){
 		  		turn++;
 		  	}

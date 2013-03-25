@@ -5,6 +5,9 @@ class Board{
 
 	String whiteMoves;
 	String blackMoves;
+	
+	String whiteMovesFull;
+	String blackMovesFull;
 
 	public Piece.Type activePlayer;
 
@@ -46,6 +49,9 @@ class Board{
 		}
 		b.whiteMoves = this.whiteMoves;
 		b.blackMoves = this.blackMoves;
+		
+		b.whiteMovesFull = this.whiteMovesFull;
+		b.blackMovesFull = this.blackMovesFull;
 		return b;
 	}
 
@@ -57,6 +63,11 @@ class Board{
 		columns = col;
 		whiteMoves = "";
 		blackMoves = "";
+		
+		whiteMovesFull = "";
+		blackMovesFull = "";
+		
+		
 		activePlayer = type;
 		latestDirectionMoved = "";
 
@@ -96,6 +107,10 @@ class Board{
 		columns = col;
 		whiteMoves = "";
 		blackMoves = "";
+		
+		whiteMovesFull = "";
+		blackMovesFull = "";
+		
 		activePlayer = type;
 		latestDirectionMoved = "";
 
