@@ -64,35 +64,91 @@ class Fanorona implements Evaluatable{
 			newState.move(getFirstRow(move2),getFirstColumn(move2),getSecondRow(move2),getSecondColumn(move2),getMoveType(move2));
 		}
 		return newState;
-	}	
-	
-	private int getFirstRow(String move){
-		//defined assuming standard 9x5 board
-		return move.charAt(0)-48;
 	}
 	
-	private int getFirstColumn(String move){
-		//defined assuming standard 9x5 board
+	/*
+	 * New move input format (same as described in the new requirements paper)
+	 * 
+	 * A/H/P row1 col1 row2 col2
+	 * S row1 col1
+	 * 
+	 */
+	
+	public static int getFirstRow(String move){
 		
-		return move.charAt(1)-48;
+		move = move.substring(2);
+		int count = 0;
+		String row = "";
+		for(int i = 0; i < move.length(); i++){
+			if( count == 0 && Character.isDigit(move.charAt(i))){
+				row += move.charAt(i);
+			}
+			else if(move.charAt(i) == ' '){
+				count++;
+			}
+		}
+
+		return Integer.parseInt(row);
 	}
 	
-	private int getSecondRow(String move){
-		//defined assuming standard 9x5 board
+	public static int getFirstColumn(String move){
 		
-		return move.charAt(3)-48;
+		move = move.substring(2);
+		int count = 0;
+		String row = "";
+		for(int i = 0; i < move.length(); i++){
+			if( count == 1 && Character.isDigit(move.charAt(i))){
+				row += move.charAt(i);
+			}
+			else if(move.charAt(i) == ' '){
+				count++;
+			}
+		}
+
+		return Integer.parseInt(row);
 	}
 	
-	private int getSecondColumn(String move){
-		//defined assuming standard 9x5 board
+	public static int getSecondRow(String move){
 		
-		return move.charAt(4)-48;
+		move = move.substring(2);
+		int count = 0;
+		String row = "";
+		for(int i = 0; i < move.length(); i++){
+			if( count == 2 && Character.isDigit(move.charAt(i))){
+				row += move.charAt(i);
+			}
+			else if(move.charAt(i) == ' '){
+				count++;
+			}
+		}
+
+		return Integer.parseInt(row);
 	}
 	
-	private char getMoveType(String move){
-		//defined assuming standard 9x5 board
+	public static int getSecondColumn(String move){
 		
-		return move.charAt(6);
+		move = move.substring(2);
+		int count = 0;
+		String row = "";
+		for(int i = 0; i < move.length(); i++){
+			if( count == 3 && Character.isDigit(move.charAt(i))){
+				row += move.charAt(i);
+			}
+			else if(move.charAt(i) == ' '){
+				count++;
+			}
+		}
+
+		return Integer.parseInt(row);
+	}
+	
+	public static char getMoveType(String move){
+		
+		char t = move.charAt(0);
+		if(!(t == 'A' || t == 'W' || t == 'P' || t == 'S' || t == 'F')){
+			throw new RuntimeException("Invalid type: "+t);
+		}
+		return t;
 	}
 	
 	private boolean moveHasSuccessiveCaptures(String move){
@@ -198,8 +254,14 @@ class Fanorona implements Evaluatable{
 		if(this.board.capturingMoveAvailable(this.board.array[row][column])){
 			String possibleMoves = this.board.PossibleCapturingMovesWithDirection(this.board.array[row][column]);
 			int temp = 0;
-			for(int k = 0; k < possibleMoves.length()/8; k++){
-				String move = possibleMoves.substring(temp+1,temp+8);
+			
+			while(possibleMoves.length() > 0){
+				int row1 = getFirstRow(possibleMoves);
+				int col1 = getFirstColumn(possibleMoves);
+				int row2 = getSecondRow(possibleMoves);
+				int col2 = getSecondColumn(possibleMoves);
+				char type = getMoveType(possibleMoves);
+				String move = type+" "+row1+" "+col1+" "+row2+" "+col2;
 				if(moveHasSuccessiveCaptures(move)){
 					Fanorona newGame = copyGame();
 					int tempRow = getSecondRow(move);	//hold the destination position so i can call recursively
@@ -207,12 +269,34 @@ class Fanorona implements Evaluatable{
 					newGame.move(getFirstRow(move), getFirstColumn(move), getSecondRow(move), getSecondColumn(move), getMoveType(move));
 					count += newGame.numberOfMoves(tempRow, tempCol, true);
 				}
-				else{
-					count++;
+				int index = possibleMoves.indexOf(',');
+				if(possibleMoves.length() < index+2){
+					possibleMoves = "";
 				}
-				temp+=8;
-				/*TODO make this code more general. now it just does the same thing as count += length/8 */
+				else{
+					possibleMoves = possibleMoves.substring(index+2);
+				}
 			}
+			
+			
+			
+//			for(int k = 0; k < possibleMoves.length()/8; k++){
+//				String move = possibleMoves.substring(temp+1,temp+8);
+//				if(moveHasSuccessiveCaptures(move)){
+//					Fanorona newGame = copyGame();
+//					int tempRow = getSecondRow(move);	//hold the destination position so i can call recursively
+//					int tempCol = getSecondColumn(move);
+//					newGame.move(getFirstRow(move), getFirstColumn(move), getSecondRow(move), getSecondColumn(move), getMoveType(move));
+//					count += newGame.numberOfMoves(tempRow, tempCol, true);
+//				}
+//				else{
+//					count++;
+//				}
+//				temp+=8;
+//				/*TODO make this code more general. now it just does the same thing as count += length/8 */
+//			}
+			
+			
 		}
 		else if(!recursion){
 			String possibleMoves = this.board.possibleMovesWithDirection(this.board.array[row][column]);
@@ -232,6 +316,7 @@ class Fanorona implements Evaluatable{
 					count += numberOfMoves(i,j,false);
 				}
 				else if(!capturingMoveAvailable()){
+					/* TODO fix this loop for paika moves */
 					String possibleMoves = board.possibleMovesWithDirection(board.array[i][j]);
 					for(int k = 0; k < possibleMoves.length()/8; k++){
 						count++;
@@ -308,17 +393,19 @@ class Fanorona implements Evaluatable{
 			if(board.activePlayer == Piece.Type.WHITE){
 				board.whiteMoves += ""+row1+col1+">"+row2+col2;
 				if(board.whiteMovesFull.lastIndexOf('\n') != board.whiteMovesFull.length()-1 && board.whiteMovesFull.length()!=0){
-					board.whiteMovesFull += ">";
+					board.whiteMovesFull += " + ";
 				}
-				board.whiteMovesFull += ""+row1+""+col1+" "+row2+""+col2+" "+type;
+				board.whiteMovesFull += type+" "+row1+""+col1+" "+row2+""+col2;
 			}
 			else{
 				board.blackMoves += ""+row1+col1+">"+row2+col2;
-				if(board.blackMovesFull.lastIndexOf('\n') != board.blackMovesFull.length()-1 && board.blackMovesFull.length()!=0) board.blackMovesFull += ">";
-				board.blackMovesFull += ""+row1+""+col1+" "+row2+""+col2+" "+type;
+				if(board.blackMovesFull.lastIndexOf('\n') != board.blackMovesFull.length()-1 && board.blackMovesFull.length()!=0){
+					board.blackMovesFull += " + ";
+				}
+				board.blackMovesFull += type+" "+row1+""+col1+" "+row2+""+col2;
 			}
 			
-			if(board.capturingMoveAvailable(board.array[row2][col2]) && type != 'f'){
+			if(board.capturingMoveAvailable(board.array[row2][col2]) && type != 'F'){
 				return true;
 			}
 
@@ -434,5 +521,25 @@ class Fanorona implements Evaluatable{
 	public String getLastNMoves(boolean type, int n){
 		
 		return "";
+	}
+	
+	public boolean validMoveSystax(String move){
+		
+			int row1 = getFirstRow(move);
+			int col1 = getFirstColumn(move);
+			int row2 = getSecondRow(move);
+			int col2 = getSecondColumn(move);
+			char moveType = getMoveType(move);
+			
+			if(row1 > board.rows || row2 > board.rows){
+				return false;
+			}
+			if(col1 > board.columns || col2 > board.columns){
+				return false;
+			}
+			if(!(moveType == 'A' || moveType == 'W' || moveType == 'P' || moveType == 'S')){
+				return false;
+			}
+		return true;
 	}
 }

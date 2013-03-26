@@ -1,6 +1,6 @@
 class Piece{
 
-	public enum Type {WHITE, BLACK, NULL};
+	public enum Type {WHITE, BLACK, NULL, WHITESACRIFICE, BLACKSACRIFICE};
 
 	Type type;
 	int row;

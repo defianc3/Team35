@@ -7,7 +7,7 @@ class Main{
 		System.out.println("\nWelcome to Team35's Fanorona game");
 		System.out.println("X=black  0=white, N='null'(no piece)\n");
 
-		Fanorona game = new Fanorona(5,9);
+		Fanorona game = new Fanorona(9,5);
 		
 		//GameWindow gw = new GameWindow(5,5);
 
@@ -109,30 +109,31 @@ class Main{
 				else{
 
 					try {
-			        	pieceInt1 = scan.nextInt();
-			        	pieceInt2 = scan.nextInt();
-
-			        	pieceStr1 = Integer.toString(pieceInt1);
-			        	pieceStr2 = Integer.toString(pieceInt2);
-
-			        	if(pieceInt1 < 10){
-			        		pieceStr1 = "0"+pieceStr1;
-			        	}
-			        	if(pieceStr1.length() != 2){
-			        		pieceStr1 = pieceStr1+="0";
-			        	}
-
-			        	if(pieceInt2 < 10){
-			        		pieceStr2 = "0"+pieceStr2;
-			        	}
-			        	if(pieceStr2.length() != 2){
-			        		pieceStr2 = pieceStr2+="0";
-			        	}
-
-			        	playerInput = scan.nextLine();
-
-
-				      	move = pieceStr1 + " " + pieceStr2 + playerInput;
+//			        	pieceInt1 = scan.nextInt();
+//			        	pieceInt2 = scan.nextInt();
+//
+//			        	pieceStr1 = Integer.toString(pieceInt1);
+//			        	pieceStr2 = Integer.toString(pieceInt2);
+//
+//			        	if(pieceInt1 < 10){
+//			        		pieceStr1 = "0"+pieceStr1;
+//			        	}
+//			        	if(pieceStr1.length() != 2){
+//			        		pieceStr1 = pieceStr1+="0";
+//			        	}
+//
+//			        	if(pieceInt2 < 10){
+//			        		pieceStr2 = "0"+pieceStr2;
+//			        	}
+//			        	if(pieceStr2.length() != 2){
+//			        		pieceStr2 = pieceStr2+="0";
+//			        	}
+//
+//			        	playerInput = scan.nextLine();
+//
+//
+//				      	move = pieceStr1 + " " + pieceStr2 + playerInput;
+						move = scan.nextLine();
 				    }
 				    catch(Exception e){
 	        			System.out.println("Error: " + e.getMessage());
@@ -142,16 +143,21 @@ class Main{
 			boolean valid = true;
       		if(moveturn){
 
-		      	int row1 = move.charAt(0)-48;
-		      	int col1 = move.charAt(1)-48;
-		      	int row2 = move.charAt(3)-48;
-		      	int col2 = move.charAt(4)-48;
-		      	char moveType = move.charAt(6);
+//		      	int row1 = move.charAt(0)-48;
+//		      	int col1 = move.charAt(1)-48;
+//		      	int row2 = move.charAt(3)-48;
+//		      	int col2 = move.charAt(4)-48;
+//		      	char moveType = move.charAt(6);
+      			
+      			int row1 = Fanorona.getFirstRow(move);
+      			int col1 = Fanorona.getFirstColumn(move);
+      			int row2 = Fanorona.getSecondRow(move);
+      			int col2 = Fanorona.getSecondColumn(move);
+      			char moveType = Fanorona.getMoveType(move);
+      			
 		      	
 
-		      	if(row1 > 4 || row1 < 0 || row2 > 4 || row2 < 0 || col1 < 0 || col1 > 8 || col2 < 0 || col2 > 8 || !(moveType == 'a' || moveType == 'w' || moveType == 'f')){
-		      		valid = false;
-		      	}
+		      	valid = game.validMoveSystax(move);
 
 		      	if(!valid){
 		      		System.out.println("not valid");

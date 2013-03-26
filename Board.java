@@ -57,7 +57,9 @@ class Board{
 
 	//Creates a new board and populates it with pieces
 	//activePlayer is set to Type type
-	public Board(int row, int col, Piece.Type type){
+	public Board(int col, int row, Piece.Type type){
+		
+		if(col%2 == 0 || row%2 == 0) throw new RuntimeException("Invaid arguments");
 
 		rows = row;
 		columns = col;
@@ -70,16 +72,18 @@ class Board{
 		
 		activePlayer = type;
 		latestDirectionMoved = "";
+		
+		int middle = rows/2;
 
 		array = new Piece[rows][columns];
 
 		for(int j = 0; j < rows; j++){
 			boolean even = true;
 			for(int i = 0; i < col; i++){
-				if(j < 2){
+				if(j < middle){
 					array[j][i] = new Piece(Piece.Type.BLACK,j,i);
 				}
-				else if(j == 2){
+				else if(j == middle){
 					if(i == col/2){
 						array[j][i] = new Piece(Piece.Type.NULL,j,i);
 						even = true;
@@ -153,7 +157,7 @@ class Board{
 		int temprow2 = row2;
 		int tempcol2 = col2;
 
-		if(type == 'a'){
+		if(type == 'A'){
 			int count = 0;
 			while((temprow2 != -1 && tempcol2 != -1) &&(temprow2 < rows && tempcol2 < columns) ){
 
@@ -175,7 +179,7 @@ class Board{
 				tempcol2 = nextcol;
 			}
 		}
-		else if(type == 'w'){
+		else if(type == 'W'){
 			int count = 0;
 			while((temprow != -1 && tempcol != -1) && (temprow < rows && tempcol < columns)){
 
@@ -202,7 +206,7 @@ class Board{
 			}
 		}
 
-		else if(type == 'f'){
+		else if(type == 'F'){
 
 		}
 
@@ -219,61 +223,61 @@ class Board{
 		String s = "";
 
 		if(row != rows-1){
-			s+=" "+(row+1)+(col);
+			s+=" "+(row+1)+","+(col);
 		}
 		if(row != 0){
-			s+=" "+(row-1)+(col);
+			s+=" "+(row-1)+","+(col);
 		}
 		if(col != columns-1){
-			s+=" "+(row)+(col+1);
+			s+=" "+(row)+","+(col+1);
 		}
 		if(col != 0){
-			s+=" "+(row)+(col-1);
+			s+=" "+(row)+","+(col-1);
 		}
 
 		if(p.stronglyConnected){
 			if(row != 0 && row != rows-1){
 				if(col != columns-1 && col != 0){
-					s+=" "+(row+1)+(col+1);
-					s+=" "+(row-1)+(col+1);
-					s+=" "+(row-1)+(col-1);
-					s+=" "+(row+1)+(col-1);
+					s+=" "+(row+1)+","+(col+1);
+					s+=" "+(row-1)+","+(col+1);
+					s+=" "+(row-1)+","+(col-1);
+					s+=" "+(row+1)+","+(col-1);
 				}
 				else if(col == 0){
-					s+=" "+(row+1)+(col+1);
-					s+=" "+(row-1)+(col+1);
+					s+=" "+(row+1)+","+(col+1);
+					s+=" "+(row-1)+","+(col+1);
 				}
 				else if(col == columns-1){
-					s+=" "+(row-1)+(col-1);
-					s+=" "+(row+1)+(col-1);
+					s+=" "+(row-1)+","+(col-1);
+					s+=" "+(row+1)+","+(col-1);
 				}
 			}
 			else if(row == 0){
 				if(col == 0){
-					s+=" "+(row+1)+(col+1);
+					s+=" "+(row+1)+","+(col+1);
 				}
 				else if(col == columns-1){
-					s+=" "+(row+1)+(col-1);
+					s+=" "+(row+1)+","+(col-1);
 				}
 				else{
-					s+=" "+(row+1)+(col-1);
-					s+=" "+(row+1)+(col+1);
+					s+=" "+(row+1)+","+(col-1);
+					s+=" "+(row+1)+","+(col+1);
 				}
 			}
 			else{
 				if(col == 0){
-					s+=" "+(row-1)+(col+1);
+					s+=" "+(row-1)+","+(col+1);
 				}
 				else if(col == columns-1){
-					s+=" "+(row-1)+(col-1);
+					s+=" "+(row-1)+","+(col-1);
 				}
 				else{
-					s+=" "+(row-1)+(col-1);
-					s+=" "+(row-1)+(col+1);
+					s+=" "+(row-1)+","+(col-1);
+					s+=" "+(row-1)+","+(col+1);
 				}
 			}
 		}
-		return s;
+		return s.substring(1);
 	}
 
 	//Determines whether or not a move is allowable (if the original position is of type
@@ -407,17 +411,50 @@ class Board{
 		}
 
 		String s = possibleMoves(p);
-		int length = s.length()/3;
-		for(int k = 0; k < length; k++){
-			int row = (int) s.charAt(1) -48;
-			int col = (int) s.charAt(2) -48;
-			s = s.substring(3);
-			if(isPossibleCapturingMove(p.row,p.column,row,col,'a')){
-			//	System.out.println(p.row+" "+p.column+" "+move);
-				return true;
+//		int length = s.length()/3;
+//		for(int k = 0; k < length; k++){
+//			int row = (int) s.charAt(1) -48;
+//			int col = (int) s.charAt(2) -48;
+//			s = s.substring(3);
+//			if(isPossibleCapturingMove(p.row,p.column,row,col,'a')){
+//			//	System.out.println(p.row+" "+p.column+" "+move);
+//				return true;
+//			}
+//			if(isPossibleCapturingMove(p.row,p.column,row,col,'w')) return true;
+		
+			while(s.length() != 0){
+				int row1;
+				int col1;
+				int row2;
+				int col2;
+				int index = s.indexOf(' ');
+				row1 = Integer.parseInt(s.substring(0,index));
+				s = s.substring(index+1);
+				index = s.indexOf(' ');
+				col1 = Integer.parseInt(s.substring(0,index));
+				s = s.substring(index+1);
+				index = s.indexOf(' ');
+				row2 = Integer.parseInt(s.substring(0,index));
+				s = s.substring(index+1);
+				index = s.indexOf(',');
+				if(index == -1){
+					col2 = Integer.parseInt(s.substring(0,s.length()-1));
+					s = "";
+				}
+				else{
+					col2 = Integer.parseInt(s.substring(0,index));
+					s = s.substring(index+1);
+				}
+				index = s.indexOf(' ');
+				if(index == -1){
+					s = "";
+				}
+				else{
+					s = s.substring(index+1);
+				}
+				if(isPossibleCapturingMove(row1, col1, row2, col2, 'a')) return true;
+				if(isPossibleCapturingMove(row1, col1, row2, col2, 'w')) return true;
 			}
-			if(isPossibleCapturingMove(p.row,p.column,row,col,'w')) return true;
-		}
 		return false;
 	}
 
@@ -427,16 +464,43 @@ class Board{
 				if(array[i][j].type == activePlayer){
 					String s = possibleMoves(array[i][j]);
 					//System.out.println("possible moves from "+i+""+j+": "+s);
-					int length = s.length()/3;
-					for(int k = 0; k < length; k++){
-						int row = (int) s.charAt(1) -48;
-						int col = (int) s.charAt(2) -48;
-						s = s.substring(3);
-						String move = ""+row+col;
-						//System.out.println("testing "+move);
-						if(isPossibleCapturingMove(i,j,row,col,'a')) return true;
-						if(isPossibleCapturingMove(i,j,row,col,'w')) return true;
-					}
+//					int length = s.length()/3;
+//					for(int k = 0; k < length; k++){
+//						int row = (int) s.charAt(1) -48;
+//						int col = (int) s.charAt(2) -48;
+//						s = s.substring(3);
+//						String move = ""+row+col;
+//						//System.out.println("testing "+move);
+//						if(isPossibleCapturingMove(i,j,row,col,'a')) return true;
+//						if(isPossibleCapturingMove(i,j,row,col,'w')) return true;
+//					}
+					
+					while(s.length() != 0){
+						int row1;
+						int col1;
+						int row2;
+						int col2;
+						int index = s.indexOf(' ');
+						row1 = Integer.parseInt(s.substring(0,index));
+						s = s.substring(index+1);
+						index = s.indexOf(' ');
+						col1 = Integer.parseInt(s.substring(0,index));
+						s = s.substring(index+1);
+						index = s.indexOf(' ');
+						row2 = Integer.parseInt(s.substring(0,index));
+						s = s.substring(index+1);
+						index = s.indexOf(' ');
+						if(index == -1){
+							col2 = Integer.parseInt(s.substring(0,s.length()-1));
+							s = "";
+						}
+						else{
+							col2 = Integer.parseInt(s.substring(0,index));
+							s = s.substring(index+1);
+						}
+						if(isPossibleCapturingMove(row1, col1, row2, col2, 'a')) return true;
+						if(isPossibleCapturingMove(row1, col1, row2, col2, 'w')) return true;
+					}				
 				}
 			}
 		}
@@ -446,18 +510,39 @@ class Board{
 
 	String possibleMoves(Piece p){
 		String connected = connectedSpaces(p);
-
 		String possible = "";
 
-		int temp = 1;
-		for(int i = 0; i < connected.length()/3;i++){
-			String move = ""+connected.charAt(temp)+connected.charAt(temp+1);
-			if(isPossibleMove(p.row, p.column,connected.charAt(temp)-48, connected.charAt(temp+1)-48,' ')){
-				possible+=" "+move;
+//		for(int i = 0; i < connected.length()/3;i++){
+//			String move = ""+connected.charAt(temp)+connected.charAt(temp+1);
+//			if(isPossibleMove(p.row, p.column,connected.charAt(temp)-48, connected.charAt(temp+1)-48,' ')){
+//				possible+=" "+move;
+//			}
+//			temp+=3;
+//		}
+		
+		while(connected.length() != 0){
+			int row2;
+			int col2;
+			int index = connected.indexOf(',');
+			row2 = Integer.parseInt(connected.substring(0,index));
+			connected = connected.substring(index+1);
+			index = connected.indexOf(' ');
+			if(index == -1){
+				col2 = Integer.parseInt(connected);
+				connected = "";
 			}
-			temp+=3;
+			else{
+				col2 = Integer.parseInt(connected.substring(0,index));
+				connected = connected.substring(index+1);
+			}
+			if(isPossibleMove(p.row, p.column, row2, col2, ' ')){
+				possible += " "+p.row+" "+p.column+" "+row2+" "+col2+",";
+			}
 		}
-		return possible;
+		if(possible.length() == 0){
+			return "";
+		}
+		return possible.substring(1);
 	}
 	
 	String possibleMovesWithDirection(Piece p){
@@ -466,13 +551,37 @@ class Board{
 		String possible = "";
 
 		int temp = 1;
-		for(int i = 0; i < connected.length()/3;i++){
-			String move = ""+connected.charAt(temp)+connected.charAt(temp+1);
-			if(isPossibleMove(p.row, p.column,connected.charAt(temp)-48, connected.charAt(temp+1)-48,' ')){
-				possible+=" "+p.row+""+p.column+" "+move+" f";
+		
+		while(connected.length() != 0){
+			int row2;
+			int col2;
+			int index = connected.indexOf(',');
+			row2 = Integer.parseInt(connected.substring(0,index));
+			connected = connected.substring(index+1);
+			index = connected.indexOf(' ');
+			if(index == -1){
+				col2 = Integer.parseInt(connected);
+				connected = "";
 			}
-			temp+=3;
+			else{
+				col2 = Integer.parseInt(connected.substring(0,index));
+				connected = connected.substring(index+1);
+			}
+			if(isPossibleMove(p.row, p.column, row2, col2, ' ')){
+				possible += " F "+p.row+" "+p.column+" "+row2+" "+col2+",";
+			}
 		}
+		
+		
+//		for(int i = 0; i < connected.length()/3;i++){
+//			String move = ""+connected.charAt(temp)+connected.charAt(temp+1);
+//			if(isPossibleMove(p.row, p.column,connected.charAt(temp)-48, connected.charAt(temp+1)-48,' ')){
+//				possible+=" "+p.row+""+p.column+" "+move+" F";
+//			}
+//			temp+=3;
+//		}
+		
+		
 		return possible;
 	}
 
@@ -504,22 +613,56 @@ class Board{
 		String connected = possibleMoves(p);
 
 		String possiblecapt = "";
-		int temp = 1;
-		for(int i = 0; i < connected.length()/3; i++){
-			String move = ""+connected.charAt(temp)+connected.charAt(temp+1);
-			int row = connected.charAt(temp)-48;
-			int col = connected.charAt(temp+1)-48;
-			temp += 3;
-
-			if(isPossibleCapturingMove(p.row, p.column,row,col,'a')){
-				possiblecapt+=" "+p.row+""+p.column+" "+move+" a";
+//		int temp = 1;
+//		for(int i = 0; i < connected.length()/3; i++){
+//			String move = ""+connected.charAt(temp)+connected.charAt(temp+1);
+//			int row2 = connected.charAt(temp)-48;
+//			int col2 = connected.charAt(temp+1)-48;
+//			temp += 3;
+		
+			while(connected.length() != 0){
+				int row1;
+				int col1;
+				int row2;
+				int col2;
+				int index = connected.indexOf(' ');
+				row1 = Integer.parseInt(connected.substring(0,index));
+				connected = connected.substring(index+1);
+				index = connected.indexOf(' ');
+				col1 = Integer.parseInt(connected.substring(0,index));
+				connected = connected.substring(index+1);
+				index = connected.indexOf(' ');
+				row2 = Integer.parseInt(connected.substring(0,index));
+				connected = connected.substring(index+1);
+				index = connected.indexOf(' ');
+				if(index == -1){
+					col2 = Integer.parseInt(connected.substring(0,connected.length()-1));
+					connected = "";
+				}
+				else{
+					col2 = Integer.parseInt(connected.substring(0,index));
+					connected = connected.substring(index+1);
+				}
+				if(isPossibleCapturingMove(row1, col1, row2, col2, 'a')){
+					possiblecapt+=" a "+row1+" "+col1+" "+row2+" "+col2+",";
+				}
+				if(isPossibleCapturingMove(row1, col1, row2, col2, 'w')){
+					possiblecapt+=" w "+row1+" "+col1+" "+row2+" "+col2+",";
+				}
 			}
 
-			if(isPossibleCapturingMove(p.row, p.column,row,col,'w')){
-				possiblecapt+=" "+p.row+""+p.column+" "+move+" w";
-			}
+//			if(isPossibleCapturingMove(p.row, p.column,row2,col2,'a')){
+//				possiblecapt+=" "+p.row+""+p.column+" "+move+" a";
+//			}
+//
+//			if(isPossibleCapturingMove(p.row, p.column,row2,col2,'w')){
+//				possiblecapt+=" "+p.row+""+p.column+" "+move+" w";
+//			}
+		//}
+		if(possiblecapt.length() == 0){
+			return "";
 		}
-		return possiblecapt;
+		return possiblecapt.substring(1);
 	}
 	
 	public String getDirection(int _row, int _col, int row2, int col2){
@@ -546,7 +689,11 @@ class Board{
 
 	public void prettyprint(){
 
-		String line2 = "--------------------------------------------";
+		String line2 = "";
+		
+		for(int i = 0; i < columns; i++){
+			line2 += "-----";
+		}
 
 		int t = 0;
 		for(int i = 0; i < columns; i++){
