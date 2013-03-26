@@ -143,13 +143,10 @@ public class GameWindow extends JFrame {
 
 	private void drawIndicator(int xCoord, int yCoord, int xActual,
 			int yActual) {
-
 		int xSpacing = (maxX - 2*40)/(xBoardDim - 1);
 		int ySpacing = ((maxY-30) - 2*40)/(yBoardDim - 1);
 		int xTemp = xGridMin + xSpacing * xCoord;
 		int yTemp = yGridMin + ySpacing * yCoord;
-		
-
 
 		double distance = Math.sqrt(((xTemp - xActual) * (xTemp - xActual)) +
 				((yTemp - yActual) * (yTemp - yActual)));
@@ -199,6 +196,9 @@ public class GameWindow extends JFrame {
 		graphics.drawLine(xPoint - radius, yPoint + radius,
 				xPoint + radius, yPoint + radius); //Bottom
 		graphics.setColor(Color.BLACK);
+		} else {
+			pointSelected = false;
+		}
 	}
 	
 	private void clearWindow() {
