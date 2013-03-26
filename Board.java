@@ -452,8 +452,8 @@ class Board{
 				else{
 					s = s.substring(index+1);
 				}
-				if(isPossibleCapturingMove(row1, col1, row2, col2, 'a')) return true;
-				if(isPossibleCapturingMove(row1, col1, row2, col2, 'w')) return true;
+				if(isPossibleCapturingMove(row1, col1, row2, col2, 'A')) return true;
+				if(isPossibleCapturingMove(row1, col1, row2, col2, 'W')) return true;
 			}
 		return false;
 	}
@@ -495,11 +495,11 @@ class Board{
 							s = "";
 						}
 						else{
-							col2 = Integer.parseInt(s.substring(0,index));
+							col2 = Integer.parseInt(s.substring(0,index-1));
 							s = s.substring(index+1);
 						}
-						if(isPossibleCapturingMove(row1, col1, row2, col2, 'a')) return true;
-						if(isPossibleCapturingMove(row1, col1, row2, col2, 'w')) return true;
+						if(isPossibleCapturingMove(row1, col1, row2, col2, 'A')) return true;
+						if(isPossibleCapturingMove(row1, col1, row2, col2, 'W')) return true;
 					}				
 				}
 			}
@@ -597,11 +597,11 @@ class Board{
 			int col = connected.charAt(temp+1)-48;
 			temp += 3;
 
-			if(isPossibleCapturingMove(p.row, p.column,row,col,'a')){
+			if(isPossibleCapturingMove(p.row, p.column,row,col,'A')){
 				possiblecapt+=" "+move;
 			}
 
-			if(isPossibleCapturingMove(p.row, p.column,row,col,'w')){
+			if(isPossibleCapturingMove(p.row, p.column,row,col,'W')){
 				possiblecapt+=" "+move;
 			}
 		}
@@ -640,14 +640,14 @@ class Board{
 					connected = "";
 				}
 				else{
-					col2 = Integer.parseInt(connected.substring(0,index));
+					col2 = Integer.parseInt(connected.substring(0,index-1));
 					connected = connected.substring(index+1);
 				}
-				if(isPossibleCapturingMove(row1, col1, row2, col2, 'a')){
-					possiblecapt+=" a "+row1+" "+col1+" "+row2+" "+col2+",";
+				if(isPossibleCapturingMove(row1, col1, row2, col2, 'A')){
+					possiblecapt+=" A "+row1+" "+col1+" "+row2+" "+col2+",";
 				}
-				if(isPossibleCapturingMove(row1, col1, row2, col2, 'w')){
-					possiblecapt+=" w "+row1+" "+col1+" "+row2+" "+col2+",";
+				if(isPossibleCapturingMove(row1, col1, row2, col2, 'W')){
+					possiblecapt+=" W "+row1+" "+col1+" "+row2+" "+col2+",";
 				}
 			}
 

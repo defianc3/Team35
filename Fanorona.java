@@ -58,11 +58,46 @@ class Fanorona implements Evaluatable{
 		//System.out.print("to next state: "+move+"  evaluates to: ");
 		int temp = 0;
 		Fanorona newState = copyGame();
-		for(int i = 0; i < move.length()/7; i++){
-			String move2 = move.substring(temp,temp+7);
-			temp+=8;
-			newState.move(getFirstRow(move2),getFirstColumn(move2),getSecondRow(move2),getSecondColumn(move2),getMoveType(move2));
+		
+		while(move.length() > 0){
+			int index = move.indexOf(' ');
+			char type = (move.substring(0, index)).charAt(0);
+			move = move.substring(index+1);
+			index = move.indexOf(' ');
+			int row1 = Integer.parseInt(move.substring(0,index));
+			move = move.substring(index+1);
+			index = move.indexOf(' ');
+			int col1 = Integer.parseInt(move.substring(0,index));
+			move = move.substring(index+1);
+			index = move.indexOf(' ');
+			int row2 = Integer.parseInt(move.substring(0,index));
+			move = move.substring(index+1);
+			index = move.indexOf('>');
+			int col2;
+			if(index == -1){
+				col2 = Integer.parseInt(move);
+				move = "";
+			}
+			else{
+				col2 = Integer.parseInt(move.substring(0,index));
+				move = move.substring(index+1);
+			}
+			
+			newState.move(row1, col1, row2, col2, type);
 		}
+		
+		
+		
+//		for(int i = 0; i < move.length()/7; i++){
+//			String move2 = move.substring(temp,temp+7);
+//			temp+=8;
+//			newState.move(getFirstRow(move2),getFirstColumn(move2),getSecondRow(move2),getSecondColumn(move2),getMoveType(move2));
+//		}
+		
+		
+		
+		
+		
 		return newState;
 	}
 	
@@ -176,8 +211,14 @@ class Fanorona implements Evaluatable{
 		if(this.board.capturingMoveAvailable(this.board.array[row][column])){
 			String possibleMoves = this.board.PossibleCapturingMovesWithDirection(this.board.array[row][column]);
 			int temp = 0;
-			for(int k = 0; k < possibleMoves.length()/8; k++){
-				String move = possibleMoves.substring(temp+1,temp+8);
+			
+			while(possibleMoves.length() > 0){
+				int row1 = getFirstRow(possibleMoves);
+				int col1 = getFirstColumn(possibleMoves);
+				int row2 = getSecondRow(possibleMoves);
+				int col2 = getSecondColumn(possibleMoves);
+				char type = getMoveType(possibleMoves);
+				String move = type+" "+row1+" "+col1+" "+row2+" "+col2;
 				if(moveHasSuccessiveCaptures(move)){
 					if(tempString.length() == 0){
 						tempString += move;
@@ -205,10 +246,9 @@ class Fanorona implements Evaluatable{
 						}
 					}
 				}
-				temp+=8;
-				/*TODO make this code more general. now it just does the same thing as count += length/8 */
 			}
-		}
+		}		
+			
 		else if(!recursion){
 			String possibleMoves = this.board.possibleMovesWithDirection(this.board.array[row][column]);
 			for(int k = 0; k < possibleMoves.length()/8; k++){
@@ -269,6 +309,9 @@ class Fanorona implements Evaluatable{
 					newGame.move(getFirstRow(move), getFirstColumn(move), getSecondRow(move), getSecondColumn(move), getMoveType(move));
 					count += newGame.numberOfMoves(tempRow, tempCol, true);
 				}
+				else{
+					count++;
+				}
 				int index = possibleMoves.indexOf(',');
 				if(possibleMoves.length() < index+2){
 					possibleMoves = "";
@@ -277,26 +320,6 @@ class Fanorona implements Evaluatable{
 					possibleMoves = possibleMoves.substring(index+2);
 				}
 			}
-			
-			
-			
-//			for(int k = 0; k < possibleMoves.length()/8; k++){
-//				String move = possibleMoves.substring(temp+1,temp+8);
-//				if(moveHasSuccessiveCaptures(move)){
-//					Fanorona newGame = copyGame();
-//					int tempRow = getSecondRow(move);	//hold the destination position so i can call recursively
-//					int tempCol = getSecondColumn(move);
-//					newGame.move(getFirstRow(move), getFirstColumn(move), getSecondRow(move), getSecondColumn(move), getMoveType(move));
-//					count += newGame.numberOfMoves(tempRow, tempCol, true);
-//				}
-//				else{
-//					count++;
-//				}
-//				temp+=8;
-//				/*TODO make this code more general. now it just does the same thing as count += length/8 */
-//			}
-			
-			
 		}
 		else if(!recursion){
 			String possibleMoves = this.board.possibleMovesWithDirection(this.board.array[row][column]);
@@ -395,14 +418,14 @@ class Fanorona implements Evaluatable{
 				if(board.whiteMovesFull.lastIndexOf('\n') != board.whiteMovesFull.length()-1 && board.whiteMovesFull.length()!=0){
 					board.whiteMovesFull += " + ";
 				}
-				board.whiteMovesFull += type+" "+row1+""+col1+" "+row2+""+col2;
+				board.whiteMovesFull += type+" "+row1+" "+col1+" "+row2+" "+col2;
 			}
 			else{
 				board.blackMoves += ""+row1+col1+">"+row2+col2;
 				if(board.blackMovesFull.lastIndexOf('\n') != board.blackMovesFull.length()-1 && board.blackMovesFull.length()!=0){
 					board.blackMovesFull += " + ";
 				}
-				board.blackMovesFull += type+" "+row1+""+col1+" "+row2+""+col2;
+				board.blackMovesFull += type+" "+row1+" "+col1+" "+row2+" "+col2;
 			}
 			
 			if(board.capturingMoveAvailable(board.array[row2][col2]) && type != 'F'){
@@ -486,7 +509,6 @@ class Fanorona implements Evaluatable{
 
 	@Override
 	public Evaluatable getNextState() {
-		// TODO Auto-generated method stub
 		recalculateNumberOfMoves();
 		int newlast = lastStateReturned+1;
 		if(newlast > numberOfPossibleMoves){

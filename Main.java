@@ -10,6 +10,9 @@ class Main{
 		Fanorona game = new Fanorona(9,5);
 		
 		//GameWindow gw = new GameWindow(5,5);
+		
+		
+		/* TODO change the rows and columns to start at 1 instead of 0 */
 
 		game.prettyprint();
 
@@ -61,13 +64,13 @@ class Main{
 				System.out.println("best move: "+bestMove);
 				
 				for(int k = 0; k <= numberOfBlackMovesThisTurn; k++){
-					int temp = bestMove.indexOf('>');
+					int temp = bestMove.indexOf('+');
 					if(temp == -1){
 						move = bestMove;
 						break;
 					}
 					move = bestMove.substring(0,temp);
-					bestMove = bestMove.substring(temp+1,bestMove.length());
+					bestMove = bestMove.substring(temp+2,bestMove.length());
 				}
 				
 				numberOfBlackMovesThisTurn++;
