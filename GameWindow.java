@@ -29,6 +29,15 @@ public class GameWindow extends JFrame {
 	int yBoardDim;
 	boolean pointSelected = false;
 	int radius;
+	int xLastCoord = -1;
+	int yLastCoord = -1;
+	
+	private enum selectionStates {
+		None,
+		FirstPiece,
+		SecondCoord;
+	}
+	selectionStates currentSelectState = selectionStates.None;
 	
 	final DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 	
@@ -134,28 +143,62 @@ public class GameWindow extends JFrame {
 
 	private void drawIndicator(int xCoord, int yCoord, int xActual,
 			int yActual) {
+
 		int xSpacing = (maxX - 2*40)/(xBoardDim - 1);
 		int ySpacing = ((maxY-30) - 2*40)/(yBoardDim - 1);
 		int xTemp = xGridMin + xSpacing * xCoord;
 		int yTemp = yGridMin + ySpacing * yCoord;
+		
+
 
 		double distance = Math.sqrt(((xTemp - xActual) * (xTemp - xActual)) +
 				((yTemp - yActual) * (yTemp - yActual)));
 		if (distance <= radius) {
 			pointSelected = true;
-			graphics.setColor(Color.RED);
-			graphics.drawLine(xTemp - radius, yTemp - radius,
-					xTemp + radius, yTemp - radius); //Top
-			graphics.drawLine(xTemp - radius, yTemp - radius,
-					xTemp - radius, yTemp + radius); //Left
-			graphics.drawLine(xTemp + radius, yTemp - radius,
-					xTemp + radius, yTemp + radius); //Right
-			graphics.drawLine(xTemp - radius, yTemp + radius,
-					xTemp + radius, yTemp + radius); //Bottom
-			graphics.setColor(Color.BLACK);
+			if (currentSelectState == selectionStates.FirstPiece) {
+				if (xCoord == xLastCoord && yCoord == yLastCoord) {
+					/* Currently selected piece is selected again. This is
+					 * interpreted as a deselect action */
+					/* TODO Check to see if the selected coordinate has a
+					 * selectable piece in it, otherwise take no action */
+					currentSelectState = selectionStates.None;
+					return;
+				} else {
+					/* A location different from the first is selected. This
+					 * is interpreted as an attempted move action. */
+					currentSelectState = selectionStates.SecondCoord;
+					drawSelection(xTemp, yTemp);
+				}
+			}
+
+			xLastCoord = xCoord;
+			yLastCoord = yCoord;
+			currentSelectState = selectionStates.FirstPiece;
+			drawSelection(xTemp, yTemp);
+
 		} else {
 			pointSelected = false;
+			currentSelectState = selectionStates.None;
+			xLastCoord = -1;
+			yLastCoord = -1;
 		}
+	}
+	
+	private void drawSelection(int xPoint, int yPoint) {
+		if (currentSelectState == selectionStates.FirstPiece) {
+			graphics.setColor(Color.RED);
+		} else {
+			graphics.setColor(Color.BLUE);
+		}
+		graphics.drawLine(xPoint - radius, yPoint - radius,
+				xPoint + radius, yPoint - radius); //Top
+		graphics.drawLine(xPoint - radius, yPoint - radius,
+				xPoint - radius, yPoint + radius); //Left
+		graphics.drawLine(xPoint + radius, yPoint - radius,
+				xPoint + radius, yPoint + radius); //Right
+		graphics.drawLine(xPoint - radius, yPoint + radius,
+				xPoint + radius, yPoint + radius); //Bottom
+		graphics.setColor(Color.BLACK);
 	}
 	
 	private void clearWindow() {
