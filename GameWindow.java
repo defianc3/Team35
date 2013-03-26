@@ -196,9 +196,6 @@ public class GameWindow extends JFrame {
 		graphics.drawLine(xPoint - radius, yPoint + radius,
 				xPoint + radius, yPoint + radius); //Bottom
 		graphics.setColor(Color.BLACK);
-		} else {
-			pointSelected = false;
-		}
 	}
 	
 	private void clearWindow() {
@@ -226,6 +223,10 @@ public class GameWindow extends JFrame {
 		int xCurrent = xGridMin;
 		int yCurrent = yGridMin;
 
+		Graphics2D graphics2D = (Graphics2D) graphics;      
+		 
+	    graphics2D.setStroke(new BasicStroke(7F));  // set stroke width of 10
+		
 		boolean altLeft = true;
 		boolean flipAlt = false;
 		if (xBoardDim % 2 == 0) {
@@ -234,22 +235,22 @@ public class GameWindow extends JFrame {
 		while(true) {
 			if (yCurrent != yGridMax) {
 				//Draw down line
-				graphics.drawLine(xCurrent, yCurrent, xCurrent,
+				graphics2D.drawLine(xCurrent, yCurrent, xCurrent,
 						yCurrent + ySpacing);
 			}
 			if ((xCurrent != xGridMin) && (yCurrent != yGridMax) && altLeft) {
 				//Draw left diagonal
-				graphics.drawLine(xCurrent, yCurrent, xCurrent - xSpacing,
+				graphics2D.drawLine(xCurrent, yCurrent, xCurrent - xSpacing,
 						yCurrent + ySpacing);
 			}
 			if ((xCurrent != xGridMax) && (yCurrent != yGridMax) && altLeft) {
 				//Draw right diagonal
-				graphics.drawLine(xCurrent, yCurrent, xCurrent + xSpacing,
+				graphics2D.drawLine(xCurrent, yCurrent, xCurrent + xSpacing,
 						yCurrent + ySpacing);
 			}
 			if (xCurrent != xGridMax) {
 				//Draw right line
-				graphics.drawLine(xCurrent, yCurrent, xCurrent + xSpacing,
+				graphics2D.drawLine(xCurrent, yCurrent, xCurrent + xSpacing,
 						yCurrent);
 			}
 			if ((xCurrent >= xGridMax) && (yCurrent >= yGridMax)) {
@@ -266,6 +267,7 @@ public class GameWindow extends JFrame {
 			}
 			altLeft = !altLeft;
 		}
+		graphics2D.setStroke(new BasicStroke(0F));
 	}
 	
 	public void updateScreen(boolean clicked) {
