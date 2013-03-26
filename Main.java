@@ -152,11 +152,31 @@ class Main{
 //		      	int col2 = move.charAt(4)-48;
 //		      	char moveType = move.charAt(6);
       			
-      			int row1 = Fanorona.getFirstRow(move);
-      			int col1 = Fanorona.getFirstColumn(move);
-      			int row2 = Fanorona.getSecondRow(move);
-      			int col2 = Fanorona.getSecondColumn(move);
-      			char moveType = Fanorona.getMoveType(move);
+      			int row1;
+      			int row2;
+      			int col1;
+      			int col2;
+      			char moveType;
+      			
+      			if(game.activePlayer() == Piece.Type.WHITE){
+	      			
+	      			row1 = game.board.rows-Fanorona.getFirstRowCMD(move);
+	      			col1 = Fanorona.getFirstColumnCMD(move)-1;
+	      			row2 = game.board.rows-Fanorona.getSecondRowCMD(move);
+	      			col2 = Fanorona.getSecondColumnCMD(move)-1;
+	      			moveType = Fanorona.getMoveType(move);
+	      			
+	      			move = moveType + " " + row1 + " " + col1 + " "+row2 + " " +col2;
+      			}
+      			else{
+      				
+      				row1 = Fanorona.getFirstRow(move);
+	      			col1 = Fanorona.getFirstColumn(move);
+	      			row2 = Fanorona.getSecondRow(move);
+	      			col2 = Fanorona.getSecondColumn(move);
+	      			moveType = Fanorona.getMoveType(move);
+      				
+      			}
       			
 		      	
 

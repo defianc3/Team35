@@ -109,6 +109,77 @@ class Fanorona implements Evaluatable{
 	 * 
 	 */
 	
+	
+	public static int getFirstRowCMD(String move){
+		
+		move = move.substring(2);
+		int count = 0;
+		String row = "";
+		for(int i = 0; i < move.length(); i++){
+			if( count == 1 && Character.isDigit(move.charAt(i))){
+				row += move.charAt(i);
+			}
+			else if(move.charAt(i) == ' '){
+				count++;
+			}
+		}
+
+		return Integer.parseInt(row);
+	}
+	
+	public static int getFirstColumnCMD(String move){
+		
+		move = move.substring(2);
+		int count = 0;
+		String row = "";
+		for(int i = 0; i < move.length(); i++){
+			if( count == 0 && Character.isDigit(move.charAt(i))){
+				row += move.charAt(i);
+			}
+			else if(move.charAt(i) == ' '){
+				count++;
+			}
+		}
+
+		return Integer.parseInt(row);
+	}
+	
+	public static int getSecondRowCMD(String move){
+		
+		move = move.substring(2);
+		int count = 0;
+		String row = "";
+		for(int i = 0; i < move.length(); i++){
+			if( count == 3 && Character.isDigit(move.charAt(i))){
+				row += move.charAt(i);
+			}
+			else if(move.charAt(i) == ' '){
+				count++;
+			}
+		}
+
+		return Integer.parseInt(row);
+	}
+	
+	public static int getSecondColumnCMD(String move){
+		
+		move = move.substring(2);
+		int count = 0;
+		String row = "";
+		for(int i = 0; i < move.length(); i++){
+			if( count == 2 && Character.isDigit(move.charAt(i))){
+				row += move.charAt(i);
+			}
+			else if(move.charAt(i) == ' '){
+				count++;
+			}
+		}
+
+		return Integer.parseInt(row);
+	}
+	
+	
+	
 	public static int getFirstRow(String move){
 		
 		move = move.substring(2);

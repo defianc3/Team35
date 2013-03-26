@@ -696,14 +696,9 @@ class Board{
 		}
 
 		int t = 0;
+		//System.out.println(line2);
 		for(int i = 0; i < columns; i++){
-			System.out.print(i+"    ");
-		}
-		System.out.println();
-		char c = 'A';
-		for(int i = 0; i < columns; i++){
-			System.out.print(c + "    ");
-			c++;
+			System.out.print((i+1)+"    ");
 		}
 		System.out.println("\n"+line2);
 		for(int i = 0; i < rows; i++){
@@ -722,7 +717,7 @@ class Board{
 					System.out.print("----");
 				}
 			}
-			System.out.print("  | "+i);
+			System.out.print("  | "+(rows-i));
 			System.out.print("\n");
 			String line = "";
 			line += "| ";
