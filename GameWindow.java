@@ -23,6 +23,8 @@ public class GameWindow extends JFrame {
 	Rectangle rec;
 	int xGridMin = 40;
 	int yGridMin = 70;
+	int xGridMax;
+	int yGridMax;
 	int maxX;
 	int maxY;
 	int xSpacing;
@@ -117,10 +119,6 @@ public class GameWindow extends JFrame {
 	private void processClick(int x, int y) {
 		xClick = -1;
 		yClick = -1;
-		xSpacing = (maxX - 2 * xGridMin)/(xBoardDim - 1);
-		ySpacing = ((maxY - 30) - 2 * xGridMin)/(yBoardDim - 1);
-		int xGridMax = xGridMin + ((xBoardDim - 1) * xSpacing);
-		int yGridMax = yGridMin + ((yBoardDim - 1) * ySpacing);
 		int xTemp;
 		int yTemp;
 		if (x <= xGridMin) {
@@ -151,8 +149,6 @@ public class GameWindow extends JFrame {
 
 	private void drawIndicator(int xCoord, int yCoord, int xActual,
 			int yActual) {
-		xSpacing = (maxX - 2 * xGridMin)/(xBoardDim - 1);
-		ySpacing = ((maxY - 30) - 2 * xGridMin)/(yBoardDim - 1);
 		int xTemp = xGridMin + xSpacing * xCoord;
 		int yTemp = yGridMin + ySpacing * yCoord;
 
@@ -232,8 +228,9 @@ public class GameWindow extends JFrame {
 		
 		xSpacing = (maxX - 2 * xGridMin)/(xBoardDim - 1);
 		ySpacing = ((maxY - 30) - 2 * xGridMin)/(yBoardDim - 1);
-		int xGridMax = xGridMin + ((xBoardDim - 1) * xSpacing);
-		int yGridMax = yGridMin + ((yBoardDim - 1) * ySpacing);
+		xGridMax = xGridMin + ((xBoardDim - 1) * xSpacing);
+		yGridMax = yGridMin + ((yBoardDim - 1) * ySpacing);
+		
 		int xCurrent = xGridMin;
 		int yCurrent = yGridMin;
 
@@ -302,8 +299,6 @@ public class GameWindow extends JFrame {
 	
 	
 	public void drawPieces() {
-		xSpacing = (maxX - 2 * xGridMin)/(xBoardDim - 1);
-		ySpacing = ((maxY - 30) - 2 * xGridMin)/(yBoardDim - 1);
 		/* Iterate over pieces here */
 		/* xCoord and yCoord points start at the top left corner with (0,0)
 		 * and go to the bottom left corner with (n,m) where n and m are the
