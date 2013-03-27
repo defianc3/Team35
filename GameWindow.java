@@ -35,17 +35,16 @@ public class GameWindow extends JFrame {
 	int yClick;
 	int xLastCoord = -1;
 	int yLastCoord = -1;
-	boolean pointSelected = false;
 	int radius;
 	boolean clicked = false;
 	boolean initialUpdate = true;
 	
 	private enum selectionStates {
-		None,
-		FirstPiece,
-		SecondCoord;
+		NONE,
+		FIRSTPIECE,
+		SECONDCOORD;
 	}
-	selectionStates currentSelectState = selectionStates.None;
+	selectionStates currentSelectState = selectionStates.NONE;
 	
 	private enum pieceType {
 		BLACK,
@@ -116,6 +115,7 @@ public class GameWindow extends JFrame {
 	}
 	
 	private void calculateDimensions() {
+		/* TODO Add stroke size scaling coefficient */
 		xSpacing = (xMax - 2 * xGridMin)/(xBoardDim - 1);
 		ySpacing = ((yMax - 30) - 2 * xGridMin)/(yBoardDim - 1);
 		if (xSpacing >= ySpacing) {
@@ -166,38 +166,36 @@ public class GameWindow extends JFrame {
 		double distance = Math.sqrt(((xTemp - xActual) * (xTemp - xActual)) +
 				((yTemp - yActual) * (yTemp - yActual)));
 		if (distance <= radius) {
-			pointSelected = true;
-			if (currentSelectState == selectionStates.FirstPiece) {
+			if (currentSelectState == selectionStates.FIRSTPIECE) {
 				if (xCoord == xLastCoord && yCoord == yLastCoord) {
 					/* Currently selected piece is selected again. This is
 					 * interpreted as a deselect action */
 					/* TODO Check to see if the selected coordinate has a
 					 * selectable piece in it, otherwise take no action */
-					currentSelectState = selectionStates.None;
+					currentSelectState = selectionStates.NONE;
 					return;
 				} else {
 					/* A location different from the first is selected. This
 					 * is interpreted as an attempted move action. */
-					currentSelectState = selectionStates.SecondCoord;
+					currentSelectState = selectionStates.SECONDCOORD;
 					drawSelection(xTemp, yTemp);
 				}
 			}
 
 			xLastCoord = xCoord;
 			yLastCoord = yCoord;
-			currentSelectState = selectionStates.FirstPiece;
+			currentSelectState = selectionStates.FIRSTPIECE;
 			drawSelection(xTemp, yTemp);
 
 		} else {
-			pointSelected = false;
-			currentSelectState = selectionStates.None;
+			currentSelectState = selectionStates.NONE;
 			xLastCoord = -1;
 			yLastCoord = -1;
 		}
 	}
 	
 	private void drawSelection(int xPoint, int yPoint) {
-		if (currentSelectState == selectionStates.FirstPiece) {
+		if (currentSelectState == selectionStates.FIRSTPIECE) {
 			graphics.setColor(Color.RED);
 		} else {
 			graphics.setColor(Color.BLUE);
@@ -313,7 +311,6 @@ public class GameWindow extends JFrame {
 		int yCoord = 4;
 		int xPoint = xGridMin + (xSpacing * xCoord);
 		int yPoint = yGridMin + (ySpacing * yCoord);
-		drawPiece(pieceType.SACRIFICED, xPoint, yPoint);
 	}
 	
 	private void updateScreen() {
