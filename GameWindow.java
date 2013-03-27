@@ -34,6 +34,8 @@ public class GameWindow extends JFrame {
 	boolean clicked = false;
 	int xClick;
 	int yClick;
+	BufferStrategy bufferStrat;
+	boolean windowReady = false;
 	
 	private enum selectionStates {
 		None,
@@ -64,6 +66,10 @@ public class GameWindow extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(600, 600);
 		setLocationRelativeTo(null);
+		setVisible(true);
+		this.createBufferStrategy(2);
+		
+		
 		rec = new Rectangle();
 		if (getParent() instanceof JViewport) {
 	        JViewport vp = (JViewport) getParent();
@@ -73,15 +79,16 @@ public class GameWindow extends JFrame {
 	    }
 		maxX = (int) rec.getMaxX();
 		maxY = (int) rec.getMaxY();
+
 		
         ActionListener timerListener = new ActionListener()  
-        {  
+        {
             public void actionPerformed(ActionEvent e)  
-            {  
-            	clearTime();
-                updateScreen(false);
-            }  
-        };  
+            {
+            	//clearTime();
+                //updateScreen();
+            }
+        };
         Timer timer = new Timer(1000, timerListener);   
         timer.start();
 		
@@ -92,7 +99,7 @@ public class GameWindow extends JFrame {
                 	clicked = true;
                 	xClick = event.getX();
                 	yClick = event.getY();
-                	updateScreen(true);
+                	updateScreen();
                     //processClick(event.getX(), event.getY());
                 }
 
@@ -101,17 +108,6 @@ public class GameWindow extends JFrame {
                 }
 			}
 		});
-		setVisible(true);
-		graphics = this.getGraphics();
-		/* To clear the window initially, a pause is needed
-		 * otherwise the graphics objects are not usable */
-		try {
-			Thread.sleep(1000);
-			clearWindow();
-			drawGrid();
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
 	}
 	
 	private void processClick(int x, int y) {
@@ -278,25 +274,41 @@ public class GameWindow extends JFrame {
 		graphics2D.setStroke(new BasicStroke(0F));
 	}
 	
-	public void updateScreen(boolean clicked) {
-		Date date = new Date();  
+	public void updateScreen() {
+		Date date = new Date();
         String time = timeFormat.format(date);
 		/*RenderingHints renderHints = new RenderingHints(
 				RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
 		graphics.setRenderingHints(renderHints);*/
-		if (clicked) {
-			clearWindow();
-			drawGrid();
-		} else {
-			clearTime();
-		}
-		
-		if (clicked) {
-			clicked = false;
-			processClick(xClick, yClick);
-		}
-		graphics.drawString("Remaining move time: ", maxX-250, 40);
-		graphics.drawString(time + " sec", maxX-100, 40);
+        bufferStrat = this.getBufferStrategy();
+        graphics = null;
+        
+        try {
+        	graphics = bufferStrat.getDrawGraphics();
+        	
+    		if (clicked) {
+    			clearWindow();
+    			drawGrid();
+    		} else {
+    			clearTime();
+    		}
+    		
+    		if (clicked) {
+    			clicked = false;
+    			processClick(xClick, yClick);
+    		}
+    		graphics.drawString("Remaining move time: ", maxX-250, 40);
+    		graphics.drawString(time + " sec", maxX-100, 40);
+        	
+        } catch (Exception e) {
+        	System.out.println("Error: " + e.getMessage());
+        } finally {
+        	
+        }
+        	graphics.dispose();
+
+        bufferStrat.show();
+        Toolkit.getDefaultToolkit().sync();
 	}
 }
