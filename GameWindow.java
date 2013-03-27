@@ -77,13 +77,11 @@ public class GameWindow extends JFrame {
 		maxX = (int) rec.getMaxX();
 		maxY = (int) rec.getMaxY();
 
-		
         ActionListener timerListener = new ActionListener()  
         {
             public void actionPerformed(ActionEvent e)  
             {
-            	//clearTime();
-                //updateScreen();
+            	updateScreen(true);
             }
         };
         Timer timer = new Timer(1000, timerListener);   
@@ -96,7 +94,7 @@ public class GameWindow extends JFrame {
                 	clicked = true;
                 	xClick = event.getX();
                 	yClick = event.getY();
-                	updateScreen();
+                	updateScreen(false);
                 }
 
                 if (event.getButton() == MouseEvent.BUTTON3) {
@@ -270,7 +268,7 @@ public class GameWindow extends JFrame {
 		graphics2D.setStroke(new BasicStroke(0F));
 	}
 	
-	public void updateScreen() {
+	public void updateScreen(boolean overrideClick) {
 		Date date = new Date();
         String time = timeFormat.format(date);
 		/*RenderingHints renderHints = new RenderingHints(
@@ -280,17 +278,19 @@ public class GameWindow extends JFrame {
         bufferStrat = this.getBufferStrategy();
         graphics = null;
         
+        
         try {
         	graphics = bufferStrat.getDrawGraphics();
         	
-    		if (clicked) {
+    		if (clicked || overrideClick) {
     			clicked = false;
     			clearWindow();
     			drawGrid();
     			processClick(xClick, yClick);
     		} else {
-    			clearTime();
+    			
     		}
+    		clearTime();
     		graphics.drawString("Remaining move time: ", maxX-250, 40);
     		graphics.drawString(time + " sec", maxX-100, 40);
         	
@@ -299,8 +299,7 @@ public class GameWindow extends JFrame {
         } finally {
         	
         }
-        	graphics.dispose();
-
+        graphics.dispose();
         bufferStrat.show();
         Toolkit.getDefaultToolkit().sync();
 	}
