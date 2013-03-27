@@ -25,8 +25,8 @@ public class GameWindow extends JFrame {
 	int yGridMin = 70;
 	int xGridMax;
 	int yGridMax;
-	int maxX;
-	int maxY;
+	int xMax;
+	int yMax;
 	int xSpacing;
 	int ySpacing;
 	int xBoardDim;
@@ -78,18 +78,16 @@ public class GameWindow extends JFrame {
 	    } else {
 	        rec = new Rectangle(0, 0, getWidth(), getHeight());
 	    }
-		maxX = (int) rec.getMaxX();
-		maxY = (int) rec.getMaxY();
-		xSpacing = (maxX - 2 * xGridMin)/(xBoardDim - 1);
-		ySpacing = ((maxY - 30) - 2 * xGridMin)/(yBoardDim - 1);
-		if (xSpacing >= ySpacing) {
-			radius = (int) (0.375 * (double) ySpacing);
-		} else {
-			radius = (int) (0.375 * (double) xSpacing);
-		}
-		xGridMax = xGridMin + ((xBoardDim - 1) * xSpacing);
-		yGridMax = yGridMin + ((yBoardDim - 1) * ySpacing);
+		xMax = (int) rec.getMaxX();
+		yMax = (int) rec.getMaxY();
 
+		calculateDimensions();
+		if (radius > xGridMin) {
+			xGridMin = (radius) + 10;
+			yGridMin = (radius) + 40;
+			calculateDimensions();
+		}
+		
         ActionListener timerListener = new ActionListener()  
         {
             public void actionPerformed(ActionEvent e)  
@@ -115,6 +113,18 @@ public class GameWindow extends JFrame {
                 }
 			}
 		});
+	}
+	
+	private void calculateDimensions() {
+		xSpacing = (xMax - 2 * xGridMin)/(xBoardDim - 1);
+		ySpacing = ((yMax - 30) - 2 * xGridMin)/(yBoardDim - 1);
+		if (xSpacing >= ySpacing) {
+			radius = (int) (0.375 * (double) ySpacing);
+		} else {
+			radius = (int) (0.375 * (double) xSpacing);
+		}
+		xGridMax = xGridMin + ((xBoardDim - 1) * xSpacing);
+		yGridMax = yGridMin + ((yBoardDim - 1) * ySpacing);
 	}
 	
 	private void processClick(int x, int y) {
@@ -211,13 +221,13 @@ public class GameWindow extends JFrame {
 	
 	private void clearWindow() {
 		graphics.setColor(Color.GRAY);
-        graphics.fillRect(0, 0, maxX+20, maxY);
+        graphics.fillRect(0, 0, xMax+20, yMax);
         graphics.setColor(Color.BLACK);
 	}
 	
 	private void clearTime() {
 		graphics.setColor(Color.GRAY);
-        graphics.fillRect(maxX-250, 0, 240, 45);
+        graphics.fillRect(xMax-250, 0, 240, 45);
         graphics.setColor(Color.BLACK);
 	}
 
@@ -330,8 +340,8 @@ public class GameWindow extends JFrame {
 
 			}
 			clearTime();
-			graphics.drawString("Remaining move time: ", maxX-250, 40);
-			graphics.drawString(time + " sec", maxX-100, 40);
+			graphics.drawString("Remaining move time: ", xMax - 250, 40);
+			graphics.drawString(time + " sec", xMax - 100, 40);
 
 		} catch (Exception e) {
 			System.out.println("Error: " + e.getMessage());
