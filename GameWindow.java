@@ -89,10 +89,10 @@ public class GameWindow extends JFrame {
 			@Override
             public void mousePressed(MouseEvent event) {
                 if (event.getButton() == MouseEvent.BUTTON1) {
-                	updateScreen(true);
                 	clicked = true;
                 	xClick = event.getX();
                 	yClick = event.getY();
+                	updateScreen(true);
                     //processClick(event.getX(), event.getY());
                 }
 
