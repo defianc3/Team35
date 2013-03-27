@@ -25,6 +25,8 @@ public class GameWindow extends JFrame {
 	int yGridMin = 70;
 	int maxX;
 	int maxY;
+	int xSpacing;
+	int ySpacing;
 	int xBoardDim;
 	int yBoardDim;
 	int xClick;
@@ -55,8 +57,8 @@ public class GameWindow extends JFrame {
 		xBoardDim = _xBoardDim;
 		yBoardDim = _yBoardDim;
 		
-		int xSpacing = (maxX - 2*40)/(xBoardDim - 1);
-		int ySpacing = ((maxY-30) - 2*40)/(yBoardDim - 1);
+		xSpacing = (maxX - 2 * xGridMin)/(xBoardDim - 1);
+		ySpacing = ((maxY - 30) - 2 * xGridMin)/(yBoardDim - 1);
 		if (xSpacing >= ySpacing) {
 			radius = (int) (0.75 * (double) (ySpacing * -1));
 		} else {
@@ -115,8 +117,8 @@ public class GameWindow extends JFrame {
 	private void processClick(int x, int y) {
 		xClick = -1;
 		yClick = -1;
-		int xSpacing = (maxX - 2*40)/(xBoardDim - 1);
-		int ySpacing = ((maxY-30) - 2*40)/(yBoardDim - 1);
+		xSpacing = (maxX - 2 * xGridMin)/(xBoardDim - 1);
+		ySpacing = ((maxY - 30) - 2 * xGridMin)/(yBoardDim - 1);
 		int xGridMax = xGridMin + ((xBoardDim - 1) * xSpacing);
 		int yGridMax = yGridMin + ((yBoardDim - 1) * ySpacing);
 		int xTemp;
@@ -149,8 +151,8 @@ public class GameWindow extends JFrame {
 
 	private void drawIndicator(int xCoord, int yCoord, int xActual,
 			int yActual) {
-		int xSpacing = (maxX - 2 * xGridMin)/(xBoardDim - 1);
-		int ySpacing = ((maxY-30) - 2 * xGridMin)/(yBoardDim - 1);
+		xSpacing = (maxX - 2 * xGridMin)/(xBoardDim - 1);
+		ySpacing = ((maxY - 30) - 2 * xGridMin)/(yBoardDim - 1);
 		int xTemp = xGridMin + xSpacing * xCoord;
 		int yTemp = yGridMin + ySpacing * yCoord;
 
@@ -228,8 +230,8 @@ public class GameWindow extends JFrame {
 			return;
 		}
 		
-		int xSpacing = (maxX - 2*40)/(xBoardDim - 1);
-		int ySpacing = ((maxY-30) - 2*40)/(yBoardDim - 1);
+		xSpacing = (maxX - 2 * xGridMin)/(xBoardDim - 1);
+		ySpacing = ((maxY - 30) - 2 * xGridMin)/(yBoardDim - 1);
 		int xGridMax = xGridMin + ((xBoardDim - 1) * xSpacing);
 		int yGridMax = yGridMin + ((yBoardDim - 1) * ySpacing);
 		int xCurrent = xGridMin;
@@ -300,8 +302,8 @@ public class GameWindow extends JFrame {
 	
 	
 	public void drawPieces() {
-		int xSpacing = (maxX - 2 * xGridMin)/(xBoardDim - 1);
-		int ySpacing = ((maxY - 30) - 2 * xGridMin)/(yBoardDim - 1);
+		xSpacing = (maxX - 2 * xGridMin)/(xBoardDim - 1);
+		ySpacing = ((maxY - 30) - 2 * xGridMin)/(yBoardDim - 1);
 		/* Iterate over pieces here */
 		/* xCoord and yCoord points start at the top left corner with (0,0)
 		 * and go to the bottom left corner with (n,m) where n and m are the
