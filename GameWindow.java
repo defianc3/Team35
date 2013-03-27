@@ -33,6 +33,7 @@ public class GameWindow extends JFrame {
 	boolean pointSelected = false;
 	int radius;
 	boolean clicked = false;
+	boolean initialUpdate = true;
 	
 	private enum selectionStates {
 		None,
@@ -81,7 +82,7 @@ public class GameWindow extends JFrame {
         {
             public void actionPerformed(ActionEvent e)  
             {
-            	updateScreen(true);
+            	updateScreen();
             }
         };
         Timer timer = new Timer(1000, timerListener);   
@@ -94,7 +95,7 @@ public class GameWindow extends JFrame {
                 	clicked = true;
                 	xClick = event.getX();
                 	yClick = event.getY();
-                	updateScreen(false);
+                	updateScreen();
                 }
 
                 if (event.getButton() == MouseEvent.BUTTON3) {
@@ -268,7 +269,7 @@ public class GameWindow extends JFrame {
 		graphics2D.setStroke(new BasicStroke(0F));
 	}
 	
-	public void updateScreen(boolean overrideClick) {
+	public void updateScreen() {
 		Date date = new Date();
         String time = timeFormat.format(date);
 		/*RenderingHints renderHints = new RenderingHints(
@@ -282,7 +283,7 @@ public class GameWindow extends JFrame {
         try {
         	graphics = bufferStrat.getDrawGraphics();
         	
-    		if (clicked || overrideClick) {
+    		if (clicked || initialUpdate) {
     			clicked = false;
     			clearWindow();
     			drawGrid();
@@ -302,5 +303,6 @@ public class GameWindow extends JFrame {
         graphics.dispose();
         bufferStrat.show();
         Toolkit.getDefaultToolkit().sync();
+		initialUpdate = false;
 	}
 }
