@@ -31,6 +31,9 @@ public class GameWindow extends JFrame {
 	int radius;
 	int xLastCoord = -1;
 	int yLastCoord = -1;
+	boolean clicked = false;
+	int xClick;
+	int yClick;
 	
 	private enum selectionStates {
 		None,
@@ -87,7 +90,10 @@ public class GameWindow extends JFrame {
             public void mousePressed(MouseEvent event) {
                 if (event.getButton() == MouseEvent.BUTTON1) {
                 	updateScreen(true);
-                    processClick(event.getX(), event.getY());
+                	clicked = true;
+                	xClick = event.getX();
+                	yClick = event.getY();
+                    //processClick(event.getX(), event.getY());
                 }
 
                 if (event.getButton() == MouseEvent.BUTTON3) {
@@ -109,6 +115,8 @@ public class GameWindow extends JFrame {
 	}
 	
 	private void processClick(int x, int y) {
+		xClick = -1;
+		yClick = -1;
 		int xSpacing = (maxX - 2*40)/(xBoardDim - 1);
 		int ySpacing = ((maxY-30) - 2*40)/(yBoardDim - 1);
 		int xGridMax = xGridMin + ((xBoardDim - 1) * xSpacing);
@@ -284,7 +292,10 @@ public class GameWindow extends JFrame {
 			clearTime();
 		}
 		
-		
+		if (clicked) {
+			clicked = false;
+			processClick(xClick, yClick);
+		}
 		graphics.drawString("Remaining move time: ", maxX-250, 40);
 		graphics.drawString(time + " sec", maxX-100, 40);
 	}
