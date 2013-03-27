@@ -87,6 +87,8 @@ public class GameWindow extends JFrame {
 		} else {
 			radius = (int) (0.375 * (double) xSpacing);
 		}
+		xGridMax = xGridMin + ((xBoardDim - 1) * xSpacing);
+		yGridMax = yGridMin + ((yBoardDim - 1) * ySpacing);
 
         ActionListener timerListener = new ActionListener()  
         {
@@ -218,23 +220,19 @@ public class GameWindow extends JFrame {
         graphics.fillRect(maxX-250, 0, 240, 45);
         graphics.setColor(Color.BLACK);
 	}
-	
+
 	private void drawGrid() {
 		/* TODO Add special processing for 1xX and Xx1 board sizes */
 		if ((xBoardDim == 1) || (yBoardDim == 1)) {
 			return;
 		}
-		
 
-		xGridMax = xGridMin + ((xBoardDim - 1) * xSpacing);
-		yGridMax = yGridMin + ((yBoardDim - 1) * ySpacing);
-		
 		int xCurrent = xGridMin;
 		int yCurrent = yGridMin;
 
 		Graphics2D graphics2D = (Graphics2D) graphics;
-	    graphics2D.setStroke(new BasicStroke(7F));
-		
+		graphics2D.setStroke(new BasicStroke(7F));
+
 		boolean altLeft = true;
 		boolean flipAlt = false;
 		if (xBoardDim % 2 == 0) {
@@ -277,7 +275,7 @@ public class GameWindow extends JFrame {
 		}
 		graphics2D.setStroke(new BasicStroke(0F));
 	}
-	
+
 	private void drawPiece(pieceType pT, int xPoint, int yPoint) {
 		if (pT == pieceType.WHITE) {
 			graphics.setColor(Color.WHITE);
