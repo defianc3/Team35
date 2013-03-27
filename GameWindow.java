@@ -290,14 +290,12 @@ public class GameWindow extends JFrame {
 			graphics.setColor(Color.GRAY);
 		}
 		Graphics2D graphics2D = (Graphics2D) graphics;
-		graphics2D.setStroke(new BasicStroke(7F));
 		int x = (int) (((double) xPoint) - ((double) radius));
 		int y = (int) (((double) yPoint) - ((double) radius));
 		Ellipse2D.Double circle = new Ellipse2D.Double(x, y,
 				radius * 2, radius * 2);
 		graphics2D.fill(circle);
 		graphics.setColor(Color.BLACK);
-		graphics2D.setStroke(new BasicStroke(0F));
 	}
 	
 	public void updateScreen() {
