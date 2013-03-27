@@ -186,6 +186,8 @@ public class GameWindow extends JFrame {
 		} else {
 			graphics.setColor(Color.BLUE);
 		}
+		Graphics2D graphics2D = (Graphics2D) graphics;
+	    graphics2D.setStroke(new BasicStroke(2F));
 		graphics.drawLine(xPoint - radius, yPoint - radius,
 				xPoint + radius, yPoint - radius); //Top
 		graphics.drawLine(xPoint - radius, yPoint - radius,
@@ -195,6 +197,7 @@ public class GameWindow extends JFrame {
 		graphics.drawLine(xPoint - radius, yPoint + radius,
 				xPoint + radius, yPoint + radius); //Bottom
 		graphics.setColor(Color.BLACK);
+		graphics2D.setStroke(new BasicStroke(0F));
 	}
 	
 	private void clearWindow() {
@@ -222,8 +225,7 @@ public class GameWindow extends JFrame {
 		int xCurrent = xGridMin;
 		int yCurrent = yGridMin;
 
-		Graphics2D graphics2D = (Graphics2D) graphics;      
-		 
+		Graphics2D graphics2D = (Graphics2D) graphics;
 	    graphics2D.setStroke(new BasicStroke(7F));
 		
 		boolean altLeft = true;
@@ -271,38 +273,38 @@ public class GameWindow extends JFrame {
 	
 	public void updateScreen() {
 		Date date = new Date();
-        String time = timeFormat.format(date);
-		/*RenderingHints renderHints = new RenderingHints(
-				RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
-		graphics.setRenderingHints(renderHints);*/
-        bufferStrat = this.getBufferStrategy();
-        graphics = null;
-        
-        
-        try {
-        	graphics = bufferStrat.getDrawGraphics();
-        	
-    		if (clicked || initialUpdate) {
-    			clicked = false;
-    			clearWindow();
-    			drawGrid();
-    			processClick(xClick, yClick);
-    		} else {
-    			
-    		}
-    		clearTime();
-    		graphics.drawString("Remaining move time: ", maxX-250, 40);
-    		graphics.drawString(time + " sec", maxX-100, 40);
-        	
-        } catch (Exception e) {
-        	System.out.println("Error: " + e.getMessage());
-        } finally {
-        	
-        }
-        graphics.dispose();
-        bufferStrat.show();
-        Toolkit.getDefaultToolkit().sync();
+		String time = timeFormat.format(date);
+
+		bufferStrat = this.getBufferStrategy();
+		graphics = null;
+
+		try {
+			graphics = bufferStrat.getDrawGraphics();
+			Graphics2D graphics2D = (Graphics2D) graphics;
+			RenderingHints renderHints = new RenderingHints(
+					RenderingHints.KEY_ANTIALIASING,
+					RenderingHints.VALUE_ANTIALIAS_ON);
+			graphics2D.setRenderingHints(renderHints);
+			if (clicked || initialUpdate) {
+				clicked = false;
+				clearWindow();
+				drawGrid();
+				processClick(xClick, yClick);
+			} else {
+
+			}
+			clearTime();
+			graphics.drawString("Remaining move time: ", maxX-250, 40);
+			graphics.drawString(time + " sec", maxX-100, 40);
+
+		} catch (Exception e) {
+			System.out.println("Error: " + e.getMessage());
+		} finally {
+
+		}
+		graphics.dispose();
+		bufferStrat.show();
+		Toolkit.getDefaultToolkit().sync();
 		initialUpdate = false;
 	}
 }
