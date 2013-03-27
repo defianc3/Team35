@@ -11,14 +11,13 @@ import java.util.Date;
 
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JViewport;
 import javax.swing.Timer;
 
 public class GameWindow extends JFrame {
 	private static final long serialVersionUID = 1L; //To suppress warning
 	static JFrame frame;
-	JPanel panel;
+	BufferStrategy bufferStrat;
 	Graphics graphics;
 	Rectangle rec;
 	int xGridMin = 40;
@@ -27,15 +26,13 @@ public class GameWindow extends JFrame {
 	int maxY;
 	int xBoardDim;
 	int yBoardDim;
-	boolean pointSelected = false;
-	int radius;
-	int xLastCoord = -1;
-	int yLastCoord = -1;
-	boolean clicked = false;
 	int xClick;
 	int yClick;
-	BufferStrategy bufferStrat;
-	boolean windowReady = false;
+	int xLastCoord = -1;
+	int yLastCoord = -1;
+	boolean pointSelected = false;
+	int radius;
+	boolean clicked = false;
 	
 	private enum selectionStates {
 		None,
@@ -69,7 +66,7 @@ public class GameWindow extends JFrame {
 		setVisible(true);
 		this.createBufferStrategy(2);
 		
-		
+		/* Set window dimensions used elsewhere */
 		rec = new Rectangle();
 		if (getParent() instanceof JViewport) {
 	        JViewport vp = (JViewport) getParent();
@@ -100,7 +97,6 @@ public class GameWindow extends JFrame {
                 	xClick = event.getX();
                 	yClick = event.getY();
                 	updateScreen();
-                    //processClick(event.getX(), event.getY());
                 }
 
                 if (event.getButton() == MouseEvent.BUTTON3) {
@@ -215,7 +211,7 @@ public class GameWindow extends JFrame {
 	}
 	
 	public void drawGrid() {
-		/* Do not process bad dimensions */
+		/* TODO Add special processing for 1xX and Xx1 board sizes */
 		if ((xBoardDim == 1) || (yBoardDim == 1)) {
 			return;
 		}
@@ -229,7 +225,7 @@ public class GameWindow extends JFrame {
 
 		Graphics2D graphics2D = (Graphics2D) graphics;      
 		 
-	    graphics2D.setStroke(new BasicStroke(7F));  // set stroke width of 10
+	    graphics2D.setStroke(new BasicStroke(7F));
 		
 		boolean altLeft = true;
 		boolean flipAlt = false;
@@ -288,15 +284,12 @@ public class GameWindow extends JFrame {
         	graphics = bufferStrat.getDrawGraphics();
         	
     		if (clicked) {
+    			clicked = false;
     			clearWindow();
     			drawGrid();
+    			processClick(xClick, yClick);
     		} else {
     			clearTime();
-    		}
-    		
-    		if (clicked) {
-    			clicked = false;
-    			processClick(xClick, yClick);
     		}
     		graphics.drawString("Remaining move time: ", maxX-250, 40);
     		graphics.drawString(time + " sec", maxX-100, 40);
