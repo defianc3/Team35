@@ -157,7 +157,7 @@ public class GameWindow extends JFrame {
 			yTemp = (int) Math.round(((yDouble -
 					(double)yGridMin) / (double)ySpacing));
 		}
-		drawIndicator(xTemp, yTemp, x, y);
+		processCoordinate(xTemp, yTemp, x, y);
 
 		graphics.drawString("Point nearest click: " +
 				Integer.toString(xTemp), 20, 40);
@@ -165,8 +165,7 @@ public class GameWindow extends JFrame {
 				Integer.toString(yTemp), 20, 60);
 	}
 
-	/* TODO Rename to processCoord or something */
-	private void drawIndicator(int xCoord, int yCoord, int xActual,
+	private void processCoordinate(int xCoord, int yCoord, int xActual,
 			int yActual) {
 		int xTemp = xGridMin + xSpacing * xCoord;
 		int yTemp = yGridMin + ySpacing * yCoord;
@@ -177,6 +176,8 @@ public class GameWindow extends JFrame {
 		/* Is the click near a coordinate? */
 		if (distance <= radius) {
 			if (currentSelectState == selectionStates.NONE) {
+				/* TODO Check to see if the selected coordinate has a
+				 * selectable piece in it, otherwise take no action */
 				xLastCoord = xCoord;
 				yLastCoord = yCoord;
 				currentSelectState = selectionStates.FIRSTPIECE;
@@ -186,8 +187,6 @@ public class GameWindow extends JFrame {
 				if (xCoord == xLastCoord && yCoord == yLastCoord) {
 					/* Currently selected piece is selected again. This is
 					 * interpreted as a deselect action */
-					/* TODO Check to see if the selected coordinate has a
-					 * selectable piece in it, otherwise take no action */
 					currentSelectState = selectionStates.NONE;
 					xLastCoord = -1;
 					yLastCoord = -1;
@@ -241,6 +240,7 @@ public class GameWindow extends JFrame {
 		
 		if (currentSelectState == selectionStates.SECONDCOORD) {
 			currentSelectState = selectionStates.NONE;
+			/* TODO Possibly update x/yLastCoord/Point here */
 			processMove();
 		}
 		
