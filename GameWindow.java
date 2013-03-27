@@ -127,6 +127,11 @@ public class GameWindow extends JFrame {
 		yGridMax = yGridMin + ((yBoardDim - 1) * ySpacing);
 	}
 	
+	/* TODO Implement this function */
+	public void processMove() {
+		
+	}
+	
 	private void processClick(int x, int y) {
 		xClick = -1;
 		yClick = -1;
@@ -158,6 +163,7 @@ public class GameWindow extends JFrame {
 				Integer.toString(yTemp), 20, 60);
 	}
 
+	/* TODO Rename to processCoord or something */
 	private void drawIndicator(int xCoord, int yCoord, int xActual,
 			int yActual) {
 		int xTemp = xGridMin + xSpacing * xCoord;
@@ -165,14 +171,23 @@ public class GameWindow extends JFrame {
 
 		double distance = Math.sqrt(((xTemp - xActual) * (xTemp - xActual)) +
 				((yTemp - yActual) * (yTemp - yActual)));
+		
+		/* Is the click near a coordinate? */
 		if (distance <= radius) {
-			if (currentSelectState == selectionStates.FIRSTPIECE) {
+			if (currentSelectState == selectionStates.NONE) {
+				xLastCoord = xCoord;
+				yLastCoord = yCoord;
+				currentSelectState = selectionStates.FIRSTPIECE;
+				drawSelection(xTemp, yTemp);
+			} else if (currentSelectState == selectionStates.FIRSTPIECE) {
 				if (xCoord == xLastCoord && yCoord == yLastCoord) {
 					/* Currently selected piece is selected again. This is
 					 * interpreted as a deselect action */
 					/* TODO Check to see if the selected coordinate has a
 					 * selectable piece in it, otherwise take no action */
 					currentSelectState = selectionStates.NONE;
+					xLastCoord = -1;
+					yLastCoord = -1;
 					return;
 				} else {
 					/* A location different from the first is selected. This
@@ -181,16 +196,11 @@ public class GameWindow extends JFrame {
 					drawSelection(xTemp, yTemp);
 				}
 			}
-
-			xLastCoord = xCoord;
-			yLastCoord = yCoord;
-			currentSelectState = selectionStates.FIRSTPIECE;
-			drawSelection(xTemp, yTemp);
-
 		} else {
-			currentSelectState = selectionStates.NONE;
+			/* Clicked point not near a coordinate */
+			/*currentSelectState = selectionStates.NONE;
 			xLastCoord = -1;
-			yLastCoord = -1;
+			yLastCoord = -1;*/
 		}
 	}
 	
@@ -213,19 +223,24 @@ public class GameWindow extends JFrame {
 		graphics.setColor(Color.BLACK);
 		graphics2D.setStroke(new BasicStroke(0F));
 		
+		if (currentSelectState == selectionStates.SECONDCOORD) {
+			currentSelectState = selectionStates.NONE;
+			processMove();
+		}
+		
 		/* REMOVE THIS LINE */
 		drawPiece(pieceType.WHITE, xPoint, yPoint);
 	}
 	
 	private void clearWindow() {
 		graphics.setColor(Color.GRAY);
-        graphics.fillRect(0, 0, xMax+20, yMax);
+        graphics.fillRect(0, 0, xMax + 20, yMax);
         graphics.setColor(Color.BLACK);
 	}
 	
 	private void clearTime() {
 		graphics.setColor(Color.GRAY);
-        graphics.fillRect(xMax-250, 0, 240, 45);
+        graphics.fillRect(xMax - 250, 0, 240, 45);
         graphics.setColor(Color.BLACK);
 	}
 
