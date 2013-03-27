@@ -35,6 +35,8 @@ public class GameWindow extends JFrame {
 	int yClick;
 	int xLastCoord = -1;
 	int yLastCoord = -1;
+	int xLastPoint = -1;
+	int yLastPoint = -1;
 	int radius;
 	boolean clicked = false;
 	boolean initialUpdate = true;
@@ -179,6 +181,7 @@ public class GameWindow extends JFrame {
 				yLastCoord = yCoord;
 				currentSelectState = selectionStates.FIRSTPIECE;
 				drawSelection(xTemp, yTemp);
+				return;
 			} else if (currentSelectState == selectionStates.FIRSTPIECE) {
 				if (xCoord == xLastCoord && yCoord == yLastCoord) {
 					/* Currently selected piece is selected again. This is
@@ -194,6 +197,7 @@ public class GameWindow extends JFrame {
 					 * is interpreted as an attempted move action. */
 					currentSelectState = selectionStates.SECONDCOORD;
 					drawSelection(xTemp, yTemp);
+					return;
 				}
 			}
 		} else {
@@ -201,10 +205,22 @@ public class GameWindow extends JFrame {
 			/*currentSelectState = selectionStates.NONE;
 			xLastCoord = -1;
 			yLastCoord = -1;*/
+			drawSelection(-2, -2);
+			return;
 		}
 	}
 	
 	private void drawSelection(int xPoint, int yPoint) {
+		if (initialUpdate) {
+			return;
+		}
+		if (xPoint == -2 || yPoint == -2) {
+			xPoint = xLastPoint;
+			yPoint = yLastPoint;
+		} else {
+			xLastPoint = xPoint;
+			yLastPoint = yPoint;
+		}
 		if (currentSelectState == selectionStates.FIRSTPIECE) {
 			graphics.setColor(Color.RED);
 		} else {
@@ -234,6 +250,8 @@ public class GameWindow extends JFrame {
 	
 	private void clearWindow() {
 		graphics.setColor(Color.GRAY);
+		/* +20 is to work around the either getting bad dimensions from the
+		 * viewport or rendering problems with Swing or the window manager */
         graphics.fillRect(0, 0, xMax + 20, yMax);
         graphics.setColor(Color.BLACK);
 	}
