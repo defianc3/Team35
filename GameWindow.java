@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferStrategy;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -41,6 +42,12 @@ public class GameWindow extends JFrame {
 		SecondCoord;
 	}
 	selectionStates currentSelectState = selectionStates.None;
+	
+	private enum pieceType {
+		BLACK,
+		WHITE,
+		SACRIFICED
+	}
 	
 	final DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 	
@@ -198,11 +205,14 @@ public class GameWindow extends JFrame {
 				xPoint + radius, yPoint + radius); //Bottom
 		graphics.setColor(Color.BLACK);
 		graphics2D.setStroke(new BasicStroke(0F));
+		
+		/* REMOVE THIS LINE */
+		drawPiece(pieceType.WHITE, xPoint, yPoint);
 	}
 	
 	private void clearWindow() {
 		graphics.setColor(Color.GRAY);
-        graphics.fillRect(0, 0, maxX, maxY);
+        graphics.fillRect(0, 0, maxX+20, maxY);
         graphics.setColor(Color.BLACK);
 	}
 	
@@ -268,6 +278,25 @@ public class GameWindow extends JFrame {
 			}
 			altLeft = !altLeft;
 		}
+		graphics2D.setStroke(new BasicStroke(0F));
+	}
+	
+	private void drawPiece(pieceType pT, int xPoint, int yPoint) {
+		if (pT == pieceType.WHITE) {
+			graphics.setColor(Color.WHITE);
+		} else if (pT == pieceType.BLACK) {
+			graphics.setColor(Color.BLACK);
+		} else {
+			graphics.setColor(Color.GRAY);
+		}
+		Graphics2D graphics2D = (Graphics2D) graphics;
+		graphics2D.setStroke(new BasicStroke(7F));
+		int x = (int) (((double) xPoint) - ((double) radius));
+		int y = (int) (((double) yPoint) - ((double) radius));
+		Ellipse2D.Double circle = new Ellipse2D.Double(x, y,
+				radius * 2, radius * 2);
+		graphics2D.fill(circle);
+		graphics.setColor(Color.BLACK);
 		graphics2D.setStroke(new BasicStroke(0F));
 	}
 	
