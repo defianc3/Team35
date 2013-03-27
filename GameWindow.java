@@ -58,14 +58,6 @@ public class GameWindow extends JFrame {
 	public GameWindow(int _xBoardDim, int _yBoardDim) {
 		xBoardDim = _xBoardDim;
 		yBoardDim = _yBoardDim;
-		
-		xSpacing = (maxX - 2 * xGridMin)/(xBoardDim - 1);
-		ySpacing = ((maxY - 30) - 2 * xGridMin)/(yBoardDim - 1);
-		if (xSpacing >= ySpacing) {
-			radius = (int) (0.75 * (double) (ySpacing * -1));
-		} else {
-			radius = (int) (0.75 * (double) xSpacing);
-		}
 		createWindow();
 	}
 	
@@ -88,6 +80,13 @@ public class GameWindow extends JFrame {
 	    }
 		maxX = (int) rec.getMaxX();
 		maxY = (int) rec.getMaxY();
+		xSpacing = (maxX - 2 * xGridMin)/(xBoardDim - 1);
+		ySpacing = ((maxY - 30) - 2 * xGridMin)/(yBoardDim - 1);
+		if (xSpacing >= ySpacing) {
+			radius = (int) (0.375 * (double) ySpacing);
+		} else {
+			radius = (int) (0.375 * (double) xSpacing);
+		}
 
         ActionListener timerListener = new ActionListener()  
         {
@@ -226,8 +225,7 @@ public class GameWindow extends JFrame {
 			return;
 		}
 		
-		xSpacing = (maxX - 2 * xGridMin)/(xBoardDim - 1);
-		ySpacing = ((maxY - 30) - 2 * xGridMin)/(yBoardDim - 1);
+
 		xGridMax = xGridMin + ((xBoardDim - 1) * xSpacing);
 		yGridMax = yGridMin + ((yBoardDim - 1) * ySpacing);
 		
