@@ -51,7 +51,7 @@ public class GameWindow extends JFrame {
 	
 	final DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 	
-	GameWindow(int _xBoardDim, int _yBoardDim) {
+	public GameWindow(int _xBoardDim, int _yBoardDim) {
 		xBoardDim = _xBoardDim;
 		yBoardDim = _yBoardDim;
 		
@@ -65,7 +65,7 @@ public class GameWindow extends JFrame {
 		createWindow();
 	}
 	
-	public final void createWindow() {
+	private final void createWindow() {
 		setTitle("Fanorona");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -222,7 +222,7 @@ public class GameWindow extends JFrame {
         graphics.setColor(Color.BLACK);
 	}
 	
-	public void drawGrid() {
+	private void drawGrid() {
 		/* TODO Add special processing for 1xX and Xx1 board sizes */
 		if ((xBoardDim == 1) || (yBoardDim == 1)) {
 			return;
@@ -298,7 +298,7 @@ public class GameWindow extends JFrame {
 		graphics.setColor(Color.BLACK);
 	}
 	
-	public void updateScreen() {
+	private void updateScreen() {
 		Date date = new Date();
 		String time = timeFormat.format(date);
 
