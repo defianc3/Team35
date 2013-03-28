@@ -324,10 +324,21 @@ class Fanorona implements Evaluatable{
 			
 		else if(!recursion){
 			String possibleMoves = this.board.possibleMovesWithDirection(this.board.array[row][column]);
-			for(int k = 0; k < possibleMoves.length()/8; k++){
-				//also generalize this code
+			possibleMoves = possibleMoves.substring(1);
+			
+			while(possibleMoves.length() > 0){
+				int row1 = getFirstRow(possibleMoves);
+				int col1 = getFirstColumn(possibleMoves);
+				int row2 = getSecondRow(possibleMoves);
+				int col2 = getSecondColumn(possibleMoves);
+				char type = getMoveType(possibleMoves);
+				String move = type+" "+row1+" "+col1+" "+row2+" "+col2;
+				int index = possibleMoves.indexOf(',');
+				possibleMoves = possibleMoves.substring(index+1);
 				count++;
 				cc++;
+				if(cc == goal) return move;
+				
 			}
 		}
 		return "";
@@ -346,12 +357,18 @@ class Fanorona implements Evaluatable{
 					if(cc == goal) return eMove;
 				}
 				else if(!capturingMoveAvailable()){
+
 					String possibleMoves = board.possibleMovesWithDirection(board.array[i][j]);
-					int temp = 0;
-					for(int k = 0; k < possibleMoves.length()/8; k++){
-						//also generalize this code
-						String move = possibleMoves.substring(temp+1,temp+8);
-						temp+=8;
+					
+					while(possibleMoves.length() > 0){
+						int row1 = getFirstRow(possibleMoves);
+						int col1 = getFirstColumn(possibleMoves);
+						int row2 = getSecondRow(possibleMoves);
+						int col2 = getSecondColumn(possibleMoves);
+						char type = getMoveType(possibleMoves);
+						String move = type+" "+row1+" "+col1+" "+row2+" "+col2;
+						int index = possibleMoves.indexOf(',');
+						possibleMoves = possibleMoves.substring(index+1);
 						count++;
 						cc++;
 						if(cc == goal) return move;
@@ -414,7 +431,17 @@ class Fanorona implements Evaluatable{
 				else if(!capturingMoveAvailable()){
 					/* TODO fix this loop for paika moves */
 					String possibleMoves = board.possibleMovesWithDirection(board.array[i][j]);
-					for(int k = 0; k < possibleMoves.length()/8; k++){
+					possibleMoves = possibleMoves.substring(1);
+					
+					while(possibleMoves.length() > 0){
+						int row1 = getFirstRow(possibleMoves);
+						int col1 = getFirstColumn(possibleMoves);
+						int row2 = getSecondRow(possibleMoves);
+						int col2 = getSecondColumn(possibleMoves);
+						char type = getMoveType(possibleMoves);
+						String move = type+" "+row1+" "+col1+" "+row2+" "+col2;
+						int index = possibleMoves.indexOf(',');
+						possibleMoves = possibleMoves.substring(index+1);
 						count++;
 					}
 				}

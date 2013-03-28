@@ -10,6 +10,7 @@ class Main{
 		
 		int rows = 5;
 		int columns = 9;
+		Piece.Type humanPlayer = Piece.Type.BLACK;
 
 		Fanorona game = new Fanorona(columns,rows);
 		

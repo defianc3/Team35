@@ -31,7 +31,7 @@ public class SocketMain{
 		ServerSocket sock = create();
 		System.out.println("Listening on "+sock.getLocalPort());
 		
-		clientThread cT = new clientThread(sock.getLocalPort());
+		clientThread cT = new clientThread("",sock.getLocalPort());
 		cT.start();
 		
 		Socket client = null;
@@ -48,15 +48,21 @@ public class SocketMain{
 		}
 		
 		String inputLine, outputLine;
-		out.println("quit");
+		out.println("WELCOME");
+		out.println("INFO 9 5 B 5000");
 
 		String playerInput = "";
 		try {
 			while((playerInput = in.readLine()) != null){
-//			System.out.print("Enter a command: ");
-				
-
-//			Scanner scan2 = new Scanner(System.in);
+	//			System.out.print("Enter a command: ");
+				System.out.println(playerInput);
+					
+	
+	//			Scanner scan2 = new Scanner(System.in);
+				if(playerInput.equals("READY")){
+					out.println("BEGIN");
+					continue;
+				}
 //			playerInput = scan2.nextLine();
 				System.out.println("input = " + playerInput);
 				int index = playerInput.indexOf(' ');
@@ -115,6 +121,11 @@ public class SocketMain{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//sock.close();
+		try {
+			sock.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
