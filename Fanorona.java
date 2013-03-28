@@ -472,10 +472,10 @@ class Fanorona implements Evaluatable{
 	public boolean move(int row1, int col1, int row2, int col2, char type){
 
 		boolean valid = false;
-		if(capturingMoveAvailable() && board.isPossibleCapturingMove(row1,col1,row2,col2,type)){
+		if(capturingMoveAvailable() && board.isPossibleCapturingMove(row1,col1,row2,col2,type) || type == 'S'){
 			valid = true;
 		}
-		else if(!capturingMoveAvailable() && board.isPossibleMove(row1,col1,row2,col2,type)){
+		else if(!capturingMoveAvailable() && board.isPossibleMove(row1,col1,row2,col2)){
 			valid = true;
 		}
 
@@ -483,25 +483,39 @@ class Fanorona implements Evaluatable{
 		if(valid){
 			Piece.Type temp = board.activePlayer;
 			board.movePiece(row1,col1,row2,col2,type);
+			
 			lastStateReturned = 0;
 			board.activePlayer = temp;
-
-			if(board.activePlayer == Piece.Type.WHITE){
-				board.whiteMoves += ""+row1+col1+">"+row2+col2;
-				if(board.whiteMovesFull.lastIndexOf('\n') != board.whiteMovesFull.length()-1 && board.whiteMovesFull.length()!=0){
-					board.whiteMovesFull += " + ";
+			
+			if(type == 'S'){
+				if(board.activePlayer == Piece.Type.WHITE){
+					board.whiteMoves += ""+row1+col1+">"+row2+col2;
+					
+					board.whiteMovesFull += type+" "+row1+" "+col1;
 				}
-				board.whiteMovesFull += type+" "+row1+" "+col1+" "+row2+" "+col2;
+				else{
+					board.blackMoves += ""+row1+col1+">"+row2+col2;
+					board.blackMovesFull += type+" "+row1+" "+col1;
+				}
 			}
 			else{
-				board.blackMoves += ""+row1+col1+">"+row2+col2;
-				if(board.blackMovesFull.lastIndexOf('\n') != board.blackMovesFull.length()-1 && board.blackMovesFull.length()!=0){
-					board.blackMovesFull += " + ";
+				if(board.activePlayer == Piece.Type.WHITE){
+					board.whiteMoves += ""+row1+col1+">"+row2+col2;
+					if(board.whiteMovesFull.lastIndexOf('\n') != board.whiteMovesFull.length()-1 && board.whiteMovesFull.length()!=0){
+						board.whiteMovesFull += " + ";
+					}
+					board.whiteMovesFull += type+" "+row1+" "+col1+" "+row2+" "+col2;
 				}
-				board.blackMovesFull += type+" "+row1+" "+col1+" "+row2+" "+col2;
+				else{
+					board.blackMoves += ""+row1+col1+">"+row2+col2;
+					if(board.blackMovesFull.lastIndexOf('\n') != board.blackMovesFull.length()-1 && board.blackMovesFull.length()!=0){
+						board.blackMovesFull += " + ";
+					}
+					board.blackMovesFull += type+" "+row1+" "+col1+" "+row2+" "+col2;
+				}
 			}
 			
-			if(board.capturingMoveAvailable(board.array[row2][col2]) && type != 'F'){
+			if(board.capturingMoveAvailable(board.array[row2][col2]) && !(type == 'P' || type == 'S')){
 				return true;
 			}
 
@@ -522,6 +536,8 @@ class Fanorona implements Evaluatable{
 			else{
 				board.activePlayer = Piece.Type.WHITE;
 			}
+			
+			
 
 			return false;
 		}
@@ -559,7 +575,7 @@ class Fanorona implements Evaluatable{
 					String move = board.possibleMoves(board.array[i][j]);
 					Piece p = board.array[i][j];
 					if(move.length() > 0){
-						if(board.isPossibleMove(p.row, p.column, move.charAt(1)-48, move.charAt(2)-48, 'f')){
+						if(board.isPossibleMove(p.row, p.column, move.charAt(1)-48, move.charAt(2)-48)){
 							ret = ""+p.row+p.column+" "+(move.charAt(1))+""+(move.charAt(2))+" f";
 							break;
 						}
@@ -616,6 +632,26 @@ class Fanorona implements Evaluatable{
 	public String getLastNMoves(boolean type, int n){
 		
 		return "";
+	}
+	
+	public void removeSacrifices(Piece.Type type){
+		
+		Piece.Type toRemove;
+		if(type == Piece.Type.WHITE){
+			toRemove = Piece.Type.WHITESACRIFICE;
+		}
+		else{
+			toRemove = Piece.Type.BLACKSACRIFICE;
+		}
+		
+		for(int i = 0; i < board.rows; i++){
+			for(int j = 0; j < board.columns; j++){
+				if(board.array[i][j].type == toRemove){
+					board.array[i][j].setType(Piece.Type.NULL);
+					break;
+				}
+			}
+		}
 	}
 	
 	public boolean validMoveSystax(String move){

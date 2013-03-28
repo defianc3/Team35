@@ -128,7 +128,17 @@ class Board{
 
 	//
 	boolean movePiece(int row, int col, int row2, int col2, char type){
-
+		
+		if(type == 'S'){
+			if(array[row][col].type == Piece.Type.WHITE){
+				array[row][col].setType(Piece.Type.WHITESACRIFICE);
+			}
+			else{
+				array[row][col].setType(Piece.Type.BLACKSACRIFICE);
+			}
+			return true;
+		}
+		
 		if(array[row2][col2].type != Piece.Type.NULL){
 			return false;
 		}
@@ -206,7 +216,7 @@ class Board{
 			}
 		}
 
-		else if(type == 'F'){
+		else if(type == 'P'){
 
 		}
 
@@ -283,14 +293,7 @@ class Board{
 	//Determines whether or not a move is allowable (if the original position is of type
 	//activePlayer, and the second position is null)
 	//public boolean isPossibleMove(int _row, int _col,String s, char type){
-	public boolean isPossibleMove(int _row, int _col,int row2, int col2, char type){
-
-		//if(type != 'f'){
-		//	return isPossibleCapturingMove(_row,_col,row2,col2,type);
-		//}
-		
-		//if(capturingMoveAvailable()){
-		//	return false;
+	public boolean isPossibleMove(int _row, int _col,int row2, int col2){
 				
 		if(array[_row][_col].type != activePlayer){
 			return false;
@@ -535,7 +538,7 @@ class Board{
 				col2 = Integer.parseInt(connected.substring(0,index));
 				connected = connected.substring(index+1);
 			}
-			if(isPossibleMove(p.row, p.column, row2, col2, ' ')){
+			if(isPossibleMove(p.row, p.column, row2, col2)){
 				possible += " "+p.row+" "+p.column+" "+row2+" "+col2+",";
 			}
 		}
@@ -567,8 +570,8 @@ class Board{
 				col2 = Integer.parseInt(connected.substring(0,index));
 				connected = connected.substring(index+1);
 			}
-			if(isPossibleMove(p.row, p.column, row2, col2, ' ')){
-				possible += " F "+p.row+" "+p.column+" "+row2+" "+col2+",";
+			if(isPossibleMove(p.row, p.column, row2, col2)){
+				possible += " P "+p.row+" "+p.column+" "+row2+" "+col2+",";
 			}
 		}
 		
@@ -712,6 +715,12 @@ class Board{
 				if(array[i][j].type == Piece.Type.NULL){
 					//System.out.print("N");
 					System.out.print(" ");
+				}
+				if(array[i][j].type == Piece.Type.WHITESACRIFICE){
+					System.out.print("W");
+				}
+				if(array[i][j].type == Piece.Type.BLACKSACRIFICE){
+					System.out.print("B");
 				}
 				if(j != columns-1){
 					System.out.print("----");

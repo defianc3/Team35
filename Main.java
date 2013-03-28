@@ -169,11 +169,19 @@ class Main{
       			
       			if(game.activePlayer() == Piece.Type.WHITE){
 	      			
-	      			row1 = game.board.rows-Fanorona.getFirstRowCMD(move);
-	      			col1 = Fanorona.getFirstColumnCMD(move)-1;
-	      			row2 = game.board.rows-Fanorona.getSecondRowCMD(move);
-	      			col2 = Fanorona.getSecondColumnCMD(move)-1;
-	      			moveType = Fanorona.getMoveType(move);
+      				moveType = Fanorona.getMoveType(move);
+      				if(moveType == 'S'){
+      					row1 = game.board.rows-Fanorona.getFirstRowCMD(move);
+    	      			col1 = Fanorona.getFirstColumnCMD(move)-1;
+    	      			row2 = 0;
+    	      			col2 = 0;
+      				}
+      				else{
+      					row1 = game.board.rows-Fanorona.getFirstRowCMD(move);
+    	      			col1 = Fanorona.getFirstColumnCMD(move)-1;
+		      			row2 = game.board.rows-Fanorona.getSecondRowCMD(move);
+		      			col2 = Fanorona.getSecondColumnCMD(move)-1;
+      				}
 	      			
 	      			move = moveType + " " + row1 + " " + col1 + " "+row2 + " " +col2;
       			}
@@ -204,14 +212,14 @@ class Main{
 		      		}
 
 		      		if(game.capturingMoveAvailable()){
-			      		if(game.isPossibleCapturingMove(row1, col1, row2, col2, moveType)){
+			      		if(game.isPossibleCapturingMove(row1, col1, row2, col2, moveType) || moveType == 'S'){
 			      			Piece.Type previous = game.activePlayer();
 			      			boolean successiveMove = game.move(row1, col1, row2, col2, moveType);
 			      			if(previous == Piece.Type.BLACK && game.activePlayer() == Piece.Type.WHITE){
 			      				numberOfBlackMovesThisTurn = 0;
 			      			}
-			      			if(successiveMove){
-
+			      			if(!successiveMove){
+			      				game.removeSacrifices(game.activePlayer());
 			      			}
 			      		}
 			      		else{
