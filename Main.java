@@ -9,7 +9,7 @@ class Main{
 
 		Fanorona game = new Fanorona(9,5);
 		
-		//GameWindow gw = new GameWindow(5,5);
+		//GameWindow gw = new GameWindow(9,5);
 		
 		
 		/* TODO change the rows and columns to start at 1 instead of 0 */

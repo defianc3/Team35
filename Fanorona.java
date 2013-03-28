@@ -16,6 +16,8 @@
 
 */
 
+/* TODO handle cases where no move is possible */
+
 
 
 class Fanorona implements Evaluatable{

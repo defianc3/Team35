@@ -237,41 +237,41 @@ class Board{
 
 		if(p.stronglyConnected){
 			if(row != 0 && row != rows-1){
-				if(col != columns-1 && col != 0){
+				if(col != columns-1 && columns > 1 && col != 0){
 					s+=" "+(row+1)+","+(col+1);
 					s+=" "+(row-1)+","+(col+1);
 					s+=" "+(row-1)+","+(col-1);
 					s+=" "+(row+1)+","+(col-1);
 				}
-				else if(col == 0){
+				else if(col == 0 && columns > 1){
 					s+=" "+(row+1)+","+(col+1);
 					s+=" "+(row-1)+","+(col+1);
 				}
-				else if(col == columns-1){
+				else if(col == columns-1 && columns > 1){
 					s+=" "+(row-1)+","+(col-1);
 					s+=" "+(row+1)+","+(col-1);
 				}
 			}
-			else if(row == 0){
-				if(col == 0){
+			else if(row == 0 && rows > 1){
+				if(col == 0 && col != columns-1){
 					s+=" "+(row+1)+","+(col+1);
 				}
-				else if(col == columns-1){
+				else if(col == columns-1 && columns-1 > 0){
 					s+=" "+(row+1)+","+(col-1);
 				}
-				else{
+				else if(row != rows-1 && col != columns-1){
 					s+=" "+(row+1)+","+(col-1);
 					s+=" "+(row+1)+","+(col+1);
 				}
 			}
-			else{
-				if(col == 0){
+			else if(rows > 1){
+				if(col == 0 && columns > 1){
 					s+=" "+(row-1)+","+(col+1);
 				}
-				else if(col == columns-1){
+				else if(col == columns-1 && columns-1 > 0){
 					s+=" "+(row-1)+","+(col-1);
 				}
-				else{
+				else if(columns > 1){
 					s+=" "+(row-1)+","+(col-1);
 					s+=" "+(row-1)+","+(col+1);
 				}
