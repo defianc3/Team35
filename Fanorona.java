@@ -431,7 +431,10 @@ class Fanorona implements Evaluatable{
 				else if(!capturingMoveAvailable()){
 					/* TODO fix this loop for paika moves */
 					String possibleMoves = board.possibleMovesWithDirection(board.array[i][j]);
-					possibleMoves = possibleMoves.substring(1);
+					/* TODO look into this code for possible bug related to paika moves */
+					if(possibleMoves.length() > 0){
+						possibleMoves = possibleMoves.substring(1);
+					}
 					
 					while(possibleMoves.length() > 0){
 						int row1 = getFirstRow(possibleMoves);
@@ -539,10 +542,20 @@ class Fanorona implements Evaluatable{
 				move = move.substring(index+2);
 			}
 			
-			move(row1, col1, row2, col2, moveType);
+			move2(row1, col1, row2, col2, moveType);
 			board.activePlayer = original;
 		}
 		
+		if(activePlayer() == Piece.Type.WHITE){
+			board.whiteMoves += "\n";
+			board.whiteMovesFull += "\n";
+		}
+		else{
+			board.blackMoves += "\n";
+			board.blackMovesFull += "\n";
+		}
+		
+		board.latestDirectionMoved = "";
 		board.activePlayer = other;
 		return true;
 	}
@@ -625,6 +638,56 @@ class Fanorona implements Evaluatable{
 		}
 		return false;
 	}
+	
+	public boolean move2(int row1, int col1, int row2, int col2, char type){
+
+		boolean valid = false;
+		if(capturingMoveAvailable() && board.isPossibleCapturingMove(row1,col1,row2,col2,type) || type == 'S'){
+			valid = true;
+		}
+		else if(!capturingMoveAvailable() && board.isPossibleMove(row1,col1,row2,col2)){
+			valid = true;
+		}
+
+		//check to see if move is valid
+		if(valid){
+			Piece.Type temp = board.activePlayer;
+			board.movePiece(row1,col1,row2,col2,type);
+			
+			lastStateReturned = 0;
+			board.activePlayer = temp;
+			
+			if(type == 'S'){
+				if(board.activePlayer == Piece.Type.WHITE){
+					board.whiteMoves += ""+row1+col1+">"+row2+col2;
+					
+					board.whiteMovesFull += type+" "+row1+" "+col1;
+				}
+				else{
+					board.blackMoves += ""+row1+col1+">"+row2+col2;
+					board.blackMovesFull += type+" "+row1+" "+col1;
+				}
+			}
+			else{
+				if(board.activePlayer == Piece.Type.WHITE){
+					board.whiteMoves += ""+row1+col1+">"+row2+col2;
+					if(board.whiteMovesFull.lastIndexOf('\n') != board.whiteMovesFull.length()-1 && board.whiteMovesFull.length()!=0){
+						board.whiteMovesFull += " + ";
+					}
+					board.whiteMovesFull += type+" "+row1+" "+col1+" "+row2+" "+col2;
+				}
+				else{
+					board.blackMoves += ""+row1+col1+">"+row2+col2;
+					if(board.blackMovesFull.lastIndexOf('\n') != board.blackMovesFull.length()-1 && board.blackMovesFull.length()!=0){
+						board.blackMovesFull += " + ";
+					}
+					board.blackMovesFull += type+" "+row1+" "+col1+" "+row2+" "+col2;
+				}
+			}
+		}
+		return false;
+	}
+
 
 	public String getRandomMove(){
 

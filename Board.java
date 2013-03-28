@@ -670,6 +670,7 @@ class Board{
 	
 	public String getDirection(int _row, int _col, int row2, int col2){
 		String direction = "";
+		if(_row == 0 && _col == 0 && row2 == 0 && col2 == 0) return "-";
 		if(_row == row2){
 			if(_col < col2) direction = "E";
 			else direction = "W";
@@ -679,12 +680,12 @@ class Board{
 			else direction = "N";
 		}
 		else if(_row < row2){
-			if(_col < col2) direction = "NE";
-			else direction = "NW";
-		}
-		else if(_row > row2){
 			if(_col < col2) direction = "SE";
 			else direction = "SW";
+		}
+		else if(_row > row2){
+			if(_col < col2) direction = "NE";
+			else direction = "NW";
 		}	
 		return direction;
 	}

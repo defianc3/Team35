@@ -179,8 +179,6 @@ class Main{
 	      			}
       			}
       			
-		      	
-
 		      	valid = game.validMoveSystax(move);
 
 		      	if(!valid){
