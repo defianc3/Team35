@@ -258,7 +258,7 @@ public class GameWindow extends JFrame {
 	
 	private void clearTime() {
 		graphics.setColor(Color.GRAY);
-        graphics.fillRect(xMax - 250, 0, 240, 45);
+        graphics.fillRect(xMax - 250, 0, 240, 42);
         graphics.setColor(Color.BLACK);
 	}
 
@@ -346,6 +346,11 @@ public class GameWindow extends JFrame {
 		int yPoint = yGridMin + (ySpacing * yCoord);
 	}
 	
+	public void drawInfo() {
+		graphics.drawString("Current Turn: XX", xMax - 196, 52);
+		graphics.drawString("Current Player: XX", xMax - 196, 62);
+	}
+	
 	private void updateScreen() {
 		Date date = new Date();
 		String time = timeFormat.format(date);
@@ -364,6 +369,7 @@ public class GameWindow extends JFrame {
 				clicked = false;
 				clearWindow();
 				drawGrid();
+				drawInfo();
 				drawPieces();
 				processClick(xClick, yClick);
 			} else {
