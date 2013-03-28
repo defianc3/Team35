@@ -10,7 +10,14 @@ class Main{
 		
 		int rows = 5;
 		int columns = 9;
-		Piece.Type humanPlayer = Piece.Type.BLACK;
+		Piece.Type humanPlayer = Piece.Type.WHITE;
+		Piece.Type otherPlayer;
+		if(humanPlayer == Piece.Type.WHITE){
+			otherPlayer = Piece.Type.BLACK; 
+		}
+		else{
+			otherPlayer = Piece.Type.WHITE;
+		}
 
 		Fanorona game = new Fanorona(columns,rows);
 		
@@ -23,14 +30,9 @@ class Main{
 
 		int turn = 0;
 		int turnLimit = rows*10;
-		int numberOfBlackMovesThisTurn = 0;
-		
-		
-		
+		int numberOfBlackMovesThisTurn = 0;		
 		
 		while(true){
-			
-			System.out.println(game.numberOfMoves());
 
 			long time1 = new Date().getTime();
 			long time2 = -1;
@@ -54,7 +56,7 @@ class Main{
 			boolean moveturn = true; //indicates that a move as been entered
 
 
-			if(game.activePlayer() == Piece.Type.BLACK){
+			if(game.activePlayer() == otherPlayer){
 				//random
 				
 				System.out.println("evaluation: "+game.evaluate());

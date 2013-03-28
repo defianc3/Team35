@@ -683,11 +683,24 @@ class Fanorona implements Evaluatable{
 	
 	public boolean validMoveSystax(String move){
 		
-			int row1 = getFirstRow(move);
-			int col1 = getFirstColumn(move);
-			int row2 = getSecondRow(move);
-			int col2 = getSecondColumn(move);
-			char moveType = getMoveType(move);
+		while(move.length() != 0){
+			
+			int row1;
+			int col1;
+			int row2;
+			int col2;
+			char moveType;
+		
+			try{
+				row1 = getFirstRow(move);
+				col1 = getFirstColumn(move);
+				row2 = getSecondRow(move);
+				col2 = getSecondColumn(move);
+				moveType = getMoveType(move);
+			}
+			catch(Exception e){
+				return false;
+			}
 			
 			if(row1 > board.rows || row2 > board.rows){
 				return false;
@@ -698,6 +711,16 @@ class Fanorona implements Evaluatable{
 			if(!(moveType == 'A' || moveType == 'W' || moveType == 'P' || moveType == 'S')){
 				return false;
 			}
+			
+			int index = move.indexOf('+');
+			if(index == -1){
+				move = "";
+			}
+			else{
+				move = move.substring(index+2);
+				if(move.length() == 0) return false;
+			}
+		}
 		return true;
 	}
 }
