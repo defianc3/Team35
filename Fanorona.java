@@ -253,7 +253,7 @@ class Fanorona implements Evaluatable{
 	public static char getMoveType(String move){
 		
 		char t = move.charAt(0);
-		if(!(t == 'A' || t == 'W' || t == 'P' || t == 'S' || t == 'F')){
+		if(!(t == 'A' || t == 'W' || t == 'P' || t == 'S' || t == 'F' || t == 'N')){
 			throw new RuntimeException("Invalid type: "+t);
 		}
 		return t;
@@ -494,6 +494,58 @@ class Fanorona implements Evaluatable{
 
 		return board.capturingMoveAvailable();
 	}
+	
+	public boolean move(String move){
+		
+		Piece.Type original = activePlayer();
+		Piece.Type other;
+		if(original == Piece.Type.WHITE){
+			other = Piece.Type.BLACK;
+		}
+		else{
+			other = Piece.Type.WHITE;
+		}
+		
+		if(move.equals("N")){
+			if(activePlayer() == Piece.Type.WHITE){
+				board.whiteMovesFull += "N\n";
+			}
+			else{
+				board.blackMovesFull += "N\n";
+			}
+			board.activePlayer = other;
+			return false;
+		}
+		
+		while(move.length() != 0){
+			
+			int row1;
+			int col1;
+			int row2;
+			int col2;
+			char moveType;
+		
+			row1 = getFirstRow(move);
+			col1 = getFirstColumn(move);
+			row2 = getSecondRow(move);
+			col2 = getSecondColumn(move);
+			moveType = getMoveType(move);
+			
+			int index = move.indexOf('+');
+			if(index == -1){
+				move = "";
+			}
+			else{
+				move = move.substring(index+2);
+			}
+			
+			move(row1, col1, row2, col2, moveType);
+			board.activePlayer = original;
+		}
+		
+		board.activePlayer = other;
+		return true;
+	}
 
 	//returns true if a successive capture is possible, false otherwise
 	public boolean move(int row1, int col1, int row2, int col2, char type){
@@ -683,6 +735,10 @@ class Fanorona implements Evaluatable{
 	
 	public boolean validMoveSystax(String move){
 		
+		if(getMoveType(move) == 'N'){
+			return true;
+		}
+		
 		while(move.length() != 0){
 			
 			int row1;
@@ -708,7 +764,7 @@ class Fanorona implements Evaluatable{
 			if(col1 > board.columns || col2 > board.columns){
 				return false;
 			}
-			if(!(moveType == 'A' || moveType == 'W' || moveType == 'P' || moveType == 'S')){
+			if(!(moveType == 'A' || moveType == 'W' || moveType == 'P' || moveType == 'S' || moveType == 'N')){
 				return false;
 			}
 			
@@ -722,5 +778,47 @@ class Fanorona implements Evaluatable{
 			}
 		}
 		return true;
+	}
+	
+	//Takes a move as entered by the user and converts to its internal representation
+	public String convertToInternalMove(String move){
+		
+		String internalMove = "";
+		while(move.length() != 0){
+			
+			int row1;
+			int col1;
+			int row2;
+			int col2;
+			char moveType;
+			
+			moveType = Fanorona.getMoveType(move);
+			if(moveType == 'S'){
+				row2 = 0;
+				col2 = 0;
+			}
+			else{
+				row2 = board.rows-Fanorona.getSecondRowCMD(move);
+	  			col2 = Fanorona.getSecondColumnCMD(move)-1;
+			}
+			row1 = board.rows-Fanorona.getFirstRowCMD(move);
+  			col1 = Fanorona.getFirstColumnCMD(move)-1;
+  			
+  			int index = move.indexOf('+');
+  			if(index == -1){
+  				move = "";
+  			}
+  			else{
+  				move = move.substring(index+2);
+  			}
+			
+  			if(internalMove.length() == 0){
+  				internalMove += moveType + " "+row1+" "+col1+" "+row2+" "+ col2;
+  			}
+  			else{
+  				internalMove += " + "+ moveType + " "+row1+" "+col1+" "+row2+" "+ col2;
+  			}
+		}
+		return internalMove;
 	}
 }

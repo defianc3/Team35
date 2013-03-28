@@ -75,15 +75,17 @@ class Main{
 				
 				System.out.println("best move: "+bestMove);
 				
-				for(int k = 0; k <= numberOfBlackMovesThisTurn; k++){
-					int temp = bestMove.indexOf('+');
-					if(temp == -1){
-						move = bestMove;
-						break;
-					}
-					move = bestMove.substring(0,temp);
-					bestMove = bestMove.substring(temp+2,bestMove.length());
-				}
+				move = bestMove;
+				
+//				for(int k = 0; k <= numberOfBlackMovesThisTurn; k++){
+//					int temp = bestMove.indexOf('+');
+//					if(temp == -1){
+//						move = bestMove;
+//						break;
+//					}
+//					move = bestMove.substring(0,temp);
+//					bestMove = bestMove.substring(temp+2,bestMove.length());
+//				}
 				
 				numberOfBlackMovesThisTurn++;
 				//move = game.getRandomMove();
@@ -102,7 +104,7 @@ class Main{
 				scan = new Scanner(playerInput);
 
 				time2 = new Date().getTime();
-
+				
 				if(playerInput.equals("quit")){
 					System.out.println("\nExiting\n\n");
 					scan.close();
@@ -124,30 +126,6 @@ class Main{
 				else{
 
 					try {
-//			        	pieceInt1 = scan.nextInt();
-//			        	pieceInt2 = scan.nextInt();
-//
-//			        	pieceStr1 = Integer.toString(pieceInt1);
-//			        	pieceStr2 = Integer.toString(pieceInt2);
-//
-//			        	if(pieceInt1 < 10){
-//			        		pieceStr1 = "0"+pieceStr1;
-//			        	}
-//			        	if(pieceStr1.length() != 2){
-//			        		pieceStr1 = pieceStr1+="0";
-//			        	}
-//
-//			        	if(pieceInt2 < 10){
-//			        		pieceStr2 = "0"+pieceStr2;
-//			        	}
-//			        	if(pieceStr2.length() != 2){
-//			        		pieceStr2 = pieceStr2+="0";
-//			        	}
-//
-//			        	playerInput = scan.nextLine();
-//
-//
-//				      	move = pieceStr1 + " " + pieceStr2 + playerInput;
 						move = scan.nextLine();
 				    }
 				    catch(Exception e){
@@ -157,12 +135,6 @@ class Main{
 	      	}
 			boolean valid = true;
       		if(moveturn){
-
-//		      	int row1 = move.charAt(0)-48;
-//		      	int col1 = move.charAt(1)-48;
-//		      	int row2 = move.charAt(3)-48;
-//		      	int col2 = move.charAt(4)-48;
-//		      	char moveType = move.charAt(6);
       			
       			int row1;
       			int row2;
@@ -170,32 +142,41 @@ class Main{
       			int col2;
       			char moveType;
       			
-      			if(game.activePlayer() == Piece.Type.WHITE){
-	      			
-      				moveType = Fanorona.getMoveType(move);
-      				if(moveType == 'S'){
-      					row1 = game.board.rows-Fanorona.getFirstRowCMD(move);
-    	      			col1 = Fanorona.getFirstColumnCMD(move)-1;
-    	      			row2 = 0;
-    	      			col2 = 0;
-      				}
-      				else{
-      					row1 = game.board.rows-Fanorona.getFirstRowCMD(move);
-    	      			col1 = Fanorona.getFirstColumnCMD(move)-1;
-		      			row2 = game.board.rows-Fanorona.getSecondRowCMD(move);
-		      			col2 = Fanorona.getSecondColumnCMD(move)-1;
-      				}
-	      			
-	      			move = moveType + " " + row1 + " " + col1 + " "+row2 + " " +col2;
+      			if(move.equals("N")){
+      				moveType = 'N';
+      				row1 = 0;
+      				col1 = 0;
+      				row2 = 0;
+      				col2 = 0;
       			}
       			else{
-      				
-      				row1 = Fanorona.getFirstRow(move);
-	      			col1 = Fanorona.getFirstColumn(move);
-	      			row2 = Fanorona.getSecondRow(move);
-	      			col2 = Fanorona.getSecondColumn(move);
-	      			moveType = Fanorona.getMoveType(move);
-      				
+	      			if(game.activePlayer() == Piece.Type.WHITE){
+		      			
+	      				moveType = Fanorona.getMoveType(move);
+	      				if(moveType == 'S'){
+	      					row1 = game.board.rows-Fanorona.getFirstRowCMD(move);
+	    	      			col1 = Fanorona.getFirstColumnCMD(move)-1;
+	    	      			row2 = 0;
+	    	      			col2 = 0;
+	      				}
+	      				else{
+	      					row1 = game.board.rows-Fanorona.getFirstRowCMD(move);
+	    	      			col1 = Fanorona.getFirstColumnCMD(move)-1;
+			      			row2 = game.board.rows-Fanorona.getSecondRowCMD(move);
+			      			col2 = Fanorona.getSecondColumnCMD(move)-1;
+	      				}
+		      			
+		      			move = game.convertToInternalMove(move);
+	      			}
+	      			else{
+	      				
+	      				row1 = Fanorona.getFirstRow(move);
+		      			col1 = Fanorona.getFirstColumn(move);
+		      			row2 = Fanorona.getSecondRow(move);
+		      			col2 = Fanorona.getSecondColumn(move);
+		      			moveType = Fanorona.getMoveType(move);
+	      				
+	      			}
       			}
       			
 		      	
@@ -215,15 +196,14 @@ class Main{
 		      		}
 
 		      		if(game.capturingMoveAvailable()){
-			      		if(game.isPossibleCapturingMove(row1, col1, row2, col2, moveType) || moveType == 'S'){
+			      		if(game.isPossibleCapturingMove(row1, col1, row2, col2, moveType) || moveType == 'S' || moveType == 'N'){
 			      			Piece.Type previous = game.activePlayer();
-			      			boolean successiveMove = game.move(row1, col1, row2, col2, moveType);
+//			      			boolean successiveMove = game.move(row1, col1, row2, col2, moveType);
+			      			boolean successiveMove = game.move(move);
 			      			if(previous == Piece.Type.BLACK && game.activePlayer() == Piece.Type.WHITE){
 			      				numberOfBlackMovesThisTurn = 0;
 			      			}
-			      			if(!successiveMove){
-			      				game.removeSacrifices(game.activePlayer());
-			      			}
+		      				game.removeSacrifices(game.activePlayer());
 			      		}
 			      		else{
 			      			System.out.println("A capturing move must be entered\n");
