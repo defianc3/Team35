@@ -2,12 +2,16 @@ import java.util.Scanner;
 import java.util.Date;
 
 class Main{
+	
 	public static void main(String args[]){
 
 		System.out.println("\nWelcome to Team35's Fanorona game");
 		System.out.println("X=black  0=white, N='null'(no piece)\n");
+		
+		int rows = 5;
+		int columns = 9;
 
-		Fanorona game = new Fanorona(9,5);
+		Fanorona game = new Fanorona(columns,rows);
 		
 		//GameWindow gw = new GameWindow(9,5);
 		
@@ -17,7 +21,12 @@ class Main{
 		game.prettyprint();
 
 		int turn = 0;
+		int turnLimit = rows*10;
 		int numberOfBlackMovesThisTurn = 0;
+		
+		
+		
+		
 		while(true){
 			
 			System.out.println(game.numberOfMoves());
@@ -228,7 +237,7 @@ class Main{
 		  	if(valid && moveturn){
 		  		turn++;
 		  	}
-		  	if (turn == 50) {
+		  	if (turn == turnLimit) {
 		  		System.out.println("Maximum turns reached");
 		  		break;
 		  	}
