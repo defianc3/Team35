@@ -9,7 +9,6 @@ import java.net.*;
 
 public class SocketMain{
 	
-	
 	public static ServerSocket create(){
 		
 		for(int i = 1024; i < 2048; i++){
@@ -32,66 +31,89 @@ public class SocketMain{
 		ServerSocket sock = create();
 		System.out.println("Listening on "+sock.getLocalPort());
 		
-//		Socket client = null;
-//		try{
-//			client = sock.accept();
-//		}
-//		catch(IOException e){
-//			System.out.println("Accept failed");
-//			System.exit(1);
-//		}
+		clientThread cT = new clientThread(sock.getLocalPort());
+		cT.start();
+		
+		Socket client = null;
+		PrintWriter out = null;
+		BufferedReader in = null;
+		try{
+			client = sock.accept();
+			out = new PrintWriter(client.getOutputStream(), true);
+			in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+		}
+		catch(IOException e){
+			System.out.println("Accept failed");
+			System.exit(1);
+		}
+		
+		String inputLine, outputLine;
+		out.println("quit");
 
-		while(true){
-			System.out.print("Enter a command: ");
-			
-			String playerInput = "";
-			Scanner scan2 = new Scanner(System.in);
-			playerInput = scan2.nextLine();
-			int index = playerInput.indexOf(' ');
-			String command = playerInput.substring(0,index);
-			if(command.equals("INFO")){
-				String cmd = playerInput;
-				cmd = cmd.substring(index+1);
-				index = cmd.indexOf(' ');
-				int columns = Integer.parseInt(cmd.substring(0,index));
-				cmd = cmd.substring(index+1);
-				index = cmd.indexOf(' ');
-				int rows = Integer.parseInt(cmd.substring(0,index));
-				cmd = cmd.substring(index+1);
-				index = cmd.indexOf(' ');
-				char startType = cmd.charAt(index-1);
-				cmd = cmd.substring(index+1);
-				int timeRestriction = Integer.parseInt(cmd);
-				game = new Fanorona(columns,rows);
-				if(startType == 'W'){
-					clientPlayer = Piece.Type.WHITE;
-				}
-				else if(startType == 'B'){
-					clientPlayer = Piece.Type.BLACK;
-				}
-				else{
-					System.out.println("Type error");
-					System.exit(1);
-				}
-				responseTime = timeRestriction;
-				System.out.println("READY");
-			}
-			else if(command.equals("BEGIN")){
-				//Start game
-			}
-			else if(command.equals("A")){
+		String playerInput = "";
+		try {
+			while((playerInput = in.readLine()) != null){
+//			System.out.print("Enter a command: ");
 				
-				//Approach move
+
+//			Scanner scan2 = new Scanner(System.in);
+//			playerInput = scan2.nextLine();
+				System.out.println("input = " + playerInput);
+				int index = playerInput.indexOf(' ');
+				String command = playerInput.substring(0,index);
+				
+				
+				
+				if(command.equals("INFO")){
+					String cmd = playerInput;
+					cmd = cmd.substring(index+1);
+					index = cmd.indexOf(' ');
+					int columns = Integer.parseInt(cmd.substring(0,index));
+					cmd = cmd.substring(index+1);
+					index = cmd.indexOf(' ');
+					int rows = Integer.parseInt(cmd.substring(0,index));
+					cmd = cmd.substring(index+1);
+					index = cmd.indexOf(' ');
+					char startType = cmd.charAt(index-1);
+					cmd = cmd.substring(index+1);
+					int timeRestriction = Integer.parseInt(cmd);
+					game = new Fanorona(columns,rows);
+					if(startType == 'W'){
+						clientPlayer = Piece.Type.WHITE;
+					}
+					else if(startType == 'B'){
+						clientPlayer = Piece.Type.BLACK;
+					}
+					else{
+						System.out.println("Type error");
+						System.exit(1);
+					}
+					responseTime = timeRestriction;
+					System.out.println("READY");
+				}
+				else if(command.equals("BEGIN")){
+					//Start game
+				}
+				else if(command.equals("A")){
+					
+					//Approach move
+				}
+				else if(command.equals("W")){
+					//withdrawal
+				}
+				else if(command.equals("P")){
+					//piaka
+				}
+				else if(command.equals("S")){
+					break;
+				}
 			}
-			else if(command.equals("W")){
-				//withdrawal
-			}
-			else if(command.equals("P")){
-				//piaka
-			}
-			else if(command.equals("S")){
-				break;
-			}
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		//sock.close();
 	}
