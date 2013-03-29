@@ -959,7 +959,7 @@ class Fanorona implements Evaluatable{
 		game.move(move);
 		int temp2 = game.board.numberRemaining(other);
 		
-		if(temp1 < temp2){
+		if(temp2 < temp1){
 			return true;
 		}
 		else{

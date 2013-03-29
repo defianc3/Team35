@@ -21,7 +21,9 @@ public class clientThread extends Thread {
 	public void run(){
 		
 		Fanorona game = null;
-		Piece.Type clientPlayer;
+		Piece.Type clientPlayer = null;
+		Piece.Type serverPlayer = null;
+		
 		int responseTime;
 	
 		Socket tSock = null;
@@ -52,6 +54,9 @@ public class clientThread extends Thread {
 				}
 				if(response.equals("OK")){
 					continue;
+				}
+				if(response.equals("ILLEGAL")){
+					break;
 				}
 				
 				int index = response.indexOf(' ');
@@ -87,6 +92,12 @@ public class clientThread extends Thread {
 						System.out.println("Type error");
 						System.exit(1);
 					}
+					if(clientPlayer == Piece.Type.WHITE){
+						serverPlayer = Piece.Type.BLACK;
+					}
+					else{
+						serverPlayer = Piece.Type.WHITE;
+					}
 					responseTime = timeRestriction;
 					out.println("READY");
 				}
@@ -101,8 +112,21 @@ public class clientThread extends Thread {
 					String playerInput = "";
 					Scanner scan2 = new Scanner(System.in);
 					playerInput = scan2.nextLine();
-					playerInput = game.convertToInternalMove(playerInput);
+					try{
+						playerInput = game.convertToInternalMove(playerInput);
+					}
+					catch(Exception e){
+						
+					}
+					if(game.activePlayer() != clientPlayer){
+						System.out.println("CLIENT ERROR EXITING");
+						System.exit(1);
+					}
 					game.move(playerInput);
+					if(game.activePlayer() != serverPlayer){
+						System.out.println("CLIENT ERROR EXITING");
+						System.exit(1);
+					}
 					out.println(playerInput);
 					//Approach move
 				}

@@ -66,8 +66,9 @@ public class SocketMain{
 		}
 
 		String playerInput = "";
+		boolean cont = true;
 		try {
-			while((playerInput = in.readLine()) != null){
+			while((playerInput = in.readLine()) != null && cont){
 	//			System.out.print("Enter a command: ");
 				System.out.println("From client: "+playerInput);
 					
@@ -91,9 +92,13 @@ public class SocketMain{
 //			playerInput = scan2.nextLine();
 				System.out.println("input = " + playerInput);
 				int index = playerInput.indexOf(' ');
-				String command = playerInput.substring(0,index);
-				
-				
+				String command = "";
+				try{
+					command = playerInput.substring(0,index);
+				}
+				catch(Exception e){
+					command = playerInput;
+				}
 				
 				if(command.equals("INFO")){
 					String cmd = playerInput;
@@ -125,10 +130,11 @@ public class SocketMain{
 				else if(command.equals("BEGIN")){
 					//Start game
 				}
-				else if(command.equals("A")){
+				else if(command.equals("A") || command.equals("W") || command.equals("S") || command.equals("P")){
 					out.println("OK");
+					System.out.println("Server active player: "+game.activePlayer());
 					
-					if(!game.isPossibleCapturingMove(playerInput)){
+					if(game.capturingMoveAvailable() && !game.isPossibleCapturingMove(playerInput)){
 						out.println("ILLEGAL");
 						out.println("LOSER");
 					}
@@ -158,110 +164,126 @@ public class SocketMain{
 						out.println("TIE");
 					}
 					else{
-						out.println(game.getAIMove(serverPlayer));
+						String move = game.getAIMove(serverPlayer);
+						game.move(move);
+						out.println(move);
 					}
 					//Approach move
 				}
-				else if(command.equals("W")){
-					
-					out.println("OK");
-					
-					game.move(playerInput);
-					game.prettyprint();
-					int val = game.checkEndGame();
-					if(val == 1){
-						//white win
-						if(clientPlayer == Piece.Type.WHITE){
-							out.println("WINNER");
-						}
-						else{
-							out.println("LOSER");
-						}
-					}
-					else if(val == -1){
-						//black win
-						if(clientPlayer == Piece.Type.WHITE){
-							out.println("LOSER");
-						}
-						else{
-							out.println("WINNER");
-						}
-					}
-					else if(val == 2){
-						//max turns
-						out.println("TIE");
-					}
-					else{
-						out.println(game.getAIMove(serverPlayer));
-					}
-					
-					//withdrawal
-				}
-				else if(command.equals("P")){
-					
-					out.println("OK");
-					game.move(playerInput);
-					game.prettyprint();
-					int val = game.checkEndGame();
-					if(val == 1){
-						//white win
-						if(clientPlayer == Piece.Type.WHITE){
-							out.println("WINNER");
-						}
-						else{
-							out.println("LOSER");
-						}
-					}
-					else if(val == -1){
-						//black win
-						if(clientPlayer == Piece.Type.WHITE){
-							out.println("LOSER");
-						}
-						else{
-							out.println("WINNER");
-						}
-					}
-					else if(val == 2){
-						//max turns
-						out.println("TIE");
-					}
-					else{
-						out.println(game.getAIMove(serverPlayer));
-					}
-					//piaka
-				}
-				else if(command.equals("S")){
-					
-					out.println("OK");
-					game.move(playerInput);
-					game.prettyprint();
-					int val = game.checkEndGame();
-					if(val == 1){
-						//white win
-						if(clientPlayer == Piece.Type.WHITE){
-							out.println("WINNER");
-						}
-						else{
-							out.println("LOSER");
-						}
-					}
-					else if(val == -1){
-						//black win
-						if(clientPlayer == Piece.Type.WHITE){
-							out.println("LOSER");
-						}
-						else{
-							out.println("WINNER");
-						}
-					}
-					else if(val == 2){
-						//max turns
-						out.println("TIE");
-					}
-					else{
-						out.println(game.getAIMove(serverPlayer));
-					}
-					break;
+//				else if(command.equals("W")){
+//					
+//					out.println("OK");
+//					System.out.println("Server active player: "+game.activePlayer());
+//					if(!game.isPossibleCapturingMove(playerInput)){
+//						out.println("ILLEGAL");
+//						out.println("LOSER");
+//					}
+//					game.move(playerInput);
+//					game.prettyprint();
+//					int val = game.checkEndGame();
+//					if(val == 1){
+//						//white win
+//						if(clientPlayer == Piece.Type.WHITE){
+//							out.println("WINNER");
+//						}
+//						else{
+//							out.println("LOSER");
+//						}
+//					}
+//					else if(val == -1){
+//						//black win
+//						if(clientPlayer == Piece.Type.WHITE){
+//							out.println("LOSER");
+//						}
+//						else{
+//							out.println("WINNER");
+//						}
+//					}
+//					else if(val == 2){
+//						//max turns
+//						out.println("TIE");
+//					}
+//					else{
+//						String move = game.getAIMove(serverPlayer);
+//						game.move(move);
+//						out.println(move);
+//					}
+//					
+//					//withdrawal
+//				}
+//				else if(command.equals("P")){
+//					
+//					out.println("OK");
+//					game.move(playerInput);
+//					game.prettyprint();
+//					int val = game.checkEndGame();
+//					if(val == 1){
+//						//white win
+//						if(clientPlayer == Piece.Type.WHITE){
+//							out.println("WINNER");
+//						}
+//						else{
+//							out.println("LOSER");
+//						}
+//					}
+//					else if(val == -1){
+//						//black win
+//						if(clientPlayer == Piece.Type.WHITE){
+//							out.println("LOSER");
+//						}
+//						else{
+//							out.println("WINNER");
+//						}
+//					}
+//					else if(val == 2){
+//						//max turns
+//						out.println("TIE");
+//					}
+//					else{
+//						String move = game.getAIMove(serverPlayer);
+//						game.move(move);
+//						out.println(move);
+//					}
+//					//piaka
+//				}
+//				else if(command.equals("S")){
+//					
+//					out.println("OK");
+//					game.move(playerInput);
+//					game.prettyprint();
+//					int val = game.checkEndGame();
+//					if(val == 1){
+//						//white win
+//						if(clientPlayer == Piece.Type.WHITE){
+//							out.println("WINNER");
+//						}
+//						else{
+//							out.println("LOSER");
+//						}
+//					}
+//					else if(val == -1){
+//						//black win
+//						if(clientPlayer == Piece.Type.WHITE){
+//							out.println("LOSER");
+//						}
+//						else{
+//							out.println("WINNER");
+//						}
+//					}
+//					else if(val == 2){
+//						//max turns
+//						out.println("TIE");
+//					}
+//					else{
+//						String move = game.getAIMove(serverPlayer);
+//						game.move(move);
+//						out.println(move);
+//					}
+//					break;
+//				}
+				else{
+					out.println("ILLEGAL");
+					cont = false;
 				}
 			}
 		} catch (NumberFormatException e) {
