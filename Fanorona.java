@@ -284,10 +284,11 @@ class Fanorona implements Evaluatable{
 	
 	public String numberOfMoves3(int row, int column, boolean recursion, int goal, String tempString){
 		int count = 0;
+		String tempCount = "";
 		if(this.board.capturingMoveAvailable(this.board.array[row][column])){
 			String possibleMoves = this.board.PossibleCapturingMovesWithDirection(this.board.array[row][column]);
 			int temp = 0;
-			
+//			String tempCount = null;
 			while(possibleMoves.length() > 0){
 				int row1 = getFirstRow(possibleMoves);
 				int col1 = getFirstColumn(possibleMoves);
@@ -306,7 +307,7 @@ class Fanorona implements Evaluatable{
 					int tempRow = getSecondRow(move);	//hold the destination position so i can call recursively
 					int tempCol = getSecondColumn(move);
 					newGame.move(getFirstRow(move), getFirstColumn(move), getSecondRow(move), getSecondColumn(move), getMoveType(move));
-					String tempCount = newGame.numberOfMoves3(tempRow, tempCol, true,goal,tempString);
+					tempCount = newGame.numberOfMoves3(tempRow, tempCol, true,goal,tempString);
 					tempString = tempCount;
 					if(cc == goal) return tempString;
 				}
@@ -353,7 +354,8 @@ class Fanorona implements Evaluatable{
 				
 			}
 		}
-		return "";
+		cc++;
+		return tempString;
 	}
 	
 	public String numberOfMoves3(int goal){
@@ -372,6 +374,10 @@ class Fanorona implements Evaluatable{
 
 					String possibleMoves = board.possibleMovesWithDirection(board.array[i][j]);
 					
+					if(possibleMoves.length() > 0){
+						possibleMoves = possibleMoves.substring(1);
+					}
+					
 					while(possibleMoves.length() > 0){
 						int row1 = getFirstRow(possibleMoves);
 						int col1 = getFirstColumn(possibleMoves);
@@ -381,6 +387,12 @@ class Fanorona implements Evaluatable{
 						String move = type+" "+row1+" "+col1+" "+row2+" "+col2;
 						int index = possibleMoves.indexOf(',');
 						possibleMoves = possibleMoves.substring(index+1);
+						if(possibleMoves.length() > 2){
+							possibleMoves = possibleMoves.substring(1);
+						}
+						else{
+							possibleMoves = "";
+						}
 						count++;
 						cc++;
 						if(cc == goal) return move;
@@ -457,6 +469,12 @@ class Fanorona implements Evaluatable{
 						String move = type+" "+row1+" "+col1+" "+row2+" "+col2;
 						int index = possibleMoves.indexOf(',');
 						possibleMoves = possibleMoves.substring(index+1);
+						if(possibleMoves.length() > 2){
+							possibleMoves = possibleMoves.substring(1);
+						}
+						else{
+							possibleMoves = "";
+						}
 						count++;
 					}
 				}

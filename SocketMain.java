@@ -51,7 +51,7 @@ public class SocketMain{
 		out.println("WELCOME");
 		int _rows = 5;
 		int _columns = 9;
-		char clientT = 'B';
+		char clientT = 'W';
 		out.println("INFO "+_columns+" "+_rows+" "+clientT+" "+"5000");
 		
 		game = new Fanorona(9,5);
@@ -86,7 +86,7 @@ public class SocketMain{
 					continue;
 				}
 				if(playerInput.equals("OK")){
-					out.println("OK");
+					//out.println("OK");
 					continue;
 				}
 //			playerInput = scan2.nextLine();
@@ -145,28 +145,62 @@ public class SocketMain{
 						//white win
 						if(clientPlayer == Piece.Type.WHITE){
 							out.println("WINNER");
+							break;
 						}
 						else{
 							out.println("LOSER");
+							break;
 						}
 					}
 					else if(val == -1){
 						//black win
 						if(clientPlayer == Piece.Type.WHITE){
 							out.println("LOSER");
+							break;
 						}
 						else{
 							out.println("WINNER");
+							break;
 						}
 					}
 					else if(val == 2){
 						//max turns
 						out.println("TIE");
+						break;
 					}
 					else{
 						String move = game.getAIMove(serverPlayer);
 						game.move(move);
 						out.println(move);
+					}
+					
+					val = game.checkEndGame();
+					if(val == 1){
+						//white win
+						if(clientPlayer == Piece.Type.WHITE){
+							out.println("WINNER");
+							break;
+						}
+						else{
+							out.println("LOSER");
+							break;
+						}
+					}
+					else if(val == -1){
+						//black win
+						if(clientPlayer == Piece.Type.WHITE){
+							out.println("LOSER");
+							break;
+						}
+						else{
+							out.println("WINNER");
+							break;
+						}
+					}
+					else if(val == 2){
+						//max turns
+						out.println("TIE");
+						break;
 					}
 					//Approach move
 				}
