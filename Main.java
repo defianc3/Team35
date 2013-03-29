@@ -10,7 +10,7 @@ class Main{
 		
 		int rows = 5;
 		int columns = 9;
-		Piece.Type humanPlayer = Piece.Type.WHITE;
+		Piece.Type humanPlayer = Piece.Type.BLACK;
 		Piece.Type otherPlayer;
 		if(humanPlayer == Piece.Type.WHITE){
 			otherPlayer = Piece.Type.BLACK; 
@@ -64,14 +64,28 @@ class Main{
 				MiniMaxTree mmt = new MiniMaxTree(game.copyGame());
 				mmt.processToDepth(2);
 				
-				String bestMove = "";
-				int minimum = 100000;
-				for(int i = 0; i < mmt.root.children.size();i++){
-					if(mmt.root.children.get(i).getUtilityValue() < minimum){
-						bestMove = mmt.root.children.get(i).getState().getMove(false);
-						minimum = mmt.root.children.get(i).getUtilityValue();
+				String bestMove;
+				if(otherPlayer == Piece.Type.BLACK){
+					bestMove = "";
+					int minimum = 100000;
+					for(int i = 0; i < mmt.root.children.size();i++){
+						if(mmt.root.children.get(i).getUtilityValue() < minimum){
+							bestMove = mmt.root.children.get(i).getState().getMove(false);
+							minimum = mmt.root.children.get(i).getUtilityValue();
+						}
 					}
 				}
+				else{
+					bestMove = "";
+					int maximum = -100000;
+					for(int i = 0; i < mmt.root.children.size();i++){
+						if(mmt.root.children.get(i).getUtilityValue() > maximum){
+							bestMove = mmt.root.children.get(i).getState().getMove(true);
+							maximum = mmt.root.children.get(i).getUtilityValue();
+						}
+					}
+				}
+				
 				
 				System.out.println("best move: "+bestMove);
 				
@@ -89,7 +103,7 @@ class Main{
 				
 				numberOfBlackMovesThisTurn++;
 				//move = game.getRandomMove();
-				System.out.println("Black move: "+move);
+				System.out.println("Other move: "+move);
 				
 				
 				time2 = new Date().getTime();
@@ -150,7 +164,7 @@ class Main{
       				col2 = 0;
       			}
       			else{
-	      			if(game.activePlayer() == Piece.Type.WHITE){
+	      			if(game.activePlayer() == humanPlayer){
 		      			
 	      				moveType = Fanorona.getMoveType(move);
 	      				if(moveType == 'S'){

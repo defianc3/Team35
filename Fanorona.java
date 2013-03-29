@@ -318,6 +318,15 @@ class Fanorona implements Evaluatable{
 							return tempString + ">"+move;
 						}
 					}
+					else{
+						int index = possibleMoves.indexOf(',');
+						if(index == -1 || possibleMoves.substring(index+1).length() < 2){
+							possibleMoves = "";
+						}
+						else{
+							possibleMoves = possibleMoves.substring(index+2);
+						}
+					}
 				}
 			}
 		}		

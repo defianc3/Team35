@@ -139,6 +139,10 @@ class Board{
 			return true;
 		}
 		
+		if(array[row][col].type != activePlayer){
+			return false;
+		}
+		
 		if(array[row2][col2].type != Piece.Type.NULL){
 			return false;
 		}
