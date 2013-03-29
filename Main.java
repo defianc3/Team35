@@ -10,7 +10,7 @@ class Main{
 		
 		int rows = 5;
 		int columns = 9;
-		Piece.Type humanPlayer = Piece.Type.BLACK;
+		Piece.Type humanPlayer = Piece.Type.WHITE;
 		Piece.Type otherPlayer;
 		if(humanPlayer == Piece.Type.WHITE){
 			otherPlayer = Piece.Type.BLACK; 
@@ -61,31 +61,7 @@ class Main{
 				
 				System.out.println("evaluation: "+game.evaluate());
 				
-				MiniMaxTree mmt = new MiniMaxTree(game.copyGame());
-				mmt.processToDepth(2);
-				
-				String bestMove;
-				if(otherPlayer == Piece.Type.BLACK){
-					bestMove = "";
-					int minimum = 100000;
-					for(int i = 0; i < mmt.root.children.size();i++){
-						if(mmt.root.children.get(i).getUtilityValue() < minimum){
-							bestMove = mmt.root.children.get(i).getState().getMove(false);
-							minimum = mmt.root.children.get(i).getUtilityValue();
-						}
-					}
-				}
-				else{
-					bestMove = "";
-					int maximum = -100000;
-					for(int i = 0; i < mmt.root.children.size();i++){
-						if(mmt.root.children.get(i).getUtilityValue() > maximum){
-							bestMove = mmt.root.children.get(i).getState().getMove(true);
-							maximum = mmt.root.children.get(i).getUtilityValue();
-						}
-					}
-				}
-				
+				String bestMove = game.getAIMove(otherPlayer);
 				
 				System.out.println("best move: "+bestMove);
 				

@@ -49,18 +49,43 @@ public class SocketMain{
 		
 		String inputLine, outputLine;
 		out.println("WELCOME");
-		out.println("INFO 9 5 B 5000");
+		int _rows = 5;
+		int _columns = 9;
+		char clientT = 'B';
+		out.println("INFO "+_columns+" "+_rows+" "+clientT+" "+"5000");
+		
+		game = new Fanorona(9,5);
+		Piece.Type serverPlayer;
+		if(clientT == 'B'){
+			clientPlayer = Piece.Type.BLACK;
+			serverPlayer = Piece.Type.WHITE;
+		}
+		else{
+			clientPlayer = Piece.Type.WHITE;
+			serverPlayer = Piece.Type.BLACK;
+		}
 
 		String playerInput = "";
 		try {
 			while((playerInput = in.readLine()) != null){
 	//			System.out.print("Enter a command: ");
-				System.out.println(playerInput);
+				System.out.println("From client: "+playerInput);
 					
 	
 	//			Scanner scan2 = new Scanner(System.in);
 				if(playerInput.equals("READY")){
 					out.println("BEGIN");
+					
+					if(serverPlayer == Piece.Type.WHITE){
+						String move = game.getAIMove(serverPlayer);
+						game.move(move);
+						out.println(move);
+					}
+					
+					continue;
+				}
+				if(playerInput.equals("OK")){
+					out.println("OK");
 					continue;
 				}
 //			playerInput = scan2.nextLine();
@@ -101,16 +126,141 @@ public class SocketMain{
 					//Start game
 				}
 				else if(command.equals("A")){
+					out.println("OK");
 					
+					if(!game.isPossibleCapturingMove(playerInput)){
+						out.println("ILLEGAL");
+						out.println("LOSER");
+					}
+					game.move(playerInput);
+					game.prettyprint();
+					int val = game.checkEndGame();
+					if(val == 1){
+						//white win
+						if(clientPlayer == Piece.Type.WHITE){
+							out.println("WINNER");
+						}
+						else{
+							out.println("LOSER");
+						}
+					}
+					else if(val == -1){
+						//black win
+						if(clientPlayer == Piece.Type.WHITE){
+							out.println("LOSER");
+						}
+						else{
+							out.println("WINNER");
+						}
+					}
+					else if(val == 2){
+						//max turns
+						out.println("TIE");
+					}
+					else{
+						out.println(game.getAIMove(serverPlayer));
+					}
 					//Approach move
 				}
 				else if(command.equals("W")){
+					
+					out.println("OK");
+					
+					game.move(playerInput);
+					game.prettyprint();
+					int val = game.checkEndGame();
+					if(val == 1){
+						//white win
+						if(clientPlayer == Piece.Type.WHITE){
+							out.println("WINNER");
+						}
+						else{
+							out.println("LOSER");
+						}
+					}
+					else if(val == -1){
+						//black win
+						if(clientPlayer == Piece.Type.WHITE){
+							out.println("LOSER");
+						}
+						else{
+							out.println("WINNER");
+						}
+					}
+					else if(val == 2){
+						//max turns
+						out.println("TIE");
+					}
+					else{
+						out.println(game.getAIMove(serverPlayer));
+					}
+					
 					//withdrawal
 				}
 				else if(command.equals("P")){
+					
+					out.println("OK");
+					game.move(playerInput);
+					game.prettyprint();
+					int val = game.checkEndGame();
+					if(val == 1){
+						//white win
+						if(clientPlayer == Piece.Type.WHITE){
+							out.println("WINNER");
+						}
+						else{
+							out.println("LOSER");
+						}
+					}
+					else if(val == -1){
+						//black win
+						if(clientPlayer == Piece.Type.WHITE){
+							out.println("LOSER");
+						}
+						else{
+							out.println("WINNER");
+						}
+					}
+					else if(val == 2){
+						//max turns
+						out.println("TIE");
+					}
+					else{
+						out.println(game.getAIMove(serverPlayer));
+					}
 					//piaka
 				}
 				else if(command.equals("S")){
+					
+					out.println("OK");
+					game.move(playerInput);
+					game.prettyprint();
+					int val = game.checkEndGame();
+					if(val == 1){
+						//white win
+						if(clientPlayer == Piece.Type.WHITE){
+							out.println("WINNER");
+						}
+						else{
+							out.println("LOSER");
+						}
+					}
+					else if(val == -1){
+						//black win
+						if(clientPlayer == Piece.Type.WHITE){
+							out.println("LOSER");
+						}
+						else{
+							out.println("WINNER");
+						}
+					}
+					else if(val == 2){
+						//max turns
+						out.println("TIE");
+					}
+					else{
+						out.println(game.getAIMove(serverPlayer));
+					}
 					break;
 				}
 			}

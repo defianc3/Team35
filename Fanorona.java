@@ -29,6 +29,7 @@ class Fanorona implements Evaluatable{
 	
 	int numberOfPossibleMoves;
 	int lastEvaluated;
+	int numberOfTurns;
 	
 	int lastStateReturned;
 	
@@ -43,6 +44,7 @@ class Fanorona implements Evaluatable{
 		player1Time = 0;
 		player2Time = 0;
 		lastStateReturned = 0;
+		numberOfTurns = 0;
 	}
 	
 	public void setCC(int val){
@@ -53,6 +55,7 @@ class Fanorona implements Evaluatable{
 		board = new Board(row,col,b.array,active);
 		player1Time = 0;
 		player2Time = 0;
+		numberOfTurns = 0;
 	}
 	
 	private Fanorona getState(int n){
@@ -566,6 +569,7 @@ class Fanorona implements Evaluatable{
 		
 		board.latestDirectionMoved = "";
 		board.activePlayer = other;
+		numberOfTurns++;
 		return true;
 	}
 
@@ -892,5 +896,74 @@ class Fanorona implements Evaluatable{
   			}
 		}
 		return internalMove;
+	}
+	
+	String getAIMove(Piece.Type t){
+		
+		Piece.Type otherPlayer = t;
+		
+		MiniMaxTree mmt = new MiniMaxTree(copyGame());
+		mmt.processToDepth(2);
+		
+		String bestMove;
+		if(otherPlayer == Piece.Type.BLACK){
+			bestMove = "";
+			int minimum = 100000;
+			for(int i = 0; i < mmt.root.children.size();i++){
+				if(mmt.root.children.get(i).getUtilityValue() < minimum){
+					bestMove = mmt.root.children.get(i).getState().getMove(false);
+					minimum = mmt.root.children.get(i).getUtilityValue();
+				}
+			}
+		}
+		else{
+			bestMove = "";
+			int maximum = -100000;
+			for(int i = 0; i < mmt.root.children.size();i++){
+				if(mmt.root.children.get(i).getUtilityValue() > maximum){
+					bestMove = mmt.root.children.get(i).getState().getMove(true);
+					maximum = mmt.root.children.get(i).getUtilityValue();
+				}
+			}
+		}
+		
+		
+		return bestMove;
+	}
+	
+	
+	int checkEndGame(){
+		if(board.numberRemaining(Piece.Type.WHITE) == 0){
+			return 1;
+		}
+		else if(board.numberRemaining(Piece.Type.BLACK) == 0){
+			return -1;
+		}
+		else if(numberOfTurns >= board.rows*10){
+			return 2;
+		}
+		return 0;
+	}
+	
+	boolean isPossibleCapturingMove(String move){
+		
+		Fanorona game = copyGame();
+		Piece.Type other;
+		if(game.activePlayer() == Piece.Type.WHITE){
+			other = Piece.Type.BLACK;
+		}
+		else{
+			other = Piece.Type.WHITE;
+		}
+		int temp1 = game.board.numberRemaining(other);
+		game.move(move);
+		int temp2 = game.board.numberRemaining(other);
+		
+		if(temp1 < temp2){
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 }

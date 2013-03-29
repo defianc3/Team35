@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Scanner;
 
 
 public class clientThread extends Thread {
@@ -19,7 +20,7 @@ public class clientThread extends Thread {
 	
 	public void run(){
 		
-		Fanorona game;
+		Fanorona game = null;
 		Piece.Type clientPlayer;
 		int responseTime;
 	
@@ -46,9 +47,21 @@ public class clientThread extends Thread {
 				if(response.equals("WELCOME")){
 					continue;
 				}
+				if(response.equals("BEGIN")){
+					continue;
+				}
+				if(response.equals("OK")){
+					continue;
+				}
 				
 				int index = response.indexOf(' ');
-				String command = response.substring(0,index);
+				String command = response;
+				if(index == -1){
+					
+				}
+				else{
+					command = response.substring(0,index);
+				}
 				
 				if(command.equals("INFO")){
 					String cmd = response;
@@ -81,20 +94,55 @@ public class clientThread extends Thread {
 					//Start game
 				}
 				else if(command.equals("A")){
-					
+					out.println("OK");
+					game.move(response);
+					game.prettyprint();
+					System.out.print("Enter a move ");
+					String playerInput = "";
+					Scanner scan2 = new Scanner(System.in);
+					playerInput = scan2.nextLine();
+					playerInput = game.convertToInternalMove(playerInput);
+					game.move(playerInput);
+					out.println(playerInput);
 					//Approach move
 				}
 				else if(command.equals("W")){
+					out.println("OK");
+					game.move(response);
+					game.prettyprint();
+					System.out.print("Enter a move ");
+					String playerInput = "";
+					Scanner scan2 = new Scanner(System.in);
+					playerInput = scan2.nextLine();
+					playerInput = game.convertToInternalMove(playerInput);
+					game.move(playerInput);
+					out.println(playerInput);
 					//withdrawal
 				}
 				else if(command.equals("P")){
+					out.println("OK");
+					game.move(response);
+					game.prettyprint();
+					System.out.print("Enter a move ");
+					String playerInput = "";
+					Scanner scan2 = new Scanner(System.in);
+					playerInput = scan2.nextLine();
+					playerInput = game.convertToInternalMove(playerInput);
+					game.move(playerInput);
+					out.println(playerInput);
 					//piaka
 				}
 				else if(command.equals("S")){
-					break;
-				}
-				if(response.equals("quit")){
-					out.println("Client is quitting");
+					out.println("OK");
+					game.move(response);
+					game.prettyprint();
+					System.out.print("Enter a move ");
+					String playerInput = "";
+					Scanner scan2 = new Scanner(System.in);
+					playerInput = scan2.nextLine();
+					playerInput = game.convertToInternalMove(playerInput);
+					game.move(playerInput);
+					out.println(playerInput);
 					break;
 				}
 			}
