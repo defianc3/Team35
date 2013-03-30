@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class MiniMaxTree {
 	Node root;
@@ -108,6 +109,10 @@ public class MiniMaxTree {
 		void setBeta(int beta) {
 			this.beta = beta;
 		}
+		
+		Node getBestChildNode() {
+			return bestChildNode;
+		}
 
 		Evaluatable getState() {
 			return state;
@@ -146,7 +151,7 @@ public class MiniMaxTree {
 				} else {
 					/* Done processing children of node */
 					node.getParent().setNewUtilityValueIfBetter(
-							node.getUtilityValue(), node);
+							node.getUtilityValue(), node.getBestChildNode());
 					genTree(node.getParent(), currentDepth + 1, depth, false);
 					return;
 				}
@@ -184,5 +189,20 @@ public class MiniMaxTree {
 	Evaluatable processToDepth(int howDeep) {
 		genTree(root, howDeep, howDeep, false);
 		return root.getState();
+	}
+	
+	public LinkedList<Evaluatable> getPath() {
+		LinkedList<Evaluatable> bestPath = new LinkedList<Evaluatable>();
+		if (root.getBestChildNode() == null) {
+			bestPath.add(root.getState());
+			return bestPath;
+		}
+		Node tempNode = root.getBestChildNode();
+		bestPath.addFirst(tempNode.getState());
+		while (tempNode.getParent() != null) {
+			bestPath.addFirst(tempNode.getParent().getState());
+			tempNode = tempNode.getParent();
+		}
+		return bestPath;
 	}
 }

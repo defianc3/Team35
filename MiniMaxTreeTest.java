@@ -1,6 +1,7 @@
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -124,15 +125,15 @@ public class MiniMaxTreeTest {
 	@Test
 	public void maxUtilitySet() {
 		assertEquals(-1000000, rootNode.getUtilityValue());
-		rootNode.setNewUtilityValueIfBetter(-1000001);
+		rootNode.setNewUtilityValueIfBetter(-1000001, rootNode);
 		assertEquals(-1000000, rootNode.getUtilityValue());
-		rootNode.setNewUtilityValueIfBetter(-1000000);
+		rootNode.setNewUtilityValueIfBetter(-1000000, rootNode);
 		assertEquals(-1000000, rootNode.getUtilityValue());
-		rootNode.setNewUtilityValueIfBetter(-999999);
+		rootNode.setNewUtilityValueIfBetter(-999999, rootNode);
 		assertEquals(-999999, rootNode.getUtilityValue());
-		rootNode.setNewUtilityValueIfBetter(0);
+		rootNode.setNewUtilityValueIfBetter(0, rootNode);
 		assertEquals(0, rootNode.getUtilityValue());
-		rootNode.setNewUtilityValueIfBetter(-1);
+		rootNode.setNewUtilityValueIfBetter(-1, rootNode);
 		assertEquals(0, rootNode.getUtilityValue());
 	}
 	
@@ -142,15 +143,15 @@ public class MiniMaxTreeTest {
 		MiniMaxTree mmt = new MiniMaxTree(t);
 		rootNode = mmt.new Node(null, t, false, -1000000, 1000000);
 		assertEquals(1000000, rootNode.getUtilityValue());
-		rootNode.setNewUtilityValueIfBetter(1000001);
+		rootNode.setNewUtilityValueIfBetter(1000001, rootNode);
 		assertEquals(1000000, rootNode.getUtilityValue());
-		rootNode.setNewUtilityValueIfBetter(1000000);
+		rootNode.setNewUtilityValueIfBetter(1000000, rootNode);
 		assertEquals(1000000, rootNode.getUtilityValue());
-		rootNode.setNewUtilityValueIfBetter(999999);
+		rootNode.setNewUtilityValueIfBetter(999999, rootNode);
 		assertEquals(999999, rootNode.getUtilityValue());
-		rootNode.setNewUtilityValueIfBetter(0);
+		rootNode.setNewUtilityValueIfBetter(0, rootNode);
 		assertEquals(0, rootNode.getUtilityValue());
-		rootNode.setNewUtilityValueIfBetter(-1);
+		rootNode.setNewUtilityValueIfBetter(-1, rootNode);
 		assertEquals(-1, rootNode.getUtilityValue());
 	}
 	
@@ -207,5 +208,6 @@ public class MiniMaxTreeTest {
 		Evaluatable tempE = new TreeEval(1);
 		mMT = new MiniMaxTree(tempE);
 		mMT.processToDepth(4);
+		LinkedList<Evaluatable> path = mMT.getPath();
 	}
 }
