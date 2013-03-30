@@ -33,6 +33,20 @@ public class SocketMain{
 		System.out.print("(1) Server or (2) Client?");
 		Scanner firstScan = new Scanner(System.in);
 		String response1 = firstScan.nextLine();
+		System.out.println("(1) Human or (2) Computer?");
+		String response2 = firstScan.nextLine();
+		
+		boolean human = false;
+		if(response2.equals("1")){
+			human = true;
+		}
+		else if(response2.equals("2")){
+			human = false;
+		}
+		else{
+			System.out.println("Error on human/computer selection");
+			System.exit(3);
+		}
 		
 		if(response1.equals("1")){
 			
@@ -88,10 +102,21 @@ public class SocketMain{
 					if(playerInput.equals("READY")){
 						out.println("BEGIN");
 						
-						if(serverPlayer == Piece.Type.WHITE){
+						if(serverPlayer == Piece.Type.WHITE && !human){
 							String move = game.getAIMove(serverPlayer);
 							game.move(move);
 							out.println(move);
+						}
+						else if(serverPlayer == Piece.Type.WHITE && human){
+							
+							System.out.print("Enter a move ");
+							playerInput = "";
+							Scanner scan2 = new Scanner(System.in);
+							playerInput = scan2.nextLine();
+							playerInput = game.convertToInternalMove(playerInput);
+							game.move(playerInput);
+							out.println(playerInput);
+							
 						}
 						
 						continue;
@@ -143,7 +168,6 @@ public class SocketMain{
 					}
 					else if(command.equals("A") || command.equals("W") || command.equals("S") || command.equals("P")){
 						out.println("OK");
-						System.out.println("Server active player: "+game.activePlayer());
 						
 						if(game.capturingMoveAvailable() && !game.isPossibleCapturingMove(playerInput)){
 							out.println("ILLEGAL");
@@ -180,9 +204,20 @@ public class SocketMain{
 							break;
 						}
 						else{
-							String move = game.getAIMove(serverPlayer);
-							game.move(move);
-							out.println(move);
+							if(!human){
+								String move = game.getAIMove(serverPlayer);
+								game.move(move);
+								out.println(move);
+							}
+							else{
+								System.out.print("Enter a move ");
+								playerInput = "";
+								Scanner scan2 = new Scanner(System.in);
+								playerInput = scan2.nextLine();
+								playerInput = game.convertToInternalMove(playerInput);
+								game.move(playerInput);
+								out.println(playerInput);
+							}
 						}
 						
 						val = game.checkEndGame();
@@ -284,6 +319,14 @@ public class SocketMain{
 					if(response.equals("ILLEGAL")){
 						break;
 					}
+					if(response.equals("LOSER")){
+						System.out.println("Lost");
+						System.exit(4);
+					}
+					if(response.equals("WINNER")){
+						System.out.println("won");
+						System.exit(5);
+					}
 					
 					int index = response.indexOf(' ');
 					String command = response;
@@ -331,10 +374,21 @@ public class SocketMain{
 					else if(command.equals("BEGIN")){
 						//Start game
 						System.out.println("In here");
-						if(clientPlayer == Piece.Type.WHITE){
+						if(clientPlayer == Piece.Type.WHITE && !human){
 							String move = game.getAIMove(clientPlayer);
 							game.move(move);
 							out.println(move);
+						}
+						else{
+							
+							System.out.print("Enter a move ");
+							String playerInput = "";
+							Scanner scan2 = new Scanner(System.in);
+							playerInput = scan2.nextLine();
+							playerInput = game.convertToInternalMove(playerInput);
+							game.move(playerInput);
+							out.println(playerInput);
+							
 						}
 						continue;
 					}
@@ -356,12 +410,21 @@ public class SocketMain{
 //								
 //							}
 //							out.println(playerInput);
-						System.out.println("Active player: "+game.activePlayer());
-						String move = game.getAIMove(clientPlayer);
-						System.out.println("check1");
-						game.move(move);
-						game.prettyprint();
-						out.println(move);
+						if(!human){
+							String move = game.getAIMove(clientPlayer);
+							game.move(move);
+							game.prettyprint();
+							out.println(move);
+						}
+						else{
+							System.out.print("Enter a move ");
+							String playerInput = "";
+							Scanner scan2 = new Scanner(System.in);
+							playerInput = scan2.nextLine();
+							playerInput = game.convertToInternalMove(playerInput);
+							game.move(playerInput);
+							out.println(playerInput);
+						}
 						
 						//Approach move
 					}
@@ -369,19 +432,22 @@ public class SocketMain{
 						out.println("OK");
 						game.move(response);
 						game.prettyprint();
-//							System.out.print("Enter a move ");
-//							String playerInput = "";
-//							Scanner scan2 = new Scanner(System.in);
-//							playerInput = scan2.nextLine();
-//							playerInput = game.convertToInternalMove(playerInput);
-//							game.move(playerInput);
-//							out.println(playerInput);
-//							
-
-						String move = game.getAIMove(clientPlayer);
-						game.move(move);
-						game.prettyprint();
-						out.println(move);
+						
+						if(!human){
+							String move = game.getAIMove(clientPlayer);
+							game.move(move);
+							game.prettyprint();
+							out.println(move);
+						}
+						else{
+							System.out.print("Enter a move ");
+							String playerInput = "";
+							Scanner scan2 = new Scanner(System.in);
+							playerInput = scan2.nextLine();
+							playerInput = game.convertToInternalMove(playerInput);
+							game.move(playerInput);
+							out.println(playerInput);
+						}
 						//withdrawal
 					}
 					else if(command.equals("P")){
@@ -396,25 +462,43 @@ public class SocketMain{
 //							game.move(playerInput);
 //							out.println(playerInput);
 						
-
-						String move = game.getAIMove(clientPlayer);
-						game.move(move);
-						game.prettyprint();
-						out.println(move);
+						if(!human){
+							String move = game.getAIMove(clientPlayer);
+							game.move(move);
+							game.prettyprint();
+							out.println(move);
+						}
+						else{
+							System.out.print("Enter a move ");
+							String playerInput = "";
+							Scanner scan2 = new Scanner(System.in);
+							playerInput = scan2.nextLine();
+							playerInput = game.convertToInternalMove(playerInput);
+							game.move(playerInput);
+							out.println(playerInput);
+						}
 						//piaka
 					}
 					else if(command.equals("S")){
 						out.println("OK");
 						game.move(response);
 						game.prettyprint();
-						System.out.print("Enter a move ");
-						String playerInput = "";
-						Scanner scan2 = new Scanner(System.in);
-						playerInput = scan2.nextLine();
-						playerInput = game.convertToInternalMove(playerInput);
-						game.move(playerInput);
-						out.println(playerInput);
-						break;
+						
+						if(!human){
+							String move = game.getAIMove(clientPlayer);
+							game.move(move);
+							game.prettyprint();
+							out.println(move);
+						}
+						else{
+							System.out.print("Enter a move ");
+							String playerInput = "";
+							Scanner scan2 = new Scanner(System.in);
+							playerInput = scan2.nextLine();
+							playerInput = game.convertToInternalMove(playerInput);
+							game.move(playerInput);
+							out.println(playerInput);
+						}
 					}
 				}
 			} catch (IOException e) {
