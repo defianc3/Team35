@@ -8,6 +8,7 @@ public class MiniMaxTree {
 		boolean isMaximizeNode;
 		Evaluatable state;
 		int utilityValue = 0;
+		Node bestChildNode;
 		ArrayList<Node> children;
 		int alpha;
 		int beta;
@@ -66,16 +67,18 @@ public class MiniMaxTree {
 			utilityValue = newValue;
 		}
 
-		boolean setNewUtilityValueIfBetter(int newValue) {
+		boolean setNewUtilityValueIfBetter(int newValue, Node newNode) {
 			if (isMaximizeNode) {
 				if (newValue > utilityValue) {
 					utilityValue = newValue;
+					bestChildNode = newNode;
 					return true;
 				}
 				return false;
 			} else {
 				if (newValue < utilityValue) {
 					utilityValue = newValue;
+					bestChildNode = newNode;
 					return true;
 				}
 				return false;
@@ -143,7 +146,7 @@ public class MiniMaxTree {
 				} else {
 					/* Done processing children of node */
 					node.getParent().setNewUtilityValueIfBetter(
-							node.getUtilityValue());
+							node.getUtilityValue(), node);
 					genTree(node.getParent(), currentDepth + 1, depth, false);
 					return;
 				}
@@ -154,7 +157,7 @@ public class MiniMaxTree {
 		} else { //currentDepth == 1
 			node.generateUtilityValue();
 			node.getParent().setNewUtilityValueIfBetter
-			(node.generateUtilityValue());
+			(node.generateUtilityValue(), node);
 			if (node.getParent().isMaximizerNode() &&
 					(node.getUtilityValue() > node.getBeta())) {
 				/* If the parent is a maximizer node, and the utility value is
