@@ -125,6 +125,14 @@ public class SocketMain{
 						//out.println("OK");
 						continue;
 					}
+					if(playerInput.equals("TIME")){
+						System.out.println("Time exceeded");
+						break;
+					}
+					if(playerInput.equals("ILLEGAL")){
+						System.out.println("Illegal move");
+						break;
+					}
 	//			playerInput = scan2.nextLine();
 					System.out.println("input = " + playerInput);
 					int index = playerInput.indexOf(' ');
@@ -272,12 +280,16 @@ public class SocketMain{
 		}
 		else if(response1.equals("2")){
 			
-				
+			//Running as a client
+			
+			long time1 = 0;
+			long time2 = 0;
+			
 			Fanorona game = null;
 			Piece.Type clientPlayer = null;
 			Piece.Type serverPlayer = null;
 			
-			int responseTime;
+			int responseTime = 0;
 		
 			Socket tSock = null;
 			BufferedReader in = null;
@@ -315,6 +327,7 @@ public class SocketMain{
 						continue;
 					}
 					if(response.equals("OK")){
+						time1 = System.currentTimeMillis();
 						continue;
 					}
 					if(response.equals("ILLEGAL")){
@@ -374,7 +387,6 @@ public class SocketMain{
 					}
 					else if(command.equals("BEGIN")){
 						//Start game
-						System.out.println("In here");
 						if(clientPlayer == Piece.Type.WHITE && !human){
 							String move = game.getAIMove(clientPlayer);
 							game.move(move);
@@ -393,9 +405,22 @@ public class SocketMain{
 						}
 						continue;
 					}
-					else if(command.equals("A")){
+					else if(command.equals("A") || command.equals("W") || command.equals("S") || command.equals("P")){
 						
+						time2 = System.currentTimeMillis();
+						if(time2 - time1 > responseTime && responseTime != 0){
+							out.println("TIME");
+							break;
+						}
 						
+						if(game.capturingMoveAvailable() && !game.isPossibleCapturingMove(response)){
+							out.println("ILLEGAL");
+							break;
+						}
+						else if(!game.capturingMoveAvailable() && !game.isPossibleCapturingMove(response)){
+							out.println("ILLEGAL");
+							break;
+						}
 						out.println("OK");
 						game.move(response);
 						System.out.println("check1");
