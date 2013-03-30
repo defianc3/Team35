@@ -50,9 +50,12 @@ public class SocketMain{
 		
 		if(response1.equals("1")){
 			
+			
+			long time1 = 0;
+			long time2 = 0;
+			
 			Fanorona game;
 			Piece.Type clientPlayer;
-			int responseTime;
 			ServerSocket sock = create();
 			System.out.println("Listening on "+sock.getLocalPort());
 			
@@ -77,7 +80,8 @@ public class SocketMain{
 			int _rows = 5;
 			int _columns = 9;
 			char clientT = 'W';
-			out.println("INFO "+_columns+" "+_rows+" "+clientT+" "+"5000");
+			int responseTime = 5000;
+			out.println("INFO "+_columns+" "+_rows+" "+clientT+" "+responseTime);
 			
 			game = new Fanorona(9,5);
 			Piece.Type serverPlayer;
@@ -122,7 +126,7 @@ public class SocketMain{
 						continue;
 					}
 					if(playerInput.equals("OK")){
-						//out.println("OK");
+						time1 = System.currentTimeMillis();
 						continue;
 					}
 					if(playerInput.equals("TIME")){
@@ -133,7 +137,7 @@ public class SocketMain{
 						System.out.println("Illegal move");
 						break;
 					}
-	//			playerInput = scan2.nextLine();
+					
 					System.out.println("input = " + playerInput);
 					int index = playerInput.indexOf(' ');
 					String command = "";
@@ -144,39 +148,18 @@ public class SocketMain{
 						command = playerInput;
 					}
 					
-					if(command.equals("INFO")){
-						String cmd = playerInput;
-						cmd = cmd.substring(index+1);
-						index = cmd.indexOf(' ');
-						int columns = Integer.parseInt(cmd.substring(0,index));
-						cmd = cmd.substring(index+1);
-						index = cmd.indexOf(' ');
-						int rows = Integer.parseInt(cmd.substring(0,index));
-						cmd = cmd.substring(index+1);
-						index = cmd.indexOf(' ');
-						char startType = cmd.charAt(index-1);
-						cmd = cmd.substring(index+1);
-						int timeRestriction = Integer.parseInt(cmd);
-						game = new Fanorona(columns,rows);
-						if(startType == 'W'){
-							clientPlayer = Piece.Type.WHITE;
+					if(command.equals("A") || command.equals("W") || command.equals("S") || command.equals("P")){
+						time2 = System.currentTimeMillis();
+						System.out.println("response time: "+responseTime);
+						System.out.println("time: "+(time2-time1));
+						if(time2-time1 > responseTime && responseTime != 0 && game.numberOfTurns != 0){
+							out.println("TIME");
+							out.println("LOSER");
+							break;
 						}
-						else if(startType == 'B'){
-							clientPlayer = Piece.Type.BLACK;
-						}
-						else{
-							System.out.println("Type error");
-							System.exit(1);
-						}
-						responseTime = timeRestriction;
-						System.out.println("READY");
-					}
-					else if(command.equals("BEGIN")){
-						//Start game
-					}
-					else if(command.equals("A") || command.equals("W") || command.equals("S") || command.equals("P")){
-						out.println("OK");
 						
+						
+						out.println("OK");
 						if(game.capturingMoveAvailable() && !game.isPossibleCapturingMove(playerInput)){
 							out.println("ILLEGAL");
 							out.println("LOSER");
@@ -341,6 +324,10 @@ public class SocketMain{
 						System.out.println("won");
 						System.exit(5);
 					}
+					if(response.equals("TIME")){
+						System.out.println("Time limit exceeded");
+						continue;
+					}
 					
 					int index = response.indexOf(' ');
 					String command = response;
@@ -408,22 +395,23 @@ public class SocketMain{
 					else if(command.equals("A") || command.equals("W") || command.equals("S") || command.equals("P")){
 						
 						time2 = System.currentTimeMillis();
-						if(time2 - time1 > responseTime && responseTime != 0){
+						if(time2 - time1 > responseTime && responseTime != 0 && game.numberOfTurns != 0){
 							out.println("TIME");
 							break;
 						}
+						
+						out.println("OK");
 						
 						if(game.capturingMoveAvailable() && !game.isPossibleCapturingMove(response)){
 							out.println("ILLEGAL");
 							break;
 						}
-						else if(!game.capturingMoveAvailable() && !game.isPossibleCapturingMove(response)){
+						else if(!game.capturingMoveAvailable() && !game.isPossibleNonCapturingMove(response)){
 							out.println("ILLEGAL");
 							break;
 						}
 						out.println("OK");
 						game.move(response);
-						System.out.println("check1");
 						game.prettyprint();
 //							System.out.print("Enter a move ");
 //							String playerInput = "";
@@ -453,78 +441,6 @@ public class SocketMain{
 						}
 						
 						//Approach move
-					}
-					else if(command.equals("W")){
-						out.println("OK");
-						game.move(response);
-						game.prettyprint();
-						
-						if(!human){
-							String move = game.getAIMove(clientPlayer);
-							game.move(move);
-							game.prettyprint();
-							out.println(move);
-						}
-						else{
-							System.out.print("Enter a move ");
-							String playerInput = "";
-							Scanner scan2 = new Scanner(System.in);
-							playerInput = scan2.nextLine();
-							playerInput = game.convertToInternalMove(playerInput);
-							game.move(playerInput);
-							out.println(playerInput);
-						}
-						//withdrawal
-					}
-					else if(command.equals("P")){
-						out.println("OK");
-						game.move(response);
-						game.prettyprint();
-//							System.out.print("Enter a move ");
-//							String playerInput = "";
-//							Scanner scan2 = new Scanner(System.in);
-//							playerInput = scan2.nextLine();
-//							playerInput = game.convertToInternalMove(playerInput);
-//							game.move(playerInput);
-//							out.println(playerInput);
-						
-						if(!human){
-							String move = game.getAIMove(clientPlayer);
-							game.move(move);
-							game.prettyprint();
-							out.println(move);
-						}
-						else{
-							System.out.print("Enter a move ");
-							String playerInput = "";
-							Scanner scan2 = new Scanner(System.in);
-							playerInput = scan2.nextLine();
-							playerInput = game.convertToInternalMove(playerInput);
-							game.move(playerInput);
-							out.println(playerInput);
-						}
-						//piaka
-					}
-					else if(command.equals("S")){
-						out.println("OK");
-						game.move(response);
-						game.prettyprint();
-						
-						if(!human){
-							String move = game.getAIMove(clientPlayer);
-							game.move(move);
-							game.prettyprint();
-							out.println(move);
-						}
-						else{
-							System.out.print("Enter a move ");
-							String playerInput = "";
-							Scanner scan2 = new Scanner(System.in);
-							playerInput = scan2.nextLine();
-							playerInput = game.convertToInternalMove(playerInput);
-							game.move(playerInput);
-							out.println(playerInput);
-						}
 					}
 				}
 			} catch (IOException e) {

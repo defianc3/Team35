@@ -963,6 +963,32 @@ class Fanorona implements Evaluatable{
 		return 0;
 	}
 	
+	boolean isPossibleNonCapturingMove(String move){
+		
+		char moveType = getMoveType(move);
+		if(moveType == 'S'){
+			if(board.array[getFirstRow(move)][getFirstColumn(move)].type == activePlayer()){
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+	
+		
+		int row1 = getFirstRow(move);
+		int col1 = getFirstColumn(move);
+		int row2 = getSecondRow(move);
+		int col2 = getSecondColumn(move);
+		moveType = getMoveType(move);
+		
+		if(moveType == 'A' || moveType == 'W'){
+			return false;
+		}
+		
+		return board.isPossibleMove(row1, col1, row2, col2);
+	}
+	
 	boolean isPossibleCapturingMove(String move){
 		
 		Fanorona game = copyGame();
