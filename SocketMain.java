@@ -172,6 +172,7 @@ public class SocketMain{
 						if(game.capturingMoveAvailable() && !game.isPossibleCapturingMove(playerInput)){
 							out.println("ILLEGAL");
 							out.println("LOSER");
+							break;
 						}
 						game.move(playerInput);
 						game.prettyprint();
