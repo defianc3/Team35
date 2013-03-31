@@ -124,7 +124,13 @@ public class MiniMaxTree {
 	}
 
 	private void genTree(Node node, int currentDepth, int depth, 
-			boolean ignoreRemaining) {
+			boolean ignoreRemaining, long start, long limit) throws InterruptedException {
+		
+		long temp = System.currentTimeMillis();
+		if((temp-start > limit-50 && limit != 0)){
+			throw new InterruptedException();
+		}
+		
 		if (depth == 1) {
 			/* To handle the case where only the root node is processed */
 			node.generateUtilityValue();
@@ -135,7 +141,7 @@ public class MiniMaxTree {
 		}
 		if (ignoreRemaining) {
 			/* No need to process children */
-			genTree(node.getParent(), currentDepth + 1, depth, false);
+			genTree(node.getParent(), currentDepth + 1, depth, false,start,limit);
 			return;
 		}
 		if (currentDepth > 1) {
@@ -152,11 +158,11 @@ public class MiniMaxTree {
 					/* Done processing children of node */
 					node.getParent().setNewUtilityValueIfBetter(
 							node.getUtilityValue(), node.getBestChildNode());
-					genTree(node.getParent(), currentDepth + 1, depth, false);
+					genTree(node.getParent(), currentDepth + 1, depth, false,start, limit);
 					return;
 				}
 			} else {
-				genTree(childNode, currentDepth - 1, depth, false);
+				genTree(childNode, currentDepth - 1, depth, false,start,limit);
 				return;
 			}
 		} else { //currentDepth == 1
@@ -168,26 +174,26 @@ public class MiniMaxTree {
 				/* If the parent is a maximizer node, and the utility value is
 				 * higher than beta, ignore the remaining children of the
 				 * parent */
-				genTree(node.getParent(), currentDepth + 1, depth, true);
+				genTree(node.getParent(), currentDepth + 1, depth, true,start,limit);
 				return;
 			} else if (!(node.getParent().isMaximizerNode()) &&
 					(node.getUtilityValue() < node.getAlpha())) {
 				/* If the parent is a minimizer node, and the utility value is
 				 * lower than alpha, ignore the remaining children of the
 				 * parent. */
-				genTree(node.getParent(), currentDepth + 1, depth, true);
+				genTree(node.getParent(), currentDepth + 1, depth, true,start,limit);
 				return;
 			} else {
 				/* The remaining children are not ignored */
-				genTree(node.getParent(), currentDepth + 1, depth, false);
+				genTree(node.getParent(), currentDepth + 1, depth, false,start,limit);
 				return;
 			}
 
 		}
 	}
 	
-	Evaluatable processToDepth(int howDeep) {
-		genTree(root, howDeep, howDeep, false);
+	Evaluatable processToDepth(int howDeep,long start,long limit) throws InterruptedException {
+		genTree(root, howDeep, howDeep, false,start,limit);
 		return root.getState();
 	}
 	

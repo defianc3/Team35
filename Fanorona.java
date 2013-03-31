@@ -1,3 +1,5 @@
+import java.util.LinkedList;
+
 /*
 
 	Fanorona game
@@ -921,7 +923,14 @@ class Fanorona implements Evaluatable{
 		Piece.Type otherPlayer = t;
 		
 		MiniMaxTree mmt = new MiniMaxTree(copyGame());
-		mmt.processToDepth(2);
+		try {
+			mmt.processToDepth(7,0,0);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		LinkedList<Evaluatable> path = mmt.getPath();
 		
 		String bestMove;
 		if(otherPlayer == Piece.Type.BLACK){

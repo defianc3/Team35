@@ -375,7 +375,19 @@ public class SocketMain{
 					else if(command.equals("BEGIN")){
 						//Start game
 						if(clientPlayer == Piece.Type.WHITE && !human){
-							String move = game.getAIMove(clientPlayer);
+//							String move = game.getAIMove(clientPlayer);
+							String move;
+							TimedMoveGet tmg = new TimedMoveGet(game.copyGame(), 0, 0, clientPlayer);
+							Thread t = new Thread(tmg);
+							t.run();
+							System.out.println("thread ended");
+							try {
+								t.join();
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							move = tmg.bestMove;
 							game.move(move);
 							out.println(move);
 						}
@@ -393,6 +405,8 @@ public class SocketMain{
 						continue;
 					}
 					else if(command.equals("A") || command.equals("W") || command.equals("S") || command.equals("P")){
+						
+						System.out.println("outside");
 						
 						time2 = System.currentTimeMillis();
 						if(time2 - time1 > responseTime && responseTime != 0 && game.numberOfTurns != 0){
@@ -413,19 +427,22 @@ public class SocketMain{
 						out.println("OK");
 						game.move(response);
 						game.prettyprint();
-//							System.out.print("Enter a move ");
-//							String playerInput = "";
-//							Scanner scan2 = new Scanner(System.in);
-//							playerInput = scan2.nextLine();
-//							try{
-//								playerInput = game.convertToInternalMove(playerInput);
-//							}
-//							catch(Exception e){
-//								
-//							}
-//							out.println(playerInput);
 						if(!human){
-							String move = game.getAIMove(clientPlayer);
+//							String move = game.getAIMove(clientPlayer);
+							String move;
+							long startTime = System.currentTimeMillis();
+							long tempTime = (long) responseTime;
+							TimedMoveGet tmg = new TimedMoveGet(game.copyGame(), startTime, tempTime, clientPlayer);
+							Thread t = new Thread(tmg);
+							t.run();
+							System.out.println("thread ended");
+							try {
+								t.join();
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							move = tmg.bestMove;
 							game.move(move);
 							game.prettyprint();
 							out.println(move);
