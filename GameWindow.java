@@ -9,6 +9,7 @@ import java.awt.image.BufferStrategy;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Scanner;
 
 
 import javax.swing.JFrame;
@@ -39,7 +40,18 @@ public class GameWindow extends JFrame {
 	int yLastPoint = -1;
 	int radius;
 	boolean clicked = false;
-	boolean initialUpdate = true;
+	boolean forceUpdate = true;
+	
+	/* Game Variables */
+	Fanorona game;
+	int turn;
+	int turnLimit;
+	int numberOfBlackMovesThisTurn;
+	boolean moveTurn;
+	Piece.Type humanPlayer = Piece.Type.WHITE;
+	Piece.Type otherPlayer;
+	long time1;
+	long time2;
 	
 	private enum selectionStates {
 		NONE,
@@ -114,6 +126,173 @@ public class GameWindow extends JFrame {
                 }
 			}
 		});
+	}
+	
+	private void initGame() {
+		game = new Fanorona(xBoardDim, yBoardDim);
+		turn = 0;
+		turnLimit = yBoardDim * 10;
+		numberOfBlackMovesThisTurn = 0;
+		moveTurn = false;
+		time1 = new Date().getTime();
+		time2 = -1;
+		if (humanPlayer == Piece.Type.WHITE) {
+			otherPlayer = Piece.Type.BLACK; 
+		} else {
+			otherPlayer = Piece.Type.WHITE;
+		}
+	}
+	
+	private void handleMove() {
+		if (game.activePlayer() == otherPlayer) {
+			String bestMove = game.getAIMove(otherPlayer);
+
+			System.out.println("best move: " + bestMove);
+
+			//move = bestMove;
+
+			numberOfBlackMovesThisTurn++;
+			//move = game.getRandomMove();
+			//System.out.println("Other move: " + move);
+
+			time2 = new Date().getTime();
+		} else {
+			//Move selection entered here
+			time2 = new Date().getTime();
+
+			/*if (playerInput.equals("quit")) {
+				
+				//Quit here
+			} else if(playerInput.equals("moves")) {
+				System.out.println("\nwhite: " + game.board.whiteMovesFull);
+				System.out.println("\nblack: " + game.board.blackMovesFull);
+				moveTurn = false;
+				turn--;
+			} else if(playerInput.equals("reset")) {
+				//Start a new game here
+				initGame();
+				continue;
+			} else {
+				try {
+					//Get move
+				}
+				catch(Exception e) {
+					System.out.println("Error: " + e.getMessage());
+				}
+			}*/
+		}
+	}
+	
+	private void gameLoop() {
+		initGame();
+		updateScreen();
+
+		while (true) {
+
+			
+			String move = "";
+			//if (game.capturingMoveAvailable()) System.out.println("Capturing move required");
+
+			int pieceInt1 = -1;
+			int pieceInt2 = -1;
+
+			String pieceStr1 = "";
+			String pieceStr2 = "";
+
+			moveTurn = true; //Indicates that a move as been entered
+
+
+			boolean valid = true;
+			if (moveTurn) {
+				int row1;
+				int row2;
+				int col1;
+				int col2;
+				char moveType;
+
+				if(move.equals("N")) {
+					moveType = 'N';
+					row1 = 0;
+					col1 = 0;
+					row2 = 0;
+					col2 = 0;
+				}
+				else {
+					if (game.activePlayer() == humanPlayer) {
+
+						moveType = Fanorona.getMoveType(move);
+						if (moveType == 'S') {
+							row1 = game.board.rows-Fanorona.getFirstRowCMD(move);
+							col1 = Fanorona.getFirstColumnCMD(move)-1;
+							row2 = 0;
+							col2 = 0;
+						}
+						else {
+							row1 = game.board.rows-Fanorona.getFirstRowCMD(move);
+							col1 = Fanorona.getFirstColumnCMD(move)-1;
+							row2 = game.board.rows-Fanorona.getSecondRowCMD(move);
+							col2 = Fanorona.getSecondColumnCMD(move)-1;
+						}
+
+						move = game.convertToInternalMove(move);
+					}
+					else{
+
+						row1 = Fanorona.getFirstRow(move);
+						col1 = Fanorona.getFirstColumn(move);
+						row2 = Fanorona.getSecondRow(move);
+						col2 = Fanorona.getSecondColumn(move);
+						moveType = Fanorona.getMoveType(move);
+					}
+				}
+
+				valid = game.validMoveSystax(move);
+
+				if (!valid) {
+					//Not a valid move
+				} else {
+					if(game.activePlayer() == Piece.Type.WHITE) {
+						game.player1Time += (time2 - time1);
+					}
+					else {
+						game.player2Time += (time2 - time1);
+					}
+
+					if (game.capturingMoveAvailable()){
+						if (game.isPossibleCapturingMove(row1, col1, row2, col2, moveType) || moveType == 'S' || moveType == 'N') {
+							Piece.Type previous = game.activePlayer();
+							//			      			boolean successiveMove = game.move(row1, col1, row2, col2, moveType);
+							//boolean successiveMove = game.move(move);
+							if(previous == Piece.Type.BLACK && game.activePlayer() == Piece.Type.WHITE) {
+								numberOfBlackMovesThisTurn = 0;
+							}
+							game.removeSacrifices(game.activePlayer());
+						} else {
+							System.out.println("A capturing move must be entered\n");
+							valid = false;
+						}
+					} else {
+						game.move(row1,col1,row2,col2,moveType);
+					}
+					if (game.board.numberRemaining(Piece.Type.WHITE) == 0) {
+						//Black wins here
+						break;
+					} else if (game.board.numberRemaining(Piece.Type.BLACK) == 0) {
+						//White wins here
+						break;
+					}
+				}
+			}
+			updateScreen();
+			//game.printTime();
+			if(valid && moveTurn) {
+				turn++;
+			}
+			if (turn == turnLimit) {
+				//Maximum number of turns reached here
+				break;
+			}
+		}
 	}
 	
 	private void calculateDimensions() {
@@ -201,16 +380,13 @@ public class GameWindow extends JFrame {
 			}
 		} else {
 			/* Clicked point not near a coordinate */
-			/*currentSelectState = selectionStates.NONE;
-			xLastCoord = -1;
-			yLastCoord = -1;*/
 			drawSelection(-2, -2);
 			return;
 		}
 	}
 	
 	private void drawSelection(int xPoint, int yPoint) {
-		if (initialUpdate) {
+		if (forceUpdate) {
 			return;
 		}
 		if (xPoint == -2 || yPoint == -2) {
@@ -344,11 +520,38 @@ public class GameWindow extends JFrame {
 		int yCoord = 4;
 		int xPoint = xGridMin + (xSpacing * xCoord);
 		int yPoint = yGridMin + (ySpacing * yCoord);
+		//drawPiece(pieceType.WHITE, xPoint, yPoint);
 	}
 	
 	public void drawInfo() {
 		graphics.drawString("Current Turn: XX", xMax - 196, 52);
 		graphics.drawString("Current Player: XX", xMax - 196, 62);
+	}
+	
+	private void drawButton(int x, int y) {
+		Graphics2D graphics2D = (Graphics2D) graphics;
+		graphics2D.setStroke(new BasicStroke(3F));
+		//Reset button
+		graphics.setColor(Color.ORANGE);
+		graphics.drawLine(x, y, x + 80, y); //Bottom
+		graphics.drawLine(x + 80, y, x + 80, y - 20); //Right
+		graphics.drawLine(x, y - 20, x + 80, y - 20); //Top
+		graphics.drawLine(x, y - 20, x, y); //Left
+		graphics.setColor(Color.BLACK);
+		graphics2D.setStroke(new BasicStroke(0F));
+	}
+	
+	private void drawButtons() {
+		//Reset button
+		drawButton(40, yMax - 10);
+		graphics.drawString("Reset", 60, yMax - 15);
+		//Quit button
+		drawButton(480, yMax - 10);
+		graphics.drawString("Quit", 505, yMax - 15);
+	}
+	
+	private void quit() {
+		
 	}
 	
 	private void updateScreen() {
@@ -365,12 +568,13 @@ public class GameWindow extends JFrame {
 					RenderingHints.KEY_ANTIALIASING,
 					RenderingHints.VALUE_ANTIALIAS_ON);
 			graphics2D.setRenderingHints(renderHints);
-			if (clicked || initialUpdate) {
+			if (clicked || forceUpdate) {
 				clicked = false;
 				clearWindow();
 				drawGrid();
 				drawInfo();
 				drawPieces();
+				drawButtons();
 				processClick(xClick, yClick);
 			} else {
 
@@ -387,6 +591,6 @@ public class GameWindow extends JFrame {
 		graphics.dispose();
 		bufferStrat.show();
 		Toolkit.getDefaultToolkit().sync();
-		initialUpdate = false;
+		forceUpdate = false;
 	}
 }
