@@ -313,7 +313,28 @@ public class GameWindow extends JFrame {
 		
 	}
 	
+	private void checkButtonClicks() {
+		if (checkButtonClick(40, yMax - 30)) {
+			//Reset clicked
+			System.out.println("RESET");
+		}
+		if (checkButtonClick(480, yMax - 30)) {
+			//Quit clicked
+			System.out.println("QUIT");
+		}
+	}
+	
+	private boolean checkButtonClick(int x, int y) {
+		if ((xClick > x && xClick < (x + 80))
+				&& (yClick > y && yClick < y + 20)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	private void processClick(int x, int y) {
+		checkButtonClicks();
 		xClick = -1;
 		yClick = -1;
 		int xTemp;
@@ -533,20 +554,20 @@ public class GameWindow extends JFrame {
 		graphics2D.setStroke(new BasicStroke(3F));
 		//Reset button
 		graphics.setColor(Color.ORANGE);
-		graphics.drawLine(x, y, x + 80, y); //Bottom
-		graphics.drawLine(x + 80, y, x + 80, y - 20); //Right
-		graphics.drawLine(x, y - 20, x + 80, y - 20); //Top
-		graphics.drawLine(x, y - 20, x, y); //Left
+		graphics.drawLine(x, y + 20, x + 80, y + 20); //Bottom
+		graphics.drawLine(x + 80, y + 20, x + 80, y); //Right
+		graphics.drawLine(x, y, x + 80, y); //Top
+		graphics.drawLine(x, y, x, y + 20); //Left
 		graphics.setColor(Color.BLACK);
 		graphics2D.setStroke(new BasicStroke(0F));
 	}
 	
 	private void drawButtons() {
 		//Reset button
-		drawButton(40, yMax - 10);
+		drawButton(40, yMax - 30);
 		graphics.drawString("Reset", 60, yMax - 15);
 		//Quit button
-		drawButton(480, yMax - 10);
+		drawButton(480, yMax - 30);
 		graphics.drawString("Quit", 505, yMax - 15);
 	}
 	
