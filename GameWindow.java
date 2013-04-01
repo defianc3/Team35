@@ -39,13 +39,24 @@ public class GameWindow extends JFrame {
 	int xLastPoint = -1;
 	int yLastPoint = -1;
 	int radius;
+	boolean alternateColors = false;
+	/* True if there was a click */
 	boolean clicked = false;
+	/* True if the timer was fired */
+	boolean ticked = false;
+	/* Used to force window updates independent of events */
 	boolean forceUpdate = true;
 	/* Controls the visibility of the advance and withdraw buttons */
-	boolean advWithVisible = false;
-	boolean alternateColors = false;
+	boolean advWithVisible = true;
 	/* Controls the visibility of the board and related buttons */
 	boolean gameVisible = true;
+	/* Controls the visibility of the client/server/local game type */
+	boolean clientServerVisible = false;
+	/* Controls the visibility of the client options screen */
+	boolean clientScreenVisible = false;
+	/* Controls the visibility of the server options screen */
+	boolean serverScreenVisible = false;
+	
 	
 	/* Game Variables */
 	Fanorona game;
@@ -110,6 +121,7 @@ public class GameWindow extends JFrame {
         {
             public void actionPerformed(ActionEvent e)  
             {
+            	ticked = true;
             	updateScreen();
             }
         };
@@ -332,17 +344,28 @@ public class GameWindow extends JFrame {
 				return true;
 			}
 			if (advWithVisible) {
-				advWithVisible = false;
-				forceUpdate = true;
 				if (checkButtonClick(200, yMax - 30)) {
 					//Advance clicked
+					advWithVisible = false;
+					forceUpdate = true;
 					return true;
 				}
 				if (checkButtonClick(315, yMax - 30)) {
 					//Withdraw clicked
+					advWithVisible = false;
+					forceUpdate = true;
 					return true;
 				}
 			}
+		}
+		if (clientServerVisible) {
+			
+		}
+		if (clientScreenVisible) {
+			
+		}
+		if (serverScreenVisible) {
+			
 		}
 		return false;
 	}
@@ -619,17 +642,29 @@ public class GameWindow extends JFrame {
 	    graphics2D.setStroke(new BasicStroke(1.5F));
 		if (alternateColors) {
 			graphics.setColor(Color.RED);
-			alternateColors = false;
+			if (ticked) {
+				alternateColors = false;
+			}
 		} else {
 			graphics.setColor(Color.YELLOW);
-			alternateColors = true;
+			if (ticked) {
+				alternateColors = true;
+			}
 		}
+		drawBox(x, y, height, width);
+		graphics.setColor(Color.BLACK);
+		graphics2D.setStroke(new BasicStroke(0F));
+	}
+	
+	private void drawBox(int x, int y, int height, int width) {
 		graphics.drawLine(x, y + height, x + width, y + height); //Bottom
 		graphics.drawLine(x + width, y + height, x + width, y); //Right
 		graphics.drawLine(x, y, x + width, y); //Top
 		graphics.drawLine(x, y, x, y + height); //Left
-		graphics.setColor(Color.BLACK);
-		graphics2D.setStroke(new BasicStroke(0F));
+	}
+	
+	private void drawClientServer() {
+		
 	}
 	
 	private void quit() {
@@ -661,6 +696,7 @@ public class GameWindow extends JFrame {
 			drawTime();
 			if (advWithVisible) {
 				drawFlashingBox(180, yMax - 40, 38, 240);
+				ticked = false;
 			}
 			
 
