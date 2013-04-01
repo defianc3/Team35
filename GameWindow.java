@@ -44,6 +44,8 @@ public class GameWindow extends JFrame {
 	/* Controls the visibility of the advance and withdraw buttons */
 	boolean advWithVisible = false;
 	boolean alternateColors = false;
+	/* Controls the visibility of the board and related buttons */
+	boolean gameVisible = false;
 	
 	/* Game Variables */
 	Fanorona game;
@@ -318,25 +320,29 @@ public class GameWindow extends JFrame {
 	}
 	
 	private void checkButtonClicks() {
-		if (checkButtonClick(40, yMax - 30)) {
-			//Reset clicked
-			System.out.println("RESET");
-		}
-		if (checkButtonClick(480, yMax - 30)) {
-			//Quit clicked
-			System.out.println("QUIT");
-		}
-		if (advWithVisible) {
-			advWithVisible = false;
-			if (checkButtonClick(200, yMax - 30)) {
-				//Advance clicked
-				
+		if (gameVisible) {
+			if (checkButtonClick(40, yMax - 30)) {
+				//Reset clicked
+				System.out.println("RESET");
 			}
-			if (checkButtonClick(315, yMax - 30)) {
-				//Withdraw clicked
-				
+			if (checkButtonClick(480, yMax - 30)) {
+				//Quit clicked
+				System.out.println("QUIT");
+			}
+			if (advWithVisible) {
+				advWithVisible = false;
+				forceUpdate = true;
+				if (checkButtonClick(200, yMax - 30)) {
+					//Advance clicked
+					
+				}
+				if (checkButtonClick(315, yMax - 30)) {
+					//Withdraw clicked
+					
+				}
 			}
 		}
+
 	}
 	
 	private boolean checkButtonClick(int x, int y) {
@@ -468,10 +474,14 @@ public class GameWindow extends JFrame {
         graphics.setColor(Color.BLACK);
 	}
 	
-	private void clearTime() {
+	private void drawTime() {
 		graphics.setColor(Color.lightGray);
         graphics.fillRect(xMax - 250, 0, 240, 42);
         graphics.setColor(Color.BLACK);
+		Date date = new Date();
+		String time = timeFormat.format(date);
+        graphics.drawString("Remaining move time: ", xMax - 250, 40);
+		graphics.drawString(time + " sec", xMax - 100, 40);
 	}
 
 	private void drawGrid() {
@@ -578,19 +588,21 @@ public class GameWindow extends JFrame {
 	}
 	
 	private void drawButtons() {
-		//Reset button
-		drawButton(40, yMax - 30, Color.ORANGE);
-		graphics.drawString("Reset", 60, yMax - 15);
-		//Quit button
-		drawButton(480, yMax - 30, Color.ORANGE);
-		graphics.drawString("Quit", 505, yMax - 15);
-		if (advWithVisible) {
-			//Advance button
-			drawButton(200, yMax - 30, Color.GRAY);
-			graphics.drawString("Advance", 214, yMax - 15);
-			//Withdraw button
-			drawButton(315, yMax - 30, Color.GRAY);
-			graphics.drawString("Withdraw", 327, yMax - 15);
+		if (gameVisible) {
+			//Reset button
+			drawButton(40, yMax - 30, Color.ORANGE);
+			graphics.drawString("Reset", 60, yMax - 15);
+			//Quit button
+			drawButton(480, yMax - 30, Color.ORANGE);
+			graphics.drawString("Quit", 505, yMax - 15);
+			if (advWithVisible) {
+				//Advance button
+				drawButton(200, yMax - 30, Color.GRAY);
+				graphics.drawString("Advance", 214, yMax - 15);
+				//Withdraw button
+				drawButton(315, yMax - 30, Color.GRAY);
+				graphics.drawString("Withdraw", 327, yMax - 15);
+			}
 		}
 	}
 	
@@ -617,9 +629,6 @@ public class GameWindow extends JFrame {
 	}
 	
 	private void updateScreen() {
-		Date date = new Date();
-		String time = timeFormat.format(date);
-
 		bufferStrat = this.getBufferStrategy();
 		graphics = null;
 
@@ -633,20 +642,19 @@ public class GameWindow extends JFrame {
 			if (clicked || forceUpdate) {
 				clicked = false;
 				clearWindow();
-				drawGrid();
-				drawInfo();
-				drawPieces();
+				if (gameVisible) {
+					drawGrid();
+					drawInfo();
+					drawPieces();
+				}
 				drawButtons();
 				processClick(xClick, yClick);
-			} else {
-
 			}
-			clearTime();
+			drawTime();
 			if (advWithVisible) {
 				drawFlashingBox(180, yMax - 40, 38, 240);
 			}
-			graphics.drawString("Remaining move time: ", xMax - 250, 40);
-			graphics.drawString(time + " sec", xMax - 100, 40);
+			
 
 		} catch (Exception e) {
 			System.out.println("Error: " + e.getMessage());
