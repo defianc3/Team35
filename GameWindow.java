@@ -45,7 +45,7 @@ public class GameWindow extends JFrame {
 	boolean advWithVisible = false;
 	boolean alternateColors = false;
 	/* Controls the visibility of the board and related buttons */
-	boolean gameVisible = false;
+	boolean gameVisible = true;
 	
 	/* Game Variables */
 	Fanorona game;
@@ -319,30 +319,32 @@ public class GameWindow extends JFrame {
 		
 	}
 	
-	private void checkButtonClicks() {
+	private boolean checkButtonClicks() {
 		if (gameVisible) {
 			if (checkButtonClick(40, yMax - 30)) {
 				//Reset clicked
 				System.out.println("RESET");
+				return true;
 			}
 			if (checkButtonClick(480, yMax - 30)) {
 				//Quit clicked
 				System.out.println("QUIT");
+				return true;
 			}
 			if (advWithVisible) {
 				advWithVisible = false;
 				forceUpdate = true;
 				if (checkButtonClick(200, yMax - 30)) {
 					//Advance clicked
-					
+					return true;
 				}
 				if (checkButtonClick(315, yMax - 30)) {
 					//Withdraw clicked
-					
+					return true;
 				}
 			}
 		}
-
+		return false;
 	}
 	
 	private boolean checkButtonClick(int x, int y) {
@@ -355,35 +357,39 @@ public class GameWindow extends JFrame {
 	}
 	
 	private void processClick(int x, int y) {
-		checkButtonClicks();
-		xClick = -1;
-		yClick = -1;
-		int xTemp;
-		int yTemp;
-		if (x <= xGridMin) {
-			xTemp = 0;
-		} else if (x >= xGridMax) {
-			xTemp = xBoardDim - 1;
-		} else {
-			double xDouble = (double) x;
-			xTemp = (int) Math.round(((xDouble -
-					(double)xGridMin) / (double)xSpacing));
+		if (checkButtonClicks()) {
+			return;
 		}
-		if (y <= yGridMin) {
-			yTemp = 0;
-		} else if (y >= yGridMax) {
-			yTemp = yBoardDim - 1;
-		} else {
-			double yDouble = (double) y;
-			yTemp = (int) Math.round(((yDouble -
-					(double)yGridMin) / (double)ySpacing));
+		if (gameVisible) {
+			xClick = -1;
+			yClick = -1;
+			int xTemp;
+			int yTemp;
+			if (x <= xGridMin) {
+				xTemp = 0;
+			} else if (x >= xGridMax) {
+				xTemp = xBoardDim - 1;
+			} else {
+				double xDouble = (double) x;
+				xTemp = (int) Math.round(((xDouble -
+						(double)xGridMin) / (double)xSpacing));
+			}
+			if (y <= yGridMin) {
+				yTemp = 0;
+			} else if (y >= yGridMax) {
+				yTemp = yBoardDim - 1;
+			} else {
+				double yDouble = (double) y;
+				yTemp = (int) Math.round(((yDouble -
+						(double)yGridMin) / (double)ySpacing));
+			}
+			processCoordinate(xTemp, yTemp, x, y);
 		}
-		processCoordinate(xTemp, yTemp, x, y);
 
-		graphics.drawString("Point nearest click: " +
+		/*graphics.drawString("Point nearest click: " +
 				Integer.toString(xTemp), 20, 40);
 		graphics.drawString("Point nearest click: " +
-				Integer.toString(yTemp), 20, 60);
+				Integer.toString(yTemp), 20, 60);*/
 	}
 
 	private void processCoordinate(int xCoord, int yCoord, int xActual,
@@ -475,13 +481,15 @@ public class GameWindow extends JFrame {
 	}
 	
 	private void drawTime() {
-		graphics.setColor(Color.lightGray);
-        graphics.fillRect(xMax - 250, 0, 240, 42);
-        graphics.setColor(Color.BLACK);
-		Date date = new Date();
-		String time = timeFormat.format(date);
-        graphics.drawString("Remaining move time: ", xMax - 250, 40);
-		graphics.drawString(time + " sec", xMax - 100, 40);
+		if (gameVisible) {
+			graphics.setColor(Color.lightGray);
+	        graphics.fillRect(xMax - 250, 0, 240, 42);
+	        graphics.setColor(Color.BLACK);
+			Date date = new Date();
+			String time = timeFormat.format(date);
+	        graphics.drawString("Remaining move time: ", xMax - 250, 40);
+			graphics.drawString(time + " sec", xMax - 100, 40);
+		}
 	}
 
 	private void drawGrid() {
