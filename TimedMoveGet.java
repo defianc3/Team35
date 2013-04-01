@@ -33,7 +33,7 @@ class TimedMoveGet implements Runnable {
     public void kill() { killed = true; }
     private void doOnce() throws InterruptedException { 
     	
-    	if(iteration > 6 || (iteration > 2 && game.board.whiteMoves == "")){
+    	if(iteration > 4 || (iteration > 2 && game.board.whiteMoves == "")){
     		throw new InterruptedException();
     	}
     	
@@ -43,7 +43,6 @@ class TimedMoveGet implements Runnable {
 		mmt.processToDepth(iteration,start,limit);
 		
 		if(otherPlayer == Piece.Type.BLACK){
-			bestMove = "";
 			int minimum = 100000;
 			for(int i = 0; i < mmt.root.children.size();i++){
 				if(mmt.root.children.get(i).getUtilityValue() < minimum){
@@ -53,7 +52,6 @@ class TimedMoveGet implements Runnable {
 			}
 		}
 		else{
-			bestMove = "";
 			int maximum = -100000;
 			for(int i = 0; i < mmt.root.children.size();i++){
 				if(mmt.root.children.get(i).getUtilityValue() > maximum){

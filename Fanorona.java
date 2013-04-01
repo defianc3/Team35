@@ -66,32 +66,34 @@ class Fanorona implements Evaluatable{
 		int temp = 0;
 		Fanorona newState = copyGame();
 		
-		while(move.length() > 0){
-			int index = move.indexOf(' ');
-			char type = (move.substring(0, index)).charAt(0);
-			move = move.substring(index+1);
-			index = move.indexOf(' ');
-			int row1 = Integer.parseInt(move.substring(0,index));
-			move = move.substring(index+1);
-			index = move.indexOf(' ');
-			int col1 = Integer.parseInt(move.substring(0,index));
-			move = move.substring(index+1);
-			index = move.indexOf(' ');
-			int row2 = Integer.parseInt(move.substring(0,index));
-			move = move.substring(index+1);
-			index = move.indexOf('>');
-			int col2;
-			if(index == -1){
-				col2 = Integer.parseInt(move);
-				move = "";
-			}
-			else{
-				col2 = Integer.parseInt(move.substring(0,index));
-				move = move.substring(index+1);
-			}
-			
-			newState.move(row1, col1, row2, col2, type);
-		}
+//		while(move.length() > 0){
+//			int index = move.indexOf(' ');
+//			char type = (move.substring(0, index)).charAt(0);
+//			move = move.substring(index+1);
+//			index = move.indexOf(' ');
+//			int row1 = Integer.parseInt(move.substring(0,index));
+//			move = move.substring(index+1);
+//			index = move.indexOf(' ');
+//			int col1 = Integer.parseInt(move.substring(0,index));
+//			move = move.substring(index+1);
+//			index = move.indexOf(' ');
+//			int row2 = Integer.parseInt(move.substring(0,index));
+//			move = move.substring(index+1);
+//			index = move.indexOf('>');
+//			int col2;
+//			if(index == -1){
+//				col2 = Integer.parseInt(move);
+//				move = "";
+//			}
+//			else{
+//				col2 = Integer.parseInt(move.substring(0,index));
+//				move = move.substring(index+1);
+//			}
+//			
+//			newState.move(row1, col1, row2, col2, type);
+//		}
+		
+		newState.move(move);
 		
 		
 		
@@ -924,7 +926,7 @@ class Fanorona implements Evaluatable{
 		
 		MiniMaxTree mmt = new MiniMaxTree(copyGame());
 		try {
-			mmt.processToDepth(7,0,0);
+			mmt.processToDepth(5,0,0);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

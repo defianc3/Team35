@@ -21,7 +21,7 @@ class Main{
 
 		Fanorona game = new Fanorona(columns,rows);
 		
-		//GameWindow gw = new GameWindow(9,5);
+		GameWindow gw = new GameWindow(9,5);
 		
 		
 		/* TODO change the rows and columns to start at 1 instead of 0 */

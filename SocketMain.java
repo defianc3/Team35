@@ -77,10 +77,10 @@ public class SocketMain{
 			
 			String inputLine, outputLine;
 			out.println("WELCOME");
-			int _rows = 5;
+			int _rows = 7;
 			int _columns = 9;
 			char clientT = 'W';
-			int responseTime = 5000;
+			int responseTime = 1000;
 			out.println("INFO "+_columns+" "+_rows+" "+clientT+" "+responseTime);
 			
 			game = new Fanorona(9,5);
@@ -107,9 +107,25 @@ public class SocketMain{
 						out.println("BEGIN");
 						
 						if(serverPlayer == Piece.Type.WHITE && !human){
-							String move = game.getAIMove(serverPlayer);
+							// String move = game.getAIMove(serverPlayer);
+							// game.move(move);
+							// out.println(move);
+
+							String move;
+							TimedMoveGet tmg = new TimedMoveGet(game.copyGame(), 0, 0, serverPlayer);
+							Thread t = new Thread(tmg);
+							t.run();
+							System.out.println("thread ended");
+							try {
+								t.join();
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							move = tmg.bestMove;
 							game.move(move);
 							out.println(move);
+
 						}
 						else if(serverPlayer == Piece.Type.WHITE && human){
 							
@@ -160,6 +176,7 @@ public class SocketMain{
 						
 						
 						out.println("OK");
+						long time3 = System.currentTimeMillis();
 						if(game.capturingMoveAvailable() && !game.isPossibleCapturingMove(playerInput)){
 							out.println("ILLEGAL");
 							out.println("LOSER");
@@ -167,6 +184,7 @@ public class SocketMain{
 						}
 						game.move(playerInput);
 						game.prettyprint();
+						System.out.println("turns: "+game.numberOfTurns);
 						int val = game.checkEndGame();
 						if(val == 1){
 							//white win
@@ -197,9 +215,25 @@ public class SocketMain{
 						}
 						else{
 							if(!human){
-								String move = game.getAIMove(serverPlayer);
+								// String move = game.getAIMove(serverPlayer);
+								// game.move(move);
+								// out.println(move);
+
+								String move;
+								TimedMoveGet tmg = new TimedMoveGet(game.copyGame(), time3, responseTime, serverPlayer);
+								Thread t = new Thread(tmg);
+								t.run();
+								System.out.println("thread ended");
+								try {
+									t.join();
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								move = tmg.bestMove;
 								game.move(move);
 								out.println(move);
+
 							}
 							else{
 								System.out.print("Enter a move ");
@@ -352,6 +386,7 @@ public class SocketMain{
 						char startType = cmd.charAt(index-1);
 						cmd = cmd.substring(index+1);
 						int timeRestriction = Integer.parseInt(cmd);
+						System.out.println("rows: "+rows+" columns: "+columns);
 						game = new Fanorona(columns,rows);
 						if(startType == 'W'){
 							clientPlayer = Piece.Type.WHITE;
@@ -374,6 +409,7 @@ public class SocketMain{
 					}
 					else if(command.equals("BEGIN")){
 						//Start game
+						game.prettyprint();
 						if(clientPlayer == Piece.Type.WHITE && !human){
 //							String move = game.getAIMove(clientPlayer);
 							String move;
