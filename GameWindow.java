@@ -41,6 +41,9 @@ public class GameWindow extends JFrame {
 	int radius;
 	boolean clicked = false;
 	boolean forceUpdate = true;
+	/* Controls the visibility of the advance and withdraw buttons */
+	boolean advWithVisible = false;
+	boolean alternateColors = false;
 	
 	/* Game Variables */
 	Fanorona game;
@@ -252,6 +255,7 @@ public class GameWindow extends JFrame {
 					//Not a valid move
 				} else {
 					if(game.activePlayer() == Piece.Type.WHITE) {
+						//Total time it took for the player to make the move
 						game.player1Time += (time2 - time1);
 					}
 					else {
@@ -259,7 +263,7 @@ public class GameWindow extends JFrame {
 					}
 
 					if (game.capturingMoveAvailable()){
-						if (game.isPossibleCapturingMove(row1, col1, row2, col2, moveType) || moveType == 'S' || moveType == 'N') {
+						if (game.isPossibleCapturingMove(row1, col1, row2, col2, moveType) || moveType == 'S') {
 							Piece.Type previous = game.activePlayer();
 							//			      			boolean successiveMove = game.move(row1, col1, row2, col2, moveType);
 							//boolean successiveMove = game.move(move);
@@ -321,6 +325,17 @@ public class GameWindow extends JFrame {
 		if (checkButtonClick(480, yMax - 30)) {
 			//Quit clicked
 			System.out.println("QUIT");
+		}
+		if (advWithVisible) {
+			advWithVisible = false;
+			if (checkButtonClick(200, yMax - 30)) {
+				//Advance clicked
+				
+			}
+			if (checkButtonClick(315, yMax - 30)) {
+				//Withdraw clicked
+				
+			}
 		}
 	}
 	
@@ -446,7 +461,7 @@ public class GameWindow extends JFrame {
 	}
 	
 	private void clearWindow() {
-		graphics.setColor(Color.GRAY);
+		graphics.setColor(Color.lightGray);
 		/* +20 is to work around the either getting bad dimensions from the
 		 * viewport or rendering problems with Swing or the window manager */
         graphics.fillRect(0, 0, xMax + 20, yMax);
@@ -454,7 +469,7 @@ public class GameWindow extends JFrame {
 	}
 	
 	private void clearTime() {
-		graphics.setColor(Color.GRAY);
+		graphics.setColor(Color.lightGray);
         graphics.fillRect(xMax - 250, 0, 240, 42);
         graphics.setColor(Color.BLACK);
 	}
@@ -549,11 +564,11 @@ public class GameWindow extends JFrame {
 		graphics.drawString("Current Player: XX", xMax - 196, 62);
 	}
 	
-	private void drawButton(int x, int y) {
+	private void drawButton(int x, int y, Color color) {
 		Graphics2D graphics2D = (Graphics2D) graphics;
 		graphics2D.setStroke(new BasicStroke(3F));
 		//Reset button
-		graphics.setColor(Color.ORANGE);
+		graphics.setColor(color);
 		graphics.drawLine(x, y + 20, x + 80, y + 20); //Bottom
 		graphics.drawLine(x + 80, y + 20, x + 80, y); //Right
 		graphics.drawLine(x, y, x + 80, y); //Top
@@ -564,11 +579,37 @@ public class GameWindow extends JFrame {
 	
 	private void drawButtons() {
 		//Reset button
-		drawButton(40, yMax - 30);
+		drawButton(40, yMax - 30, Color.ORANGE);
 		graphics.drawString("Reset", 60, yMax - 15);
 		//Quit button
-		drawButton(480, yMax - 30);
+		drawButton(480, yMax - 30, Color.ORANGE);
 		graphics.drawString("Quit", 505, yMax - 15);
+		if (advWithVisible) {
+			//Advance button
+			drawButton(200, yMax - 30, Color.GRAY);
+			graphics.drawString("Advance", 214, yMax - 15);
+			//Withdraw button
+			drawButton(315, yMax - 30, Color.GRAY);
+			graphics.drawString("Withdraw", 327, yMax - 15);
+		}
+	}
+	
+	private void drawFlashingBox(int x, int y, int height, int width) {
+		Graphics2D graphics2D = (Graphics2D) graphics;
+	    graphics2D.setStroke(new BasicStroke(1.5F));
+		if (alternateColors) {
+			graphics.setColor(Color.RED);
+			alternateColors = false;
+		} else {
+			graphics.setColor(Color.YELLOW);
+			alternateColors = true;
+		}
+		graphics.drawLine(x, y + height, x + width, y + height); //Bottom
+		graphics.drawLine(x + width, y + height, x + width, y); //Right
+		graphics.drawLine(x, y, x + width, y); //Top
+		graphics.drawLine(x, y, x, y + height); //Left
+		graphics.setColor(Color.BLACK);
+		graphics2D.setStroke(new BasicStroke(0F));
 	}
 	
 	private void quit() {
@@ -601,6 +642,9 @@ public class GameWindow extends JFrame {
 
 			}
 			clearTime();
+			if (advWithVisible) {
+				drawFlashingBox(180, yMax - 40, 38, 240);
+			}
 			graphics.drawString("Remaining move time: ", xMax - 250, 40);
 			graphics.drawString(time + " sec", xMax - 100, 40);
 
