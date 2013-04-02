@@ -364,18 +364,30 @@ public class GameWindow extends JFrame {
 			if (checkButtonClick(xMax / 4, yMax / 3, yMax / 6, xMax / 5)) {
 				//Client clicked
 				System.out.println("CLIENT");
+				clientServerVisible = false;
+				clientScreenVisible = true;
+				forceUpdate = true;
+				updateScreen();
 				return true;
 			}
 			if (checkButtonClick(xMax / 2 + xMax / 20, yMax /3, yMax / 6,
 					xMax / 5)) {
 				//Server clicked
 				System.out.println("SERVER");
+				clientServerVisible = false;
+				serverScreenVisible = true;
+				forceUpdate = true;
+				updateScreen();
 				return true;
 			}
 			if (checkButtonClick(4 * (xMax / 10), yMax / 3 + yMax / 4,
 					yMax / 6, xMax / 5)) {
 				//Local clicked
 				System.out.println("LOCAL");
+				clientServerVisible = false;
+				localScreenVisible = true;
+				forceUpdate = true;
+				updateScreen();
 				return true;
 			}
 		}
