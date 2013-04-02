@@ -474,17 +474,9 @@ public class GameWindow extends JFrame {
 		}
 		Graphics2D graphics2D = (Graphics2D) graphics;
 	    graphics2D.setStroke(new BasicStroke(2F));
-		graphics.drawLine(xPoint - radius, yPoint - radius,
-				xPoint + radius, yPoint - radius); //Top
-		graphics.drawLine(xPoint - radius, yPoint - radius,
-				xPoint - radius, yPoint + radius); //Left
-		graphics.drawLine(xPoint + radius, yPoint - radius,
-				xPoint + radius, yPoint + radius); //Right
-		graphics.drawLine(xPoint - radius, yPoint + radius,
-				xPoint + radius, yPoint + radius); //Bottom
+	    drawBox(xPoint - radius, yPoint - radius, radius * 2, radius * 2);
 		graphics.setColor(Color.BLACK);
 		graphics2D.setStroke(new BasicStroke(0F));
-		
 		if (currentSelectState == selectionStates.SECONDCOORD) {
 			currentSelectState = selectionStates.NONE;
 			/* TODO Possibly update x/yLastCoord/Point here */
@@ -610,10 +602,7 @@ public class GameWindow extends JFrame {
 		graphics2D.setStroke(new BasicStroke(3F));
 		//Reset button
 		graphics.setColor(color);
-		graphics.drawLine(x, y + 20, x + 80, y + 20); //Bottom
-		graphics.drawLine(x + 80, y + 20, x + 80, y); //Right
-		graphics.drawLine(x, y, x + 80, y); //Top
-		graphics.drawLine(x, y, x, y + 20); //Left
+		drawBox(x, y, 20, 80);
 		graphics.setColor(Color.BLACK);
 		graphics2D.setStroke(new BasicStroke(0F));
 	}
