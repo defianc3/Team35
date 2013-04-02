@@ -59,6 +59,12 @@ public class GameWindow extends JFrame {
 	/* Controls the visibility of the local options screen */
 	boolean localScreenVisible = false;
 	
+	String address;
+	int port;
+	boolean isPlayer1White = true;
+	boolean isPlayer1Human = false;
+	boolean isPlayer2Human = false;
+	
 	
 	/* Game Variables */
 	Fanorona game;
@@ -760,6 +766,8 @@ public class GameWindow extends JFrame {
 	private void drawServerScreen() {
 		int boxHeight = yMax / 13;
 		int ySpacing = yMax / 40;
+		int xSelectorShift = xMax / 50;
+		int ySelectorShift = yMax / 50;
 		//Rows field
 		drawBox(xMax / 2, yMax / 10, boxHeight, xMax / 5);
 		graphics.drawString("Rows:", xMax / 4, yMax / 10 + boxHeight / 2);
@@ -771,8 +779,13 @@ public class GameWindow extends JFrame {
 		graphics.drawString("Port:", xMax / 4, yMax / 10 + 2 * ySpacing + 5 * boxHeight / 2);
 		//Color selector
 		graphics.drawString("Player 1 Color:", xMax / 4, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
-		graphics.drawString("Black", xMax / 2, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
-		graphics.drawString("White", xMax / 2 + xMax / 9, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
+		graphics.drawString("Black", xMax / 2 + xSelectorShift, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
+		graphics.drawString("White", xMax / 2 + xMax / 9 + xSelectorShift, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
+		if (isPlayer1White) {
+			drawBox(xMax / 2, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 10);
+		} else {
+			drawBox(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 10);
+		}
 		//Number pad
 		drawNumberPad();
 	}
@@ -780,6 +793,8 @@ public class GameWindow extends JFrame {
 	private void drawLocalScreen() {
 		int boxHeight = yMax / 16;
 		int ySpacing = yMax / 40;
+		int xSelectorShift = xMax / 50;
+		int ySelectorShift = yMax / 50;
 		//Rows field
 		drawBox(xMax / 2, yMax / 10, boxHeight, xMax / 5);
 		graphics.drawString("Rows:", xMax / 4, yMax / 10 + boxHeight / 2);
@@ -788,16 +803,31 @@ public class GameWindow extends JFrame {
 		graphics.drawString("Columns:", xMax / 4, yMax / 10 + ySpacing + 3 * boxHeight / 2);
 		//Color selector
 		graphics.drawString("Player 1 Color:", xMax / 4, yMax / 10 + 2 * ySpacing + 5 * boxHeight / 2);
-		graphics.drawString("Black", xMax / 2, yMax / 10 + 2 * ySpacing + 5 * boxHeight / 2);
-		graphics.drawString("White", xMax / 2 + xMax / 9, yMax / 10 + 2 * ySpacing + 5 * boxHeight / 2);
+		graphics.drawString("Black", xMax / 2 + xSelectorShift, yMax / 10 + 2 * ySpacing + 5 * boxHeight / 2);
+		graphics.drawString("White", xMax / 2 + xMax / 9 + xSelectorShift, yMax / 10 + 2 * ySpacing + 5 * boxHeight / 2);
+		if (isPlayer1White) {
+			drawBox(xMax / 2, yMax / 10 + 2 * ySpacing + 2 * boxHeight, boxHeight - ySelectorShift, xMax / 10);
+		} else {
+			drawBox(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 2 * ySpacing + 2 * boxHeight, boxHeight - ySelectorShift, xMax / 10);
+		}
 		//Player 1 type
 		graphics.drawString("Player 1 Type:", xMax / 4, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
-		graphics.drawString("Human", xMax / 2, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
-		graphics.drawString("Computer", xMax / 2 + xMax / 9, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
+		graphics.drawString("Human", xMax / 2 + xSelectorShift, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
+		graphics.drawString("Computer", xMax / 2 + xMax / 9 + xSelectorShift, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
+		if (isPlayer1White) {
+			drawBox(xMax / 2, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 10);
+		} else {
+			drawBox(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 8);
+		}
 		//Player 2 type
 		graphics.drawString("Player 2 Type:", xMax / 4, yMax / 10 + 4 * ySpacing + 9 * boxHeight / 2);
-		graphics.drawString("Human", xMax / 2, yMax / 10 + 4 * ySpacing + 9 * boxHeight / 2);
-		graphics.drawString("Computer", xMax / 2 + xMax / 9, yMax / 10 + 4 * ySpacing + 9 * boxHeight / 2);
+		graphics.drawString("Human", xMax / 2 + xSelectorShift, yMax / 10 + 4 * ySpacing + 9 * boxHeight / 2);
+		graphics.drawString("Computer", xMax / 2 + xMax / 9 + xSelectorShift, yMax / 10 + 4 * ySpacing + 9 * boxHeight / 2);
+		if (isPlayer1White) {
+			drawBox(xMax / 2, yMax / 10 + 4 * ySpacing + 4 * boxHeight, boxHeight - ySelectorShift, xMax / 10);
+		} else {
+			drawBox(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 4 * ySpacing + 4 * boxHeight, boxHeight - ySelectorShift, xMax / 8);
+		}
 		//Player 1 player checkbox
 		//Player 2 player checkbox
 		drawNumberPad();
