@@ -341,115 +341,78 @@ public class GameWindow extends JFrame {
 	
 	private boolean checkButtonClicks() {
 		if (gameVisible) {
-			if (checkButtonClick(40, yMax - 30, 20, 80)) {
-				//Reset clicked
-				System.out.println("RESET");
-				return true;
-			} else if (checkButtonClick(480, yMax - 30, 20, 80)) {
-				//Quit clicked
-				System.out.println("QUIT");
-				return true;
-			} else if (advWithVisible) {
-				if (checkButtonClick(200, yMax - 30, 20, 80)) {
-					//Advance clicked
-					advWithVisible = false;
-					forceUpdate = true;
-					return true;
-				} else if (checkButtonClick(315, yMax - 30, 20, 80)) {
-					//Withdraw clicked
-					advWithVisible = false;
-					forceUpdate = true;
-					return true;
-				} else {
-					return false;
-				}
-			} else {
-				return false;
-			}
+			return checkGameButtons();
 		} else if (clientServerVisible) {
-			if (checkButtonClick(xMax / 4, yMax / 3, yMax / 6, xMax / 5)) {
-				//Client clicked
-				System.out.println("CLIENT");
-				clientServerVisible = false;
-				clientScreenVisible = true;
-				forceUpdate = true;
-				updateScreen();
-				return true;
-			} else if (checkButtonClick(xMax / 2 + xMax / 20, yMax /3, yMax / 6,
-					xMax / 5)) {
-				//Server clicked
-				System.out.println("SERVER");
-				clientServerVisible = false;
-				serverScreenVisible = true;
-				forceUpdate = true;
-				updateScreen();
-				return true;
-			} else if (checkButtonClick(4 * (xMax / 10), yMax / 3 + yMax / 4,
-					yMax / 6, xMax / 5)) {
-				//Local clicked
-				System.out.println("LOCAL");
-				clientServerVisible = false;
-				localScreenVisible = true;
-				forceUpdate = true;
-				updateScreen();
-				return true;
-			} else {
-				return false;
-			}
+			return checkClientServerButtons();
 		} else if (clientScreenVisible) {
-			if (false) {
-				//Address field clicked
-				
-			} else if (false) {
-				//Port field clicked
-			} else if (checkNumberPadButtons()) {
-				
-			} else {
-				return false;
-			}
+			return checkClientButtons();
 		} else if (serverScreenVisible) {
-			if (false) {
-				//Rows field clicked
-				
-			} else if (false) {
-				//Columns field clicked
-				
-			} else if (false) {
-				//Port field clicked
-				
-			} else if (false) {
-				//Color checkbox clicked
-				
-			} else if (checkNumberPadButtons()) {
-				
-			} else {
-				return false;
-			}
+			return checkServerButtons();
 		} else if (localScreenVisible) {
-			if (false) {
-				//Rows field clicked
-				
-			} else if (false) {
-				//Columns field clicked
-				
-			} else if (false) {
-				//Color checkbox clicked
-				
-			} else if (false) {
-				//Player 1 type checkbox clicked
-				
-			} else if (false) {
-				//Player 2 type checkbox clicked
-				
-			} else if (checkNumberPadButtons()) {
-				
+			return checkLocalButtons();
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean checkGameButtons() {
+		if (checkButtonClick(40, yMax - 30, 20, 80)) {
+			//Reset clicked
+			System.out.println("RESET");
+			return true;
+		} else if (checkButtonClick(480, yMax - 30, 20, 80)) {
+			//Quit clicked
+			System.out.println("QUIT");
+			return true;
+		} else if (advWithVisible) {
+			if (checkButtonClick(200, yMax - 30, 20, 80)) {
+				//Advance clicked
+				advWithVisible = false;
+				forceUpdate = true;
+				return true;
+			} else if (checkButtonClick(315, yMax - 30, 20, 80)) {
+				//Withdraw clicked
+				advWithVisible = false;
+				forceUpdate = true;
+				return true;
 			} else {
 				return false;
 			}
 		} else {
 			return false;
 		}
-		return false;
+	}
+	
+	private boolean checkClientServerButtons() {
+		if (checkButtonClick(xMax / 4, yMax / 3, yMax / 6, xMax / 5)) {
+			//Client clicked
+			System.out.println("CLIENT");
+			clientServerVisible = false;
+			clientScreenVisible = true;
+			forceUpdate = true;
+			updateScreen();
+			return true;
+		} else if (checkButtonClick(xMax / 2 + xMax / 20, yMax /3, yMax / 6,
+				xMax / 5)) {
+			//Server clicked
+			System.out.println("SERVER");
+			clientServerVisible = false;
+			serverScreenVisible = true;
+			forceUpdate = true;
+			updateScreen();
+			return true;
+		} else if (checkButtonClick(4 * (xMax / 10), yMax / 3 + yMax / 4,
+				yMax / 6, xMax / 5)) {
+			//Local clicked
+			System.out.println("LOCAL");
+			clientServerVisible = false;
+			localScreenVisible = true;
+			forceUpdate = true;
+			updateScreen();
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	private boolean checkButtonClick(int x, int y, int height, int width) {
