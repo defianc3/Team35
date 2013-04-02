@@ -745,7 +745,9 @@ public class GameWindow extends JFrame {
 	
 	private void drawClientScreen() {
 		//Address field
+		//drawBox(4 * (xMax / 10), yMax / 3 + yMax / 4, yMax / 6, xMax / 5);
 		//Port field
+		//drawBox(4 * (xMax / 10), yMax / 3 + yMax / 4, yMax / 6, xMax / 5);
 		//Number pad
 	}
 	
@@ -763,6 +765,51 @@ public class GameWindow extends JFrame {
 		//Player 1 color checkbox
 		//Player 1 player checkbox
 		//Player 2 player checkbox
+	}
+	
+	private void drawNumberPad() {
+		int yOffset = yMax / 6;
+		int xShift = 5;
+		int yShift = -2;
+		drawBox(xMax / 3, yMax / 3 + yOffset, yMax / 9, xMax / 9);
+		graphics.drawString("7", xMax / 3 + xMax / 18 - xShift,
+				yMax / 3 + yMax / 18 - yShift +  + yOffset);
+		drawBox(xMax / 3 + xMax / 9, yMax / 3 + yOffset, yMax / 9, xMax / 9);
+		graphics.drawString("8", xMax / 3 + 3 * xMax / 18 - xShift,
+				yMax / 3 + yMax / 18 - yShift + yOffset);
+		drawBox(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + yOffset, yMax / 9, xMax / 9);
+		graphics.drawString("9", xMax / 3 + 5 * xMax / 18 - xShift,
+				yMax / 3 + yMax / 18 - yShift + yOffset);
+		
+		drawBox(xMax / 3, yMax / 3 + yMax / 9 + yOffset, yMax / 9, xMax / 9);
+		graphics.drawString("4", xMax / 3 + xMax / 18 - xShift,
+				yMax / 3 + 3 * yMax / 18 - yShift + yOffset);
+		drawBox(xMax / 3 + xMax / 9, yMax / 3 + yMax / 9 + yOffset, yMax / 9, xMax / 9);
+		graphics.drawString("5", xMax / 3 + 3 * xMax / 18 - xShift,
+				yMax / 3 + 3 * yMax / 18 - yShift + yOffset);
+		drawBox(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + yMax / 9 + yOffset, yMax / 9, xMax / 9);
+		graphics.drawString("6", xMax / 3 + 5 * xMax / 18 - xShift,
+				yMax / 3 + 3 * yMax / 18 - yShift + yOffset);
+		
+		drawBox(xMax / 3, yMax / 3 + 2 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9);
+		graphics.drawString("1", xMax / 3 + xMax / 18 - xShift,
+				yMax / 3 + 5 * yMax / 18 - yShift + yOffset);
+		drawBox(xMax / 3 + xMax / 9, yMax / 3 + 2 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9);
+		graphics.drawString("2", xMax / 3 + 3 * xMax / 18 - xShift,
+				yMax / 3 + 5 * yMax / 18 - yShift + yOffset);
+		drawBox(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + 2 * yMax / 9 - 1 + yOffset, yMax / 9 , xMax / 9);
+		graphics.drawString("3", xMax / 3 + 5 * xMax / 18 - xShift,
+				yMax / 3 + 5 * yMax / 18 - yShift + yOffset);
+		
+		drawBox(xMax / 3, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9);
+		graphics.drawString(".", xMax / 3 + xMax / 18 - xShift,
+				yMax / 3 + 7 * yMax / 18 - yShift + yOffset);
+		drawBox(xMax / 3 + xMax / 9, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9);
+		graphics.drawString("0", xMax / 3 + 3 * xMax / 18 - xShift,
+				yMax / 3 + 7 * yMax / 18 - yShift + yOffset);
+		drawBox(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9);
+		graphics.drawString("<-", xMax / 3 + 5 * xMax / 18 - xShift,
+				yMax / 3 + 7 * yMax / 18 - yShift + yOffset);
 	}
 	
 	private void quit() {
@@ -799,6 +846,10 @@ public class GameWindow extends JFrame {
 				}
 				if (localScreenVisible) {
 					drawLocalScreen();
+				}
+				if (clientScreenVisible || serverScreenVisible ||
+						localScreenVisible) {
+					drawNumberPad();
 				}
 				drawButtons();
 				processClick(xClick, yClick);
