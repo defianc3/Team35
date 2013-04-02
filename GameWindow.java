@@ -763,6 +763,81 @@ public class GameWindow extends JFrame {
 		drawNumberPad();
 	}
 	
+	private boolean checkClientButtons() {
+		if (checkButtonClick(xMax / 2, 2 * yMax / 10, yMax / 12, xMax / 5)) {
+			//Address field clicked
+			return true;
+		} else if (checkButtonClick(xMax / 2,
+				2 * yMax / 10 + yMax / 12 + yMax / 20, yMax / 12, xMax / 5)) {
+			//Port field clicked
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean checkServerButtons() {
+		int boxHeight = yMax / 13;
+		int ySpacing = yMax / 40;
+		int xSelectorShift = xMax / 50;
+		int ySelectorShift = yMax / 50;
+		if (checkButtonClick(xMax / 2, yMax / 10, boxHeight, xMax / 5)) {
+			//Row field clicked
+			return true;
+		} else if (checkButtonClick(xMax / 2, yMax / 10 + ySpacing + boxHeight, boxHeight, xMax / 5)) {
+			//Columns field clicked
+			return true;
+		} else if (checkButtonClick(xMax / 2, yMax / 10 + 2 * ySpacing + 2 * boxHeight, boxHeight, xMax / 5)) {
+			//Port field clicked
+			return true;
+		} else if (checkButtonClick(xMax / 2, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 10)) {
+			//Player 1 color black clicked
+			isPlayer1White = false;
+			//Update here?
+			return true;
+		} else if (checkButtonClick(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 10)) {
+			//Player 1 color white clicked
+			isPlayer1White = true;
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean checkLocalButtons() {
+		int boxHeight = yMax / 16;
+		int ySpacing = yMax / 40;
+		int xSelectorShift = xMax / 50;
+		int ySelectorShift = yMax / 50;
+		if (checkButtonClick(xMax / 2, yMax / 10, boxHeight, xMax / 5)) {
+			//Rows field clicked
+			return true;
+		} else if (checkButtonClick(xMax / 2, yMax / 10 + ySpacing + boxHeight, boxHeight, xMax / 5)) {
+			//Columns field clicked
+			return true;
+		} else if (checkButtonClick(xMax / 2, yMax / 10 + 2 * ySpacing + 2 * boxHeight, boxHeight - ySelectorShift, xMax / 10)) {
+			//Player 1 color black clicked
+			return true;
+		} else if (checkButtonClick(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 2 * ySpacing + 2 * boxHeight, boxHeight - ySelectorShift, xMax / 10)) {
+			//Player 1 color white clicked
+			return true;
+		} else if (checkButtonClick(xMax / 2, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 10)) {
+			//Player 1 human clicked
+			return true;
+		} else if (checkButtonClick(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 8)) {
+			//Player 1 computer clicked
+			return true;
+		} else if (checkButtonClick(xMax / 2, yMax / 10 + 4 * ySpacing + 4 * boxHeight, boxHeight - ySelectorShift, xMax / 10)) {
+			//Player 2 human clicked
+			return true;
+		} else if (checkButtonClick(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 4 * ySpacing + 4 * boxHeight, boxHeight - ySelectorShift, xMax / 8)) {
+			//Player 2 computer clicked
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	private void drawServerScreen() {
 		int boxHeight = yMax / 13;
 		int ySpacing = yMax / 40;
@@ -814,7 +889,7 @@ public class GameWindow extends JFrame {
 		graphics.drawString("Player 1 Type:", xMax / 4, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
 		graphics.drawString("Human", xMax / 2 + xSelectorShift, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
 		graphics.drawString("Computer", xMax / 2 + xMax / 9 + xSelectorShift, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
-		if (isPlayer1White) {
+		if (isPlayer1Human) {
 			drawBox(xMax / 2, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 10);
 		} else {
 			drawBox(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 8);
@@ -823,7 +898,7 @@ public class GameWindow extends JFrame {
 		graphics.drawString("Player 2 Type:", xMax / 4, yMax / 10 + 4 * ySpacing + 9 * boxHeight / 2);
 		graphics.drawString("Human", xMax / 2 + xSelectorShift, yMax / 10 + 4 * ySpacing + 9 * boxHeight / 2);
 		graphics.drawString("Computer", xMax / 2 + xMax / 9 + xSelectorShift, yMax / 10 + 4 * ySpacing + 9 * boxHeight / 2);
-		if (isPlayer1White) {
+		if (isPlayer2Human) {
 			drawBox(xMax / 2, yMax / 10 + 4 * ySpacing + 4 * boxHeight, boxHeight - ySelectorShift, xMax / 10);
 		} else {
 			drawBox(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 4 * ySpacing + 4 * boxHeight, boxHeight - ySelectorShift, xMax / 8);
