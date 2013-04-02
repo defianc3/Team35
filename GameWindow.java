@@ -9,6 +9,7 @@ import java.awt.image.BufferStrategy;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Scanner;
 
 
 import javax.swing.JFrame;
@@ -38,8 +39,46 @@ public class GameWindow extends JFrame {
 	int xLastPoint = -1;
 	int yLastPoint = -1;
 	int radius;
+	boolean alternateColors = false;
+	/* True if there was a click */
 	boolean clicked = false;
-	boolean initialUpdate = true;
+	/* True if the timer was fired */
+	boolean ticked = false;
+	/* Used to force window updates independent of events */
+	boolean forceUpdate = true;
+	/* Controls the visibility of the advance and withdraw buttons */
+	boolean advWithVisible = false;
+	/* Controls the visibility of the board and related buttons */
+	boolean gameVisible = false;
+	/* Controls the visibility of the client/server/local game type */
+	boolean clientServerVisible = true;
+	/* Controls the visibility of the client options screen */
+	boolean clientScreenVisible = false;
+	/* Controls the visibility of the server options screen */
+	boolean serverScreenVisible = false;
+	/* Controls the visibility of the local options screen */
+	boolean localScreenVisible = false;
+	
+	String address = "";
+	int port;
+	boolean isPlayer1White = true;
+	boolean isPlayer1Human = false;
+	boolean isPlayer2Human = false;
+	int tempRows = 0;
+	int tempColumns = 0;
+	int focusedField = 1;
+	
+	
+	/* Game Variables */
+	Fanorona game;
+	int turn;
+	int turnLimit;
+	int numberOfBlackMovesThisTurn;
+	boolean moveTurn;
+	Piece.Type humanPlayer = Piece.Type.WHITE;
+	Piece.Type otherPlayer;
+	long time1;
+	long time2;
 	
 	private enum selectionStates {
 		NONE,
@@ -93,6 +132,7 @@ public class GameWindow extends JFrame {
         {
             public void actionPerformed(ActionEvent e)  
             {
+            	ticked = true;
             	updateScreen();
             }
         };
@@ -116,6 +156,174 @@ public class GameWindow extends JFrame {
 		});
 	}
 	
+	private void initGame() {
+		game = new Fanorona(xBoardDim, yBoardDim);
+		turn = 0;
+		turnLimit = yBoardDim * 10;
+		numberOfBlackMovesThisTurn = 0;
+		moveTurn = false;
+		time1 = new Date().getTime();
+		time2 = -1;
+		if (humanPlayer == Piece.Type.WHITE) {
+			otherPlayer = Piece.Type.BLACK; 
+		} else {
+			otherPlayer = Piece.Type.WHITE;
+		}
+	}
+	
+	private void handleMove() {
+		if (game.activePlayer() == otherPlayer) {
+			String bestMove = game.getAIMove(otherPlayer);
+
+			System.out.println("best move: " + bestMove);
+
+			//move = bestMove;
+
+			numberOfBlackMovesThisTurn++;
+			//move = game.getRandomMove();
+			//System.out.println("Other move: " + move);
+
+			time2 = new Date().getTime();
+		} else {
+			//Move selection entered here
+			time2 = new Date().getTime();
+
+			/*if (playerInput.equals("quit")) {
+				
+				//Quit here
+			} else if(playerInput.equals("moves")) {
+				System.out.println("\nwhite: " + game.board.whiteMovesFull);
+				System.out.println("\nblack: " + game.board.blackMovesFull);
+				moveTurn = false;
+				turn--;
+			} else if(playerInput.equals("reset")) {
+				//Start a new game here
+				initGame();
+				continue;
+			} else {
+				try {
+					//Get move
+				}
+				catch(Exception e) {
+					System.out.println("Error: " + e.getMessage());
+				}
+			}*/
+		}
+	}
+	
+	private void gameLoop() {
+		initGame();
+		updateScreen();
+
+		while (true) {
+
+			
+			String move = "";
+			//if (game.capturingMoveAvailable()) System.out.println("Capturing move required");
+
+			int pieceInt1 = -1;
+			int pieceInt2 = -1;
+
+			String pieceStr1 = "";
+			String pieceStr2 = "";
+
+			moveTurn = true; //Indicates that a move as been entered
+
+
+			boolean valid = true;
+			if (moveTurn) {
+				int row1;
+				int row2;
+				int col1;
+				int col2;
+				char moveType;
+
+				if(move.equals("N")) {
+					moveType = 'N';
+					row1 = 0;
+					col1 = 0;
+					row2 = 0;
+					col2 = 0;
+				}
+				else {
+					if (game.activePlayer() == humanPlayer) {
+
+						moveType = Fanorona.getMoveType(move);
+						if (moveType == 'S') {
+							row1 = game.board.rows-Fanorona.getFirstRowCMD(move);
+							col1 = Fanorona.getFirstColumnCMD(move)-1;
+							row2 = 0;
+							col2 = 0;
+						}
+						else {
+							row1 = game.board.rows-Fanorona.getFirstRowCMD(move);
+							col1 = Fanorona.getFirstColumnCMD(move)-1;
+							row2 = game.board.rows-Fanorona.getSecondRowCMD(move);
+							col2 = Fanorona.getSecondColumnCMD(move)-1;
+						}
+
+						move = game.convertToInternalMove(move);
+					}
+					else{
+
+						row1 = Fanorona.getFirstRow(move);
+						col1 = Fanorona.getFirstColumn(move);
+						row2 = Fanorona.getSecondRow(move);
+						col2 = Fanorona.getSecondColumn(move);
+						moveType = Fanorona.getMoveType(move);
+					}
+				}
+
+				valid = game.validMoveSystax(move);
+
+				if (!valid) {
+					//Not a valid move
+				} else {
+					if(game.activePlayer() == Piece.Type.WHITE) {
+						//Total time it took for the player to make the move
+						game.player1Time += (time2 - time1);
+					}
+					else {
+						game.player2Time += (time2 - time1);
+					}
+
+					if (game.capturingMoveAvailable()){
+						if (game.isPossibleCapturingMove(row1, col1, row2, col2, moveType) || moveType == 'S') {
+							Piece.Type previous = game.activePlayer();
+							//			      			boolean successiveMove = game.move(row1, col1, row2, col2, moveType);
+							//boolean successiveMove = game.move(move);
+							if(previous == Piece.Type.BLACK && game.activePlayer() == Piece.Type.WHITE) {
+								numberOfBlackMovesThisTurn = 0;
+							}
+							game.removeSacrifices(game.activePlayer());
+						} else {
+							System.out.println("A capturing move must be entered\n");
+							valid = false;
+						}
+					} else {
+						game.move(row1,col1,row2,col2,moveType);
+					}
+					if (game.board.numberRemaining(Piece.Type.WHITE) == 0) {
+						//Black wins here
+						break;
+					} else if (game.board.numberRemaining(Piece.Type.BLACK) == 0) {
+						//White wins here
+						break;
+					}
+				}
+			}
+			updateScreen();
+			//game.printTime();
+			if(valid && moveTurn) {
+				turn++;
+			}
+			if (turn == turnLimit) {
+				//Maximum number of turns reached here
+				break;
+			}
+		}
+	}
+	
 	private void calculateDimensions() {
 		/* TODO Add stroke size scaling coefficient */
 		xSpacing = (xMax - 2 * xGridMin)/(xBoardDim - 1);
@@ -134,35 +342,129 @@ public class GameWindow extends JFrame {
 		
 	}
 	
+	private boolean checkButtonClicks() {
+		if (gameVisible) {
+			return checkGameButtons();
+		} else if (clientServerVisible) {
+			return checkClientServerButtons();
+		} else if (clientScreenVisible) {
+			return checkClientButtons();
+		} else if (serverScreenVisible) {
+			return checkServerButtons();
+		} else if (localScreenVisible) {
+			return checkLocalButtons();
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean checkGameButtons() {
+		if (checkButtonClick(40, yMax - 30, 20, 80)) {
+			//Reset clicked
+			System.out.println("RESET");
+			return true;
+		} else if (checkButtonClick(480, yMax - 30, 20, 80)) {
+			//Quit clicked
+			System.out.println("QUIT");
+			return true;
+		} else if (advWithVisible) {
+			if (checkButtonClick(200, yMax - 30, 20, 80)) {
+				//Advance clicked
+				advWithVisible = false;
+				forceUpdate = true;
+				return true;
+			} else if (checkButtonClick(315, yMax - 30, 20, 80)) {
+				//Withdraw clicked
+				advWithVisible = false;
+				forceUpdate = true;
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean checkClientServerButtons() {
+		if (checkButtonClick(xMax / 4, yMax / 3, yMax / 6, xMax / 5)) {
+			//Client clicked
+			System.out.println("CLIENT");
+			clientServerVisible = false;
+			clientScreenVisible = true;
+			forceUpdate = true;
+			updateScreen();
+			return true;
+		} else if (checkButtonClick(xMax / 2 + xMax / 20, yMax /3, yMax / 6,
+				xMax / 5)) {
+			//Server clicked
+			System.out.println("SERVER");
+			clientServerVisible = false;
+			serverScreenVisible = true;
+			forceUpdate = true;
+			updateScreen();
+			return true;
+		} else if (checkButtonClick(4 * (xMax / 10), yMax / 3 + yMax / 4,
+				yMax / 6, xMax / 5)) {
+			//Local clicked
+			System.out.println("LOCAL");
+			clientServerVisible = false;
+			localScreenVisible = true;
+			forceUpdate = true;
+			updateScreen();
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean checkButtonClick(int x, int y, int height, int width) {
+		if ((xClick > x && xClick < (x + width))
+				&& (yClick > y && yClick < y + height)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	private void processClick(int x, int y) {
-		xClick = -1;
-		yClick = -1;
-		int xTemp;
-		int yTemp;
-		if (x <= xGridMin) {
-			xTemp = 0;
-		} else if (x >= xGridMax) {
-			xTemp = xBoardDim - 1;
-		} else {
-			double xDouble = (double) x;
-			xTemp = (int) Math.round(((xDouble -
-					(double)xGridMin) / (double)xSpacing));
+		if (checkButtonClicks()) {
+			if (!forceUpdate) {
+				forceUpdate = true;
+				updateScreen();
+			}
+			return;
 		}
-		if (y <= yGridMin) {
-			yTemp = 0;
-		} else if (y >= yGridMax) {
-			yTemp = yBoardDim - 1;
-		} else {
-			double yDouble = (double) y;
-			yTemp = (int) Math.round(((yDouble -
-					(double)yGridMin) / (double)ySpacing));
+		if (gameVisible) {
+			xClick = -1;
+			yClick = -1;
+			int xTemp;
+			int yTemp;
+			if (x <= xGridMin) {
+				xTemp = 0;
+			} else if (x >= xGridMax) {
+				xTemp = xBoardDim - 1;
+			} else {
+				double xDouble = (double) x;
+				xTemp = (int) Math.round(((xDouble -
+						(double)xGridMin) / (double)xSpacing));
+			}
+			if (y <= yGridMin) {
+				yTemp = 0;
+			} else if (y >= yGridMax) {
+				yTemp = yBoardDim - 1;
+			} else {
+				double yDouble = (double) y;
+				yTemp = (int) Math.round(((yDouble -
+						(double)yGridMin) / (double)ySpacing));
+			}
+			processCoordinate(xTemp, yTemp, x, y);
 		}
-		processCoordinate(xTemp, yTemp, x, y);
 
-		graphics.drawString("Point nearest click: " +
+		/*graphics.drawString("Point nearest click: " +
 				Integer.toString(xTemp), 20, 40);
 		graphics.drawString("Point nearest click: " +
-				Integer.toString(yTemp), 20, 60);
+				Integer.toString(yTemp), 20, 60);*/
 	}
 
 	private void processCoordinate(int xCoord, int yCoord, int xActual,
@@ -201,16 +503,13 @@ public class GameWindow extends JFrame {
 			}
 		} else {
 			/* Clicked point not near a coordinate */
-			/*currentSelectState = selectionStates.NONE;
-			xLastCoord = -1;
-			yLastCoord = -1;*/
 			drawSelection(-2, -2);
 			return;
 		}
 	}
 	
 	private void drawSelection(int xPoint, int yPoint) {
-		if (initialUpdate) {
+		if (forceUpdate) {
 			return;
 		}
 		if (xPoint == -2 || yPoint == -2) {
@@ -227,17 +526,9 @@ public class GameWindow extends JFrame {
 		}
 		Graphics2D graphics2D = (Graphics2D) graphics;
 	    graphics2D.setStroke(new BasicStroke(2F));
-		graphics.drawLine(xPoint - radius, yPoint - radius,
-				xPoint + radius, yPoint - radius); //Top
-		graphics.drawLine(xPoint - radius, yPoint - radius,
-				xPoint - radius, yPoint + radius); //Left
-		graphics.drawLine(xPoint + radius, yPoint - radius,
-				xPoint + radius, yPoint + radius); //Right
-		graphics.drawLine(xPoint - radius, yPoint + radius,
-				xPoint + radius, yPoint + radius); //Bottom
+	    drawBox(xPoint - radius, yPoint - radius, radius * 2, radius * 2);
 		graphics.setColor(Color.BLACK);
 		graphics2D.setStroke(new BasicStroke(0F));
-		
 		if (currentSelectState == selectionStates.SECONDCOORD) {
 			currentSelectState = selectionStates.NONE;
 			/* TODO Possibly update x/yLastCoord/Point here */
@@ -249,17 +540,23 @@ public class GameWindow extends JFrame {
 	}
 	
 	private void clearWindow() {
-		graphics.setColor(Color.GRAY);
+		graphics.setColor(Color.lightGray);
 		/* +20 is to work around the either getting bad dimensions from the
 		 * viewport or rendering problems with Swing or the window manager */
         graphics.fillRect(0, 0, xMax + 20, yMax);
         graphics.setColor(Color.BLACK);
 	}
 	
-	private void clearTime() {
-		graphics.setColor(Color.GRAY);
-        graphics.fillRect(xMax - 250, 0, 240, 42);
-        graphics.setColor(Color.BLACK);
+	private void drawTime() {
+		if (gameVisible) {
+			graphics.setColor(Color.lightGray);
+	        graphics.fillRect(xMax - 250, 0, 240, 42);
+	        graphics.setColor(Color.BLACK);
+			Date date = new Date();
+			String time = timeFormat.format(date);
+	        graphics.drawString("Remaining move time: ", xMax - 250, 40);
+			graphics.drawString(time + " sec", xMax - 100, 40);
+		}
 	}
 
 	private void drawGrid() {
@@ -344,6 +641,7 @@ public class GameWindow extends JFrame {
 		int yCoord = 4;
 		int xPoint = xGridMin + (xSpacing * xCoord);
 		int yPoint = yGridMin + (ySpacing * yCoord);
+		//drawPiece(pieceType.WHITE, xPoint, yPoint);
 	}
 	
 	public void drawInfo() {
@@ -351,10 +649,459 @@ public class GameWindow extends JFrame {
 		graphics.drawString("Current Player: XX", xMax - 196, 62);
 	}
 	
-	private void updateScreen() {
-		Date date = new Date();
-		String time = timeFormat.format(date);
+	private void drawButton(int x, int y, Color color) {
+		Graphics2D graphics2D = (Graphics2D) graphics;
+		graphics2D.setStroke(new BasicStroke(3F));
+		//Reset button
+		graphics.setColor(color);
+		drawBox(x, y, 20, 80);
+		graphics.setColor(Color.BLACK);
+		graphics2D.setStroke(new BasicStroke(0F));
+	}
+	
+	private void drawButtons() {
+		if (gameVisible) {
+			//Reset button
+			drawButton(40, yMax - 30, Color.ORANGE);
+			graphics.drawString("Reset", 60, yMax - 15);
+			//Quit button
+			drawButton(480, yMax - 30, Color.ORANGE);
+			graphics.drawString("Quit", 505, yMax - 15);
+			if (advWithVisible) {
+				//Advance button
+				drawButton(200, yMax - 30, Color.GRAY);
+				graphics.drawString("Advance", 214, yMax - 15);
+				//Withdraw button
+				drawButton(315, yMax - 30, Color.GRAY);
+				graphics.drawString("Withdraw", 327, yMax - 15);
+			}
+		}
+	}
+	
+	private void drawFlashingBox(int x, int y, int height, int width) {
+		Graphics2D graphics2D = (Graphics2D) graphics;
+	    graphics2D.setStroke(new BasicStroke(1.5F));
+		if (alternateColors) {
+			graphics.setColor(Color.RED);
+			if (ticked) {
+				alternateColors = false;
+			}
+		} else {
+			graphics.setColor(Color.YELLOW);
+			if (ticked) {
+				alternateColors = true;
+			}
+		}
+		drawBox(x, y, height, width);
+		graphics.setColor(Color.BLACK);
+		graphics2D.setStroke(new BasicStroke(0F));
+	}
+	
+	private void drawBox(int x, int y, int height, int width) {
+		graphics.drawLine(x, y + height, x + width, y + height); //Bottom
+		graphics.drawLine(x + width, y + height, x + width, y); //Right
+		graphics.drawLine(x, y, x + width, y); //Top
+		graphics.drawLine(x, y, x, y + height); //Left
+	}
+	
+	private void drawClientServer() {
+		Graphics2D graphics2D = (Graphics2D) graphics;
+		graphics2D.setStroke(new BasicStroke(3F));
+		graphics.setColor(Color.BLACK);
+		//Client button
+		drawBox(xMax / 4, yMax / 3, yMax / 6, xMax / 5);
+		graphics.drawString("Client", xMax / 4 + xMax / 10 - xMax / 30,
+				yMax / 3 + yMax / 10);
+		//Server button
+		drawBox(xMax / 2 + xMax / 20, yMax /3, yMax / 6, xMax / 5);
+		graphics.drawString("Server", xMax / 4 + 2 * xMax / 10 - xMax / 30 + 
+				xMax / 5,
+				yMax / 3 + yMax / 10);
+		//Local button
+		drawBox(4 * (xMax / 10), yMax / 3 + yMax / 4, yMax / 6, xMax / 5);
+		graphics.drawString("Local", xMax / 2 - xMax / 30, 2 * yMax / 3);
+	}
+	
+	private void drawClientScreen() {
+		//Address field
+		drawBox(xMax / 2, 2 * yMax / 10, yMax / 12, xMax / 5);
+		graphics.drawString("Address:", xMax / 4, 2 * yMax / 10 + yMax / 24);
+		graphics.drawString(address, xMax / 2, 2 * yMax / 10 + yMax / 24);
+		//Port field
+		drawBox(xMax / 2, 2 * yMax / 10 + yMax / 12 + yMax / 20, yMax / 12, xMax / 5);
+		graphics.drawString("Port:", xMax / 4, 2 * yMax / 10 + yMax / 24  + yMax / 12 + yMax / 20);
+		graphics.drawString(Integer.toString(port), xMax / 2, 2 * yMax / 10 + yMax / 24  + yMax / 12 + yMax / 20);
+		//Number pad
+		drawNumberPad();
+	}
+	
+	private boolean checkClientButtons() {
+		if (checkButtonClick(xMax / 2, 2 * yMax / 10, yMax / 12, xMax / 5)) {
+			//Address field clicked
+			focusedField = 1;
+			System.out.println("Address clicked");
+			return true;
+		} else if (checkButtonClick(xMax / 2,
+				2 * yMax / 10 + yMax / 12 + yMax / 20, yMax / 12, xMax / 5)) {
+			//Port field clicked
+			focusedField = 2;
+			System.out.println("Port clicked");
+			return true;
+		} else if (checkNumberPadButtons()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean checkServerButtons() {
+		int boxHeight = yMax / 13;
+		int ySpacing = yMax / 40;
+		int xSelectorShift = xMax / 50;
+		int ySelectorShift = yMax / 50;
+		if (checkButtonClick(xMax / 2, yMax / 10, boxHeight, xMax / 5)) {
+			//Row field clicked
+			focusedField = 1;
+			System.out.println("Row clicked");
+			return true;
+		} else if (checkButtonClick(xMax / 2, yMax / 10 + ySpacing + boxHeight, boxHeight, xMax / 5)) {
+			//Columns field clicked
+			focusedField = 2;
+			System.out.println("Column clicked");
+			return true;
+		} else if (checkButtonClick(xMax / 2, yMax / 10 + 2 * ySpacing + 2 * boxHeight, boxHeight, xMax / 5)) {
+			//Port field clicked
+			focusedField = 3;
+			System.out.println("Port clicked");
+			return true;
+		} else if (checkButtonClick(xMax / 2, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 10)) {
+			//Player 1 color black clicked
+			isPlayer1White = false;
+			System.out.println("Black selected");
+			return true;
+		} else if (checkButtonClick(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 10)) {
+			//Player 1 color white clicked
+			isPlayer1White = true;
+			System.out.println("White selected");
+			return true;
+		} else if (checkNumberPadButtons()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean checkLocalButtons() {
+		int boxHeight = yMax / 16;
+		int ySpacing = yMax / 40;
+		int xSelectorShift = xMax / 50;
+		int ySelectorShift = yMax / 50;
+		if (checkButtonClick(xMax / 2, yMax / 10, boxHeight, xMax / 5)) {
+			//Rows field clicked
+			focusedField = 1;
+			System.out.println("Row clicked");
+			return true;
+		} else if (checkButtonClick(xMax / 2, yMax / 10 + ySpacing + boxHeight, boxHeight, xMax / 5)) {
+			//Columns field clicked
+			System.out.println("Column clicked");
+			focusedField = 2;
+			return true;
+		} else if (checkButtonClick(xMax / 2, yMax / 10 + 2 * ySpacing + 2 * boxHeight, boxHeight - ySelectorShift, xMax / 10)) {
+			//Player 1 color black clicked
+			isPlayer1White = false;
+			System.out.println("Black selected");
+			return true;
+		} else if (checkButtonClick(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 2 * ySpacing + 2 * boxHeight, boxHeight - ySelectorShift, xMax / 10)) {
+			//Player 1 color white clicked
+			isPlayer1White = true;
+			System.out.println("White selected");
+			return true;
+		} else if (checkButtonClick(xMax / 2, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 10)) {
+			//Player 1 human clicked
+			isPlayer1Human = true;
+			System.out.println("Player 1 Human selected");
+			return true;
+		} else if (checkButtonClick(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 8)) {
+			//Player 1 computer clicked
+			isPlayer1Human = false;
+			System.out.println("Player 1 Computer selected");
+			return true;
+		} else if (checkButtonClick(xMax / 2, yMax / 10 + 4 * ySpacing + 4 * boxHeight, boxHeight - ySelectorShift, xMax / 10)) {
+			//Player 2 human clicked
+			isPlayer2Human = true;
+			System.out.println("Player 2 Human selected");
+			return true;
+		} else if (checkButtonClick(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 4 * ySpacing + 4 * boxHeight, boxHeight - ySelectorShift, xMax / 8)) {
+			//Player 2 computer clicked
+			isPlayer2Human = false;
+			System.out.println("Player 2 Computer selected");
+			return true;
+		} else if (checkNumberPadButtons()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private void drawServerScreen() {
+		int boxHeight = yMax / 13;
+		int ySpacing = yMax / 40;
+		int xSelectorShift = xMax / 50;
+		int ySelectorShift = yMax / 50;
+		//Rows field
+		drawBox(xMax / 2, yMax / 10, boxHeight, xMax / 5);
+		graphics.drawString("Rows:", xMax / 4, yMax / 10 + boxHeight / 2);
+		graphics.drawString(Integer.toString(tempRows), xMax / 2, yMax / 10 + boxHeight / 2);
+		//Columns field
+		drawBox(xMax / 2, yMax / 10 + ySpacing + boxHeight, boxHeight, xMax / 5);
+		graphics.drawString("Columns:", xMax / 4, yMax / 10 + ySpacing + 3 * boxHeight / 2);
+		graphics.drawString(Integer.toString(tempColumns), xMax / 2, yMax / 10 + ySpacing + 3 * boxHeight / 2);
+		//Port field
+		drawBox(xMax / 2, yMax / 10 + 2 * ySpacing + 2 * boxHeight, boxHeight, xMax / 5);
+		graphics.drawString("Port:", xMax / 4, yMax / 10 + 2 * ySpacing + 5 * boxHeight / 2);
+		graphics.drawString(Integer.toString(port), xMax / 2, yMax / 10 + 2 * ySpacing + 5 * boxHeight / 2);
+		//Color selector
+		graphics.drawString("Player 1 Color:", xMax / 4, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
+		graphics.drawString("Black", xMax / 2 + xSelectorShift, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
+		graphics.drawString("White", xMax / 2 + xMax / 9 + xSelectorShift, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
+		if (!isPlayer1White) {
+			drawBox(xMax / 2, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 10);
+		} else {
+			drawBox(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 10);
+		}
+		//Number pad
+		drawNumberPad();
+		
+	}
+	
+	private void drawLocalScreen() {
+		int boxHeight = yMax / 16;
+		int ySpacing = yMax / 40;
+		int xSelectorShift = xMax / 50;
+		int ySelectorShift = yMax / 50;
+		//Rows field
+		drawBox(xMax / 2, yMax / 10, boxHeight, xMax / 5);
+		graphics.drawString("Rows:", xMax / 4, yMax / 10 + boxHeight / 2);
+		graphics.drawString(Integer.toString(tempRows), xMax / 2, yMax / 10 + boxHeight / 2);
+		//Columns field
+		drawBox(xMax / 2, yMax / 10 + ySpacing + boxHeight, boxHeight, xMax / 5);
+		graphics.drawString("Columns:", xMax / 4, yMax / 10 + ySpacing + 3 * boxHeight / 2);
+		graphics.drawString(Integer.toString(tempColumns), xMax / 2, yMax / 10 + ySpacing + 3 * boxHeight / 2);
+		//Color selector
+		graphics.drawString("Player 1 Color:", xMax / 4, yMax / 10 + 2 * ySpacing + 5 * boxHeight / 2);
+		graphics.drawString("Black", xMax / 2 + xSelectorShift, yMax / 10 + 2 * ySpacing + 5 * boxHeight / 2);
+		graphics.drawString("White", xMax / 2 + xMax / 9 + xSelectorShift, yMax / 10 + 2 * ySpacing + 5 * boxHeight / 2);
+		if (!isPlayer1White) {
+			drawBox(xMax / 2, yMax / 10 + 2 * ySpacing + 2 * boxHeight, boxHeight - ySelectorShift, xMax / 10);
+		} else {
+			drawBox(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 2 * ySpacing + 2 * boxHeight, boxHeight - ySelectorShift, xMax / 10);
+		}
+		//Player 1 type
+		graphics.drawString("Player 1 Type:", xMax / 4, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
+		graphics.drawString("Human", xMax / 2 + xSelectorShift, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
+		graphics.drawString("Computer", xMax / 2 + xMax / 9 + xSelectorShift, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
+		if (isPlayer1Human) {
+			drawBox(xMax / 2, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 10);
+		} else {
+			drawBox(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 8);
+		}
+		//Player 2 type
+		graphics.drawString("Player 2 Type:", xMax / 4, yMax / 10 + 4 * ySpacing + 9 * boxHeight / 2);
+		graphics.drawString("Human", xMax / 2 + xSelectorShift, yMax / 10 + 4 * ySpacing + 9 * boxHeight / 2);
+		graphics.drawString("Computer", xMax / 2 + xMax / 9 + xSelectorShift, yMax / 10 + 4 * ySpacing + 9 * boxHeight / 2);
+		if (isPlayer2Human) {
+			drawBox(xMax / 2, yMax / 10 + 4 * ySpacing + 4 * boxHeight, boxHeight - ySelectorShift, xMax / 10);
+		} else {
+			drawBox(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 4 * ySpacing + 4 * boxHeight, boxHeight - ySelectorShift, xMax / 8);
+		}
+		drawNumberPad();
+	}
+	
+	private void drawNumberPad() {
+		int yOffset = yMax / 6;
+		int xShift = 5;
+		int yShift = -2;
+		drawBox(xMax / 3, yMax / 3 + yOffset, yMax / 9, xMax / 9);
+		graphics.drawString("7", xMax / 3 + xMax / 18 - xShift,
+				yMax / 3 + yMax / 18 - yShift +  + yOffset);
+		drawBox(xMax / 3 + xMax / 9, yMax / 3 + yOffset, yMax / 9, xMax / 9);
+		graphics.drawString("8", xMax / 3 + 3 * xMax / 18 - xShift,
+				yMax / 3 + yMax / 18 - yShift + yOffset);
+		drawBox(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + yOffset, yMax / 9, xMax / 9);
+		graphics.drawString("9", xMax / 3 + 5 * xMax / 18 - xShift,
+				yMax / 3 + yMax / 18 - yShift + yOffset);
 
+		drawBox(xMax / 3, yMax / 3 + yMax / 9 + yOffset, yMax / 9, xMax / 9);
+		graphics.drawString("4", xMax / 3 + xMax / 18 - xShift,
+				yMax / 3 + 3 * yMax / 18 - yShift + yOffset);
+		drawBox(xMax / 3 + xMax / 9, yMax / 3 + yMax / 9 + yOffset, yMax / 9, xMax / 9);
+		graphics.drawString("5", xMax / 3 + 3 * xMax / 18 - xShift,
+				yMax / 3 + 3 * yMax / 18 - yShift + yOffset);
+		drawBox(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + yMax / 9 + yOffset, yMax / 9, xMax / 9);
+		graphics.drawString("6", xMax / 3 + 5 * xMax / 18 - xShift,
+				yMax / 3 + 3 * yMax / 18 - yShift + yOffset);
+
+		drawBox(xMax / 3, yMax / 3 + 2 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9);
+		graphics.drawString("1", xMax / 3 + xMax / 18 - xShift,
+				yMax / 3 + 5 * yMax / 18 - yShift + yOffset);
+		drawBox(xMax / 3 + xMax / 9, yMax / 3 + 2 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9);
+		graphics.drawString("2", xMax / 3 + 3 * xMax / 18 - xShift,
+				yMax / 3 + 5 * yMax / 18 - yShift + yOffset);
+		drawBox(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + 2 * yMax / 9 - 1 + yOffset, yMax / 9 , xMax / 9);
+		graphics.drawString("3", xMax / 3 + 5 * xMax / 18 - xShift,
+				yMax / 3 + 5 * yMax / 18 - yShift + yOffset);
+
+		if (clientScreenVisible) {
+			drawBox(xMax / 3, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9);
+			graphics.drawString(".", xMax / 3 + xMax / 18 - xShift,
+					yMax / 3 + 7 * yMax / 18 - yShift + yOffset);
+		}
+		drawBox(xMax / 3 + xMax / 9, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9);
+		graphics.drawString("0", xMax / 3 + 3 * xMax / 18 - xShift,
+				yMax / 3 + 7 * yMax / 18 - yShift + yOffset);
+		drawBox(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9);
+		graphics.drawString("<-", xMax / 3 + 5 * xMax / 18 - xShift,
+				yMax / 3 + 7 * yMax / 18 - yShift + yOffset);
+	}
+	
+	private boolean checkNumberPadButtons() {
+		if (forceUpdate) {
+			/* To handle clicks "going through" to the next menu screen */
+			return false;
+		}
+		String tempString = "";
+		boolean add = true;
+		boolean returnVal = false;
+		int yOffset = yMax / 6;
+		if (checkButtonClick(xMax / 3, yMax / 3 + yOffset, yMax / 9, xMax / 9)) {
+			//7 pressed
+			tempString += "7";
+			returnVal = true;
+		} else if (checkButtonClick(xMax / 3 + xMax / 9, yMax / 3 + yOffset, yMax / 9, xMax / 9)) {
+			//8 pressed
+			tempString += "8";
+			returnVal = true;
+		} else if (checkButtonClick(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + yOffset, yMax / 9, xMax / 9)) {
+			//9 pressed
+			tempString += "9";
+			returnVal = true;
+		} else if (checkButtonClick(xMax / 3, yMax / 3 + yMax / 9 + yOffset, yMax / 9, xMax / 9)) {
+			//4 pressed
+			tempString += "4";
+			returnVal = true;
+		} else if (checkButtonClick(xMax / 3 + xMax / 9, yMax / 3 + yMax / 9 + yOffset, yMax / 9, xMax / 9)) {
+			//5 pressed
+			tempString += "5";
+			returnVal = true;
+		} else if (checkButtonClick(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + yMax / 9 + yOffset, yMax / 9, xMax / 9)) {
+			//6 pressed
+			tempString += "6";
+			returnVal = true;
+		} else if (checkButtonClick(xMax / 3, yMax / 3 + 2 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9)) {
+			//1 pressed
+			tempString += "1";
+			returnVal = true;
+		} else if (checkButtonClick(xMax / 3 + xMax / 9, yMax / 3 + 2 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9)) {
+			//2 pressed
+			tempString += "2";
+			returnVal = true;
+		} else if (checkButtonClick(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + 2 * yMax / 9 - 1 + yOffset, yMax / 9 , xMax / 9)) {
+			//1 pressed
+			tempString += "3";
+			returnVal = true;
+		} else if (checkButtonClick(xMax / 3, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9) && clientScreenVisible) {
+			//. pressed
+			tempString += ".";
+			returnVal = true;
+		} else if (checkButtonClick(xMax / 3 + xMax / 9, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9)) {
+			//0 pressed
+			tempString += "0";
+			returnVal = true;
+		} else if (checkButtonClick(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9)) {
+			//Backspace pressed
+			add = false;
+			returnVal = true;
+		} else {
+			returnVal = false;
+		}
+		if (clientScreenVisible) {
+			if (focusedField == 1) {
+				if (add) {
+					address += tempString;
+				} else {
+					if (address.length() > 0) {
+						address = address.substring(0, address.length() - 1);
+					}
+					System.out.println(address);
+				}
+			} else if (focusedField == 2) {
+				if (add) {
+					port = lengthenInt(port, tempString);
+				} else {
+					port = shortenInt(port);
+				}
+			}
+		} else if (serverScreenVisible) {
+			if (focusedField == 1) {
+				if (add) {
+					tempRows = lengthenInt(tempRows, tempString);
+				} else {
+					tempRows = shortenInt(tempRows);
+				}
+			} else if (focusedField == 2) {
+				if (add) {
+					tempColumns = lengthenInt(tempColumns, tempString);
+				} else {
+					tempColumns = shortenInt(tempColumns);
+				}
+			} else if (focusedField == 3) {
+				if (add) {
+					port = lengthenInt(port, tempString);
+				} else {
+					port = shortenInt(port);
+				}
+			}
+		} else if (localScreenVisible) {
+			if (focusedField == 1) {
+				if (add) {
+					tempRows = lengthenInt(tempRows, tempString);
+				} else {
+					tempRows = shortenInt(tempRows);
+				}
+			} else if (focusedField == 2) {
+				if (add) {
+					tempColumns = lengthenInt(tempColumns, tempString);
+				} else {
+					tempColumns = shortenInt(tempColumns);
+				}
+			}
+		}
+		return returnVal;
+	}
+	
+	private int shortenInt(int i) {
+		String tempString = Integer.toString(i);
+		if (tempString.length() >= 1) {
+			tempString = tempString.substring(0, tempString.length() - 1);
+		}
+		if (tempString.length() == 0) {
+			return 0;
+		} else {
+			return Integer.parseInt(tempString);
+		}
+	}
+	
+	private int lengthenInt(int i, String addition) {
+		String tempString = Integer.toString(i);
+		tempString += addition;
+		return Integer.parseInt(tempString);
+	}
+	
+	private void quit() {
+		
+	}
+	
+	private void updateScreen() {
 		bufferStrat = this.getBufferStrategy();
 		graphics = null;
 
@@ -365,19 +1112,36 @@ public class GameWindow extends JFrame {
 					RenderingHints.KEY_ANTIALIASING,
 					RenderingHints.VALUE_ANTIALIAS_ON);
 			graphics2D.setRenderingHints(renderHints);
-			if (clicked || initialUpdate) {
+			if (clicked || forceUpdate) {
 				clicked = false;
 				clearWindow();
-				drawGrid();
-				drawInfo();
-				drawPieces();
+				if (gameVisible) {
+					drawGrid();
+					drawInfo();
+					drawPieces();
+				}
+				if (clientServerVisible) {
+					drawClientServer();
+				}
+				if (clientScreenVisible) {
+					drawClientScreen();
+				}
+				if (serverScreenVisible) {
+					drawServerScreen();
+				}
+				if (localScreenVisible) {
+					drawLocalScreen();
+				}
+				drawButtons();
 				processClick(xClick, yClick);
-			} else {
 
 			}
-			clearTime();
-			graphics.drawString("Remaining move time: ", xMax - 250, 40);
-			graphics.drawString(time + " sec", xMax - 100, 40);
+			drawTime();
+			if (advWithVisible) {
+				drawFlashingBox(180, yMax - 40, 38, 240);
+				ticked = false;
+			}
+			
 
 		} catch (Exception e) {
 			System.out.println("Error: " + e.getMessage());
@@ -387,6 +1151,6 @@ public class GameWindow extends JFrame {
 		graphics.dispose();
 		bufferStrat.show();
 		Toolkit.getDefaultToolkit().sync();
-		initialUpdate = false;
+		forceUpdate = false;
 	}
 }

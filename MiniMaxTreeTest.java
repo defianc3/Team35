@@ -193,7 +193,7 @@ public class MiniMaxTreeTest {
 		assertEquals(childNode, rootNode.children.get(0));
 	}
 	
-	@Test
+	/*@Test
 	public void oneDeepTreeGen() {
 		Evaluatable tempTE = mMT.processToDepth(1);
 	}
@@ -209,5 +209,5 @@ public class MiniMaxTreeTest {
 		mMT = new MiniMaxTree(tempE);
 		mMT.processToDepth(4);
 		LinkedList<Evaluatable> path = mMT.getPath();
-	}
+	}*/
 }
