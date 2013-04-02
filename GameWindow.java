@@ -59,7 +59,7 @@ public class GameWindow extends JFrame {
 	/* Controls the visibility of the local options screen */
 	boolean localScreenVisible = false;
 	
-	String address;
+	String address = "";
 	int port;
 	boolean isPlayer1White = true;
 	boolean isPlayer1Human = false;
@@ -928,51 +928,65 @@ public class GameWindow extends JFrame {
 		int yOffset = yMax / 6;
 		if (checkButtonClick(xMax / 3, yMax / 3 + yOffset, yMax / 9, xMax / 9)) {
 			//7 pressed
-			System.out.println("7");
+			address += "7";
+			System.out.println(address);
 			return true;
 		} else if (checkButtonClick(xMax / 3 + xMax / 9, yMax / 3 + yOffset, yMax / 9, xMax / 9)) {
 			//8 pressed
-			System.out.println("8");
+			address += "8";
+			System.out.println(address);
 			return true;
 		} else if (checkButtonClick(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + yOffset, yMax / 9, xMax / 9)) {
 			//9 pressed
-			System.out.println("9");
+			address += "9";
+			System.out.println(address);
 			return true;
 		} else if (checkButtonClick(xMax / 3, yMax / 3 + yMax / 9 + yOffset, yMax / 9, xMax / 9)) {
 			//4 pressed
-			System.out.println("4");
+			address += "4";
+			System.out.println(address);
 			return true;
 		} else if (checkButtonClick(xMax / 3 + xMax / 9, yMax / 3 + yMax / 9 + yOffset, yMax / 9, xMax / 9)) {
 			//5 pressed
-			System.out.println("5");
+			address += "5";
+			System.out.println(address);
 			return true;
 		} else if (checkButtonClick(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + yMax / 9 + yOffset, yMax / 9, xMax / 9)) {
 			//6 pressed
-			System.out.println("6");
+			address += "6";
+			System.out.println(address);
 			return true;
 		} else if (checkButtonClick(xMax / 3, yMax / 3 + 2 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9)) {
 			//1 pressed
-			System.out.println("1");
+			address += "1";
+			System.out.println(address);
 			return true;
 		} else if (checkButtonClick(xMax / 3 + xMax / 9, yMax / 3 + 2 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9)) {
 			//2 pressed
-			System.out.println("2");
+			address += "2";
+			System.out.println(address);
 			return true;
 		} else if (checkButtonClick(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + 2 * yMax / 9 - 1 + yOffset, yMax / 9 , xMax / 9)) {
 			//1 pressed
-			System.out.println("3");
+			address += "3";
+			System.out.println(address);
 			return true;
 		} else if (checkButtonClick(xMax / 3, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9) && clientScreenVisible) {
 			//. pressed
-			System.out.println(".");
+			address += ".";
+			System.out.println(address);
 			return true;
 		} else if (checkButtonClick(xMax / 3 + xMax / 9, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9)) {
 			//0 pressed
-			System.out.println("0");
+			address += "0";
+			System.out.println(address);
 			return true;
 		} else if (checkButtonClick(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9)) {
 			//Backspace pressed
-			System.out.println("Bkspc");
+			if (address.length() > 0) {
+				address = address.substring(0, address.length() - 1);
+			}
+			System.out.println(address);
 			return true;
 		} else {
 			return false;
