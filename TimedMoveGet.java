@@ -20,6 +20,13 @@ class TimedMoveGet implements Runnable {
     private volatile boolean killed = false;
 
     public void run() {
+    	Fanorona game2 = game.copyGame();
+    	if(player == Piece.Type.WHITE){
+    		bestMove = game2.getNextState().getMove(true);
+    	}
+    	else{
+    		bestMove = game2.getNextState().getMove(false);	
+    	}
         while (!killed) {
             try {
             	doOnce();

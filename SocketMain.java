@@ -102,7 +102,7 @@ public class SocketMain{
 		int _rows = 5;
 		int _columns = 9;
 		char clientT = 'B';				//hardcoded board characteristics
-		int responseTime = 5000;
+		int responseTime = 150;
 		out.println("INFO "+_columns+" "+_rows+" "+clientT+" "+responseTime);   //send the info command
 		
 		game = new Fanorona(_columns,_rows);

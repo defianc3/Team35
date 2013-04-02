@@ -17,16 +17,11 @@ class Fanorona implements Evaluatable{
 	long player2Time;
 	
 	int numberOfPossibleMoves;
-	int lastEvaluated;
 	int numberOfTurns;
 	
 	int lastStateReturned;
 	
-	String lastStringReturned;
-	
 	static int cc;
-	
-	static String tempMove;
 
 	Fanorona(int row, int col){
 		board = new Board(row, col,Piece.Type.WHITE);
@@ -34,10 +29,6 @@ class Fanorona implements Evaluatable{
 		player2Time = 0;
 		lastStateReturned = 0;
 		numberOfTurns = 0;
-	}
-	
-	public void setCC(int val){
-		cc = val;
 	}
 	
 	Fanorona(int row, int col, Board b, Piece.Type active){
@@ -309,7 +300,6 @@ class Fanorona implements Evaluatable{
 		for(int i = 0; i < board.rows; i++){
 			for(int j = 0; j < board.columns; j++){
 				eMove = "";
-				tempMove = "";
 				if(board.capturingMoveAvailable(board.array[i][j])){
 					eMove = getNthMove(i,j,false,goal,eMove);
 					if(cc == goal) return eMove;
@@ -342,8 +332,8 @@ class Fanorona implements Evaluatable{
 					}
 				}
 			}
-		}
-		return tempMove;
+		}	
+		return "";
 	}
 	
 	public int numberOfMoves(int row, int column, boolean recursion){
@@ -420,7 +410,6 @@ class Fanorona implements Evaluatable{
 	//Calculates the total number of possible moves (state changes)
 	public void recalculateNumberOfMoves(){
 		numberOfPossibleMoves = numberOfMoves();
-		lastEvaluated = 0;
 	}
 
 	public void printTime(){
@@ -650,46 +639,6 @@ class Fanorona implements Evaluatable{
 			}
 		}
 		return false;
-	}
-
-
-	public String getRandomMove(){
-
-		String ret = "";
-		if(capturingMoveAvailable()){
-			for(int i = 0; i < board.rows; i++){
-				for(int j = 0; j < board.columns; j++){
-					String move = board.PossibleCapturingMoves(board.array[i][j]);
-					Piece p = board.array[i][j];
-					if(move.length() > 0){
-						if(isPossibleCapturingMove(p.row, p.column, move.charAt(1)-48, move.charAt(2)-48, 'a')){
-							ret = ""+p.row+p.column+" "+(move.charAt(1))+""+(move.charAt(2))+" a";
-							break;
-						}
-						else if(isPossibleCapturingMove(p.row, p.column, move.charAt(1)-48, move.charAt(2)-48, 'w')){
-							ret = ""+p.row+p.column+" "+(move.charAt(1))+""+(move.charAt(2)) + " w";
-							break;
-						}
-					}
-				}
-			}
-			return ret;
-		}
-		else{
-			for(int i = 0; i < board.rows; i++){
-				for(int j = 0; j < board.columns; j++){
-					String move = board.possibleMoves(board.array[i][j]);
-					Piece p = board.array[i][j];
-					if(move.length() > 0){
-						if(board.isPossibleMove(p.row, p.column, move.charAt(1)-48, move.charAt(2)-48)){
-							ret = ""+p.row+p.column+" "+(move.charAt(1))+""+(move.charAt(2))+" f";
-							break;
-						}
-					}
-				}
-			}
-			return ret;
-		}
 	}
 
 	Piece.Type activePlayer(){
