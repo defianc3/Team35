@@ -79,10 +79,18 @@ public class SocketMain{
 		
 		long startTime = 0;
 		long endTime = 0;
+
+		int portNumber = 1024;
 		
 		Fanorona game;
 		Piece.Type clientPlayer;
-		ServerSocket sock = create();
+		ServerSocket sock = null;
+		try{
+			sock = new ServerSocket(portNumber);
+		}
+		catch(Exception e){
+			System.out.println("Port not available");
+		}
 		System.out.println("Listening on "+sock.getLocalPort());
 		
 		Socket client = null;
