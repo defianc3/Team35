@@ -748,26 +748,59 @@ public class GameWindow extends JFrame {
 	
 	private void drawClientScreen() {
 		//Address field
-		//drawBox(4 * (xMax / 10), yMax / 3 + yMax / 4, yMax / 6, xMax / 5);
+		drawBox(xMax / 2, 2 * yMax / 10, yMax / 12, xMax / 5);
+		graphics.drawString("Address:", xMax / 4, 2 * yMax / 10 + yMax / 24);
 		//Port field
-		//drawBox(4 * (xMax / 10), yMax / 3 + yMax / 4, yMax / 6, xMax / 5);
+		drawBox(xMax / 2, 2 * yMax / 10 + yMax / 12 + yMax / 20, yMax / 12, xMax / 5);
+		graphics.drawString("Port:", xMax / 4, 2 * yMax / 10 + yMax / 24  + yMax / 12 + yMax / 20);
 		//Number pad
+		drawNumberPad();
 	}
 	
 	private void drawServerScreen() {
+		int boxHeight = yMax / 13;
+		int ySpacing = yMax / 40;
 		//Rows field
+		drawBox(xMax / 2, yMax / 10, boxHeight, xMax / 5);
+		graphics.drawString("Rows:", xMax / 4, yMax / 10 + boxHeight / 2);
 		//Columns field
+		drawBox(xMax / 2, yMax / 10 + ySpacing + boxHeight, boxHeight, xMax / 5);
+		graphics.drawString("Columns:", xMax / 4, yMax / 10 + ySpacing + 3 * boxHeight / 2);
 		//Port field
-		//Color checkbox
+		drawBox(xMax / 2, yMax / 10 + 2 * ySpacing + 2 * boxHeight, boxHeight, xMax / 5);
+		graphics.drawString("Port:", xMax / 4, yMax / 10 + 2 * ySpacing + 5 * boxHeight / 2);
+		//Color selector
+		graphics.drawString("Player 1 Color:", xMax / 4, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
+		graphics.drawString("Black", xMax / 2, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
+		graphics.drawString("White", xMax / 2 + xMax / 9, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
 		//Number pad
+		drawNumberPad();
 	}
 	
 	private void drawLocalScreen() {
+		int boxHeight = yMax / 16;
+		int ySpacing = yMax / 40;
 		//Rows field
+		drawBox(xMax / 2, yMax / 10, boxHeight, xMax / 5);
+		graphics.drawString("Rows:", xMax / 4, yMax / 10 + boxHeight / 2);
 		//Columns field
-		//Player 1 color checkbox
+		drawBox(xMax / 2, yMax / 10 + ySpacing + boxHeight, boxHeight, xMax / 5);
+		graphics.drawString("Columns:", xMax / 4, yMax / 10 + ySpacing + 3 * boxHeight / 2);
+		//Color selector
+		graphics.drawString("Player 1 Color:", xMax / 4, yMax / 10 + 2 * ySpacing + 5 * boxHeight / 2);
+		graphics.drawString("Black", xMax / 2, yMax / 10 + 2 * ySpacing + 5 * boxHeight / 2);
+		graphics.drawString("White", xMax / 2 + xMax / 9, yMax / 10 + 2 * ySpacing + 5 * boxHeight / 2);
+		//Player 1 type
+		graphics.drawString("Player 1 Type:", xMax / 4, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
+		graphics.drawString("Human", xMax / 2, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
+		graphics.drawString("Computer", xMax / 2 + xMax / 9, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
+		//Player 2 type
+		graphics.drawString("Player 2 Type:", xMax / 4, yMax / 10 + 4 * ySpacing + 9 * boxHeight / 2);
+		graphics.drawString("Human", xMax / 2, yMax / 10 + 4 * ySpacing + 9 * boxHeight / 2);
+		graphics.drawString("Computer", xMax / 2 + xMax / 9, yMax / 10 + 4 * ySpacing + 9 * boxHeight / 2);
 		//Player 1 player checkbox
 		//Player 2 player checkbox
+		drawNumberPad();
 	}
 	
 	private void drawNumberPad() {
@@ -906,10 +939,6 @@ public class GameWindow extends JFrame {
 				}
 				if (localScreenVisible) {
 					drawLocalScreen();
-				}
-				if (clientScreenVisible || serverScreenVisible ||
-						localScreenVisible) {
-					drawNumberPad();
 				}
 				drawButtons();
 				processClick(xClick, yClick);
