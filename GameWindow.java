@@ -9,8 +9,6 @@ import java.awt.image.BufferStrategy;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Scanner;
-
 
 import javax.swing.JFrame;
 import javax.swing.JViewport;
@@ -121,12 +119,7 @@ public class GameWindow extends JFrame {
 		xMax = (int) rec.getMaxX();
 		yMax = (int) rec.getMaxY();
 
-		calculateDimensions();
-		if (radius > xGridMin) {
-			xGridMin = (radius) + 10;
-			yGridMin = (radius) + 40;
-			calculateDimensions();
-		}
+
 		
         ActionListener timerListener = new ActionListener()  
         {
@@ -325,7 +318,6 @@ public class GameWindow extends JFrame {
 	}
 	
 	private void calculateDimensions() {
-		/* TODO Add stroke size scaling coefficient */
 		xSpacing = (xMax - 2 * xGridMin)/(xBoardDim - 1);
 		ySpacing = ((yMax - 30) - 2 * xGridMin)/(yBoardDim - 1);
 		if (xSpacing >= ySpacing) {
@@ -733,6 +725,9 @@ public class GameWindow extends JFrame {
 		graphics.drawString(Integer.toString(port), xMax / 2, 2 * yMax / 10 + yMax / 24  + yMax / 12 + yMax / 20);
 		//Number pad
 		drawNumberPad();
+		//Play button
+		drawBox(7 * xMax / 10, 4 * yMax / 5, yMax / 12, xMax / 5);
+		graphics.drawString("Play...", 7 * xMax / 10 + xMax / 15, 4 * yMax / 5 + yMax / 24);
 	}
 	
 	private boolean checkClientButtons() {
@@ -748,6 +743,9 @@ public class GameWindow extends JFrame {
 			System.out.println("Port clicked");
 			return true;
 		} else if (checkNumberPadButtons()) {
+			return true;
+		} else if (checkButtonClick(7 * xMax / 10, 4 * yMax / 5, yMax / 12, xMax / 5)) {
+			startGame();
 			return true;
 		} else {
 			return false;
@@ -785,6 +783,9 @@ public class GameWindow extends JFrame {
 			System.out.println("White selected");
 			return true;
 		} else if (checkNumberPadButtons()) {
+			return true;
+		} else if (checkButtonClick(7 * xMax / 10, 4 * yMax / 5, yMax / 12, xMax / 5)) {
+			startGame();
 			return true;
 		} else {
 			return false;
@@ -838,6 +839,9 @@ public class GameWindow extends JFrame {
 			return true;
 		} else if (checkNumberPadButtons()) {
 			return true;
+		} else if (checkButtonClick(7 * xMax / 10, 4 * yMax / 5, yMax / 12, xMax / 5)) {
+			startGame();
+			return true;
 		} else {
 			return false;
 		}
@@ -871,6 +875,9 @@ public class GameWindow extends JFrame {
 		}
 		//Number pad
 		drawNumberPad();
+		//Play button
+		drawBox(7 * xMax / 10, 4 * yMax / 5, yMax / 12, xMax / 5);
+		graphics.drawString("Play...", 7 * xMax / 10 + xMax / 15, 4 * yMax / 5 + yMax / 24);
 		
 	}
 	
@@ -915,6 +922,9 @@ public class GameWindow extends JFrame {
 			drawBox(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 4 * ySpacing + 4 * boxHeight, boxHeight - ySelectorShift, xMax / 8);
 		}
 		drawNumberPad();
+		//Play button
+		drawBox(7 * xMax / 10, 4 * yMax / 5, yMax / 12, xMax / 5);
+		graphics.drawString("Play...", 7 * xMax / 10 + xMax / 15, 4 * yMax / 5 + yMax / 24);
 	}
 	
 	private void drawNumberPad() {
@@ -1095,6 +1105,21 @@ public class GameWindow extends JFrame {
 		String tempString = Integer.toString(i);
 		tempString += addition;
 		return Integer.parseInt(tempString);
+	}
+	
+	private void startGame() {
+		clientScreenVisible = false;
+		serverScreenVisible = false;
+		localScreenVisible = false;
+		gameVisible = true;
+		xBoardDim = tempRows;
+		yBoardDim = tempColumns;
+		calculateDimensions();
+		if (radius > xGridMin) {
+			xGridMin = (radius) + 10;
+			yGridMin = (radius) + 40;
+			calculateDimensions();
+		}
 	}
 	
 	private void quit() {
