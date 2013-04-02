@@ -144,7 +144,7 @@ class Board{
 		}
 	}
 
-	//
+	//performs the move and handles approach / captures
 	boolean movePiece(int row, int col, int row2, int col2, char type){
 		
 		if(type == 'S'){
@@ -248,6 +248,7 @@ class Board{
 		return true;
 	}
 
+	//Returns a string which is the list of all board locations connected to piece p
 	String connectedSpaces(Piece p){
 		
 		int row = p.row;
@@ -314,7 +315,6 @@ class Board{
 
 	//Determines whether or not a move is allowable (if the original position is of type
 	//activePlayer, and the second position is null)
-	//public boolean isPossibleMove(int _row, int _col,String s, char type){
 	public boolean isPossibleMove(int _row, int _col,int row2, int col2){
 				
 		if(array[_row][_col].type != activePlayer){
@@ -328,6 +328,7 @@ class Board{
 		return false;
 	}
 
+	//Determines if the move from _row,_col to row2,col2 will result in a capture
 	public boolean isPossibleCapturingMove(int _row, int _col, int row2, int col2,char type){
 
 		boolean successive = false;
@@ -356,7 +357,6 @@ class Board{
 			int newlineIndex = activeMoves.lastIndexOf('\n');
 			if(newlineIndex == -1){
 				//'\n' not found, so set the first index to 0
-			//	newlineIndex = 0;
 			}
 			newlineIndex++;
 			String movesThisTurn = activeMoves.substring(newlineIndex, activeMoves.length());
@@ -378,20 +378,13 @@ class Board{
 			return false;
 		}
 
-
-		//System.out.println("Visited moves: "+visitedList);
-
 		if(successive && (prow != _row || pcol != _col)){
-			//System.out.println("returning false");
 			return false;
 		}
 
 		if(successive){
-		//	System.out.println("row2: "+row2+"  col2: "+col2);
 			for(int i = 0; i < visitedList.length()-1; i+=2){
-		//		System.out.println("i: "+visitedList.charAt(i)+"  i2: "+visitedList.charAt(i+1));
 				if(row2 == visitedList.charAt(i)-48 && col2 == visitedList.charAt(i+1)-48){
-			//		System.out.println("returning false2");
 					return false;
 				}
 			}
@@ -408,20 +401,17 @@ class Board{
 		Board tester = copyBoard();
 		int temp = tester.numberRemaining(other);
 
-		//tester.prettyprint();
-		//System.out.println(s);
-
 		boolean valid = tester.movePiece(_row,_col,row2,col2,type);
 		if(!valid){
 			return false;
 		}
 		int temp2 = tester.numberRemaining(other);
-		//System.out.println("temp: "+temp+"temp2: "+temp2);
 
 		if(temp2 < temp) return true;
 		return false;
 	}
 
+	//Determine if there is a capturing move available with origin position p
 	boolean capturingMoveAvailable(Piece p){
 		String latestMove = "";
 		if(activePlayer == Piece.Type.WHITE && whiteMoves.length() != 0){
@@ -436,69 +426,49 @@ class Board{
 		}
 
 		String s = possibleMoves(p);
-//		int length = s.length()/3;
-//		for(int k = 0; k < length; k++){
-//			int row = (int) s.charAt(1) -48;
-//			int col = (int) s.charAt(2) -48;
-//			s = s.substring(3);
-//			if(isPossibleCapturingMove(p.row,p.column,row,col,'a')){
-//			//	System.out.println(p.row+" "+p.column+" "+move);
-//				return true;
-//			}
-//			if(isPossibleCapturingMove(p.row,p.column,row,col,'w')) return true;
-		
-			while(s.length() != 0){
-				int row1;
-				int col1;
-				int row2;
-				int col2;
-				int index = s.indexOf(' ');
-				row1 = Integer.parseInt(s.substring(0,index));
-				s = s.substring(index+1);
-				index = s.indexOf(' ');
-				col1 = Integer.parseInt(s.substring(0,index));
-				s = s.substring(index+1);
-				index = s.indexOf(' ');
-				row2 = Integer.parseInt(s.substring(0,index));
-				s = s.substring(index+1);
-				index = s.indexOf(',');
-				if(index == -1){
-					col2 = Integer.parseInt(s.substring(0,s.length()-1));
-					s = "";
-				}
-				else{
-					col2 = Integer.parseInt(s.substring(0,index));
-					s = s.substring(index+1);
-				}
-				index = s.indexOf(' ');
-				if(index == -1){
-					s = "";
-				}
-				else{
-					s = s.substring(index+1);
-				}
-				if(isPossibleCapturingMove(row1, col1, row2, col2, 'A')) return true;
-				if(isPossibleCapturingMove(row1, col1, row2, col2, 'W')) return true;
+
+		while(s.length() != 0){
+			int row1;
+			int col1;
+			int row2;
+			int col2;
+			int index = s.indexOf(' ');
+			row1 = Integer.parseInt(s.substring(0,index));
+			s = s.substring(index+1);
+			index = s.indexOf(' ');
+			col1 = Integer.parseInt(s.substring(0,index));
+			s = s.substring(index+1);
+			index = s.indexOf(' ');
+			row2 = Integer.parseInt(s.substring(0,index));
+			s = s.substring(index+1);
+			index = s.indexOf(',');
+			if(index == -1){
+				col2 = Integer.parseInt(s.substring(0,s.length()-1));
+				s = "";
 			}
+			else{
+				col2 = Integer.parseInt(s.substring(0,index));
+				s = s.substring(index+1);
+			}
+			index = s.indexOf(' ');
+			if(index == -1){
+				s = "";
+			}
+			else{
+				s = s.substring(index+1);
+			}
+			if(isPossibleCapturingMove(row1, col1, row2, col2, 'A')) return true;
+			if(isPossibleCapturingMove(row1, col1, row2, col2, 'W')) return true;
+		}
 		return false;
 	}
 
+	//Determine if there is a capturing move available from any piece
 	boolean capturingMoveAvailable(){
 		for(int i = 0; i < rows; i++){
 			for(int j = 0; j < columns; j++){
 				if(array[i][j].type == activePlayer){
 					String s = possibleMoves(array[i][j]);
-					//System.out.println("possible moves from "+i+""+j+": "+s);
-//					int length = s.length()/3;
-//					for(int k = 0; k < length; k++){
-//						int row = (int) s.charAt(1) -48;
-//						int col = (int) s.charAt(2) -48;
-//						s = s.substring(3);
-//						String move = ""+row+col;
-//						//System.out.println("testing "+move);
-//						if(isPossibleCapturingMove(i,j,row,col,'a')) return true;
-//						if(isPossibleCapturingMove(i,j,row,col,'w')) return true;
-//					}
 					
 					while(s.length() != 0){
 						int row1;
@@ -533,17 +503,10 @@ class Board{
 		return false;
 	}
 
+	//Returns a string which is the list of moves which can be made from p
 	String possibleMoves(Piece p){
 		String connected = connectedSpaces(p);
 		String possible = "";
-
-//		for(int i = 0; i < connected.length()/3;i++){
-//			String move = ""+connected.charAt(temp)+connected.charAt(temp+1);
-//			if(isPossibleMove(p.row, p.column,connected.charAt(temp)-48, connected.charAt(temp+1)-48,' ')){
-//				possible+=" "+move;
-//			}
-//			temp+=3;
-//		}
 		
 		while(connected.length() != 0){
 			int row2;
@@ -570,6 +533,7 @@ class Board{
 		return possible.substring(1);
 	}
 	
+	//Returns a string which is the possible moves from p, includes the direction (P)
 	String possibleMovesWithDirection(Piece p){
 		String connected = connectedSpaces(p);
 
@@ -597,19 +561,10 @@ class Board{
 			}
 		}
 		
-		
-//		for(int i = 0; i < connected.length()/3;i++){
-//			String move = ""+connected.charAt(temp)+connected.charAt(temp+1);
-//			if(isPossibleMove(p.row, p.column,connected.charAt(temp)-48, connected.charAt(temp+1)-48,' ')){
-//				possible+=" "+p.row+""+p.column+" "+move+" F";
-//			}
-//			temp+=3;
-//		}
-		
-		
 		return possible;
 	}
 
+	//Returns a string which is the possible capturing moves from p
 	public String PossibleCapturingMoves(Piece p){
 		
 		String connected = possibleMoves(p);
@@ -633,63 +588,51 @@ class Board{
 		return possiblecapt;
 	}
 	
+	//Returns a string which is the possible capturing moves from p, includes direction (A/W)
 	public String PossibleCapturingMovesWithDirection(Piece p){
 		
 		String connected = possibleMoves(p);
 
 		String possiblecapt = "";
-//		int temp = 1;
-//		for(int i = 0; i < connected.length()/3; i++){
-//			String move = ""+connected.charAt(temp)+connected.charAt(temp+1);
-//			int row2 = connected.charAt(temp)-48;
-//			int col2 = connected.charAt(temp+1)-48;
-//			temp += 3;
-		
-			while(connected.length() != 0){
-				int row1;
-				int col1;
-				int row2;
-				int col2;
-				int index = connected.indexOf(' ');
-				row1 = Integer.parseInt(connected.substring(0,index));
-				connected = connected.substring(index+1);
-				index = connected.indexOf(' ');
-				col1 = Integer.parseInt(connected.substring(0,index));
-				connected = connected.substring(index+1);
-				index = connected.indexOf(' ');
-				row2 = Integer.parseInt(connected.substring(0,index));
-				connected = connected.substring(index+1);
-				index = connected.indexOf(' ');
-				if(index == -1){
-					col2 = Integer.parseInt(connected.substring(0,connected.length()-1));
-					connected = "";
-				}
-				else{
-					col2 = Integer.parseInt(connected.substring(0,index-1));
-					connected = connected.substring(index+1);
-				}
-				if(isPossibleCapturingMove(row1, col1, row2, col2, 'A')){
-					possiblecapt+=" A "+row1+" "+col1+" "+row2+" "+col2+",";
-				}
-				if(isPossibleCapturingMove(row1, col1, row2, col2, 'W')){
-					possiblecapt+=" W "+row1+" "+col1+" "+row2+" "+col2+",";
-				}
-			}
 
-//			if(isPossibleCapturingMove(p.row, p.column,row2,col2,'a')){
-//				possiblecapt+=" "+p.row+""+p.column+" "+move+" a";
-//			}
-//
-//			if(isPossibleCapturingMove(p.row, p.column,row2,col2,'w')){
-//				possiblecapt+=" "+p.row+""+p.column+" "+move+" w";
-//			}
-		//}
+		while(connected.length() != 0){
+			int row1;
+			int col1;
+			int row2;
+			int col2;
+			int index = connected.indexOf(' ');
+			row1 = Integer.parseInt(connected.substring(0,index));
+			connected = connected.substring(index+1);
+			index = connected.indexOf(' ');
+			col1 = Integer.parseInt(connected.substring(0,index));
+			connected = connected.substring(index+1);
+			index = connected.indexOf(' ');
+			row2 = Integer.parseInt(connected.substring(0,index));
+			connected = connected.substring(index+1);
+			index = connected.indexOf(' ');
+			if(index == -1){
+				col2 = Integer.parseInt(connected.substring(0,connected.length()-1));
+				connected = "";
+			}
+			else{
+				col2 = Integer.parseInt(connected.substring(0,index-1));
+				connected = connected.substring(index+1);
+			}
+			if(isPossibleCapturingMove(row1, col1, row2, col2, 'A')){
+				possiblecapt+=" A "+row1+" "+col1+" "+row2+" "+col2+",";
+			}
+			if(isPossibleCapturingMove(row1, col1, row2, col2, 'W')){
+				possiblecapt+=" W "+row1+" "+col1+" "+row2+" "+col2+",";
+			}
+		}
+
 		if(possiblecapt.length() == 0){
 			return "";
 		}
 		return possiblecapt.substring(1);
 	}
 	
+	//Determines which direction the move travels in (N/S/E/W etc)
 	public String getDirection(int _row, int _col, int row2, int col2){
 		String direction = "";
 		if(_row == 0 && _col == 0 && row2 == 0 && col2 == 0) return "-";
