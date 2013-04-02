@@ -297,6 +297,7 @@ class Fanorona implements Evaluatable{
 	public String getNthMove(int goal){
 		cc = 0;
 		String eMove = "";
+		boolean captAvailable = capturingMoveAvailable();
 		for(int i = 0; i < board.rows; i++){
 			for(int j = 0; j < board.columns; j++){
 				eMove = "";
@@ -304,7 +305,7 @@ class Fanorona implements Evaluatable{
 					eMove = getNthMove(i,j,false,goal,eMove);
 					if(cc == goal) return eMove;
 				}
-				else if(!capturingMoveAvailable()){
+				else if(!captAvailable){
 
 					String possibleMoves = board.possibleMovesWithDirection(board.array[i][j]);
 					
@@ -379,12 +380,13 @@ class Fanorona implements Evaluatable{
 	
 	public int numberOfMoves(){
 		int count = 0;
+		boolean captAvailable = capturingMoveAvailable();
 		for(int i = 0; i < board.rows; i++){
 			for(int j = 0; j < board.columns; j++){
 				if(board.capturingMoveAvailable(board.array[i][j])){
 					count += numberOfMoves(i,j,false);
 				}
-				else if(!capturingMoveAvailable()){
+				else if(!captAvailable){
 					String possibleMoves = board.possibleMovesWithDirection(board.array[i][j]);
 					if(possibleMoves.length() > 0){
 						possibleMoves = possibleMoves.substring(1);
