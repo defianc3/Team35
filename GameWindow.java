@@ -339,28 +339,28 @@ public class GameWindow extends JFrame {
 				//Reset clicked
 				System.out.println("RESET");
 				return true;
-			}
-			if (checkButtonClick(480, yMax - 30, 20, 80)) {
+			} else if (checkButtonClick(480, yMax - 30, 20, 80)) {
 				//Quit clicked
 				System.out.println("QUIT");
 				return true;
-			}
-			if (advWithVisible) {
+			} else if (advWithVisible) {
 				if (checkButtonClick(200, yMax - 30, 20, 80)) {
 					//Advance clicked
 					advWithVisible = false;
 					forceUpdate = true;
 					return true;
-				}
-				if (checkButtonClick(315, yMax - 30, 20, 80)) {
+				} else if (checkButtonClick(315, yMax - 30, 20, 80)) {
 					//Withdraw clicked
 					advWithVisible = false;
 					forceUpdate = true;
 					return true;
+				} else {
+					return false;
 				}
+			} else {
+				return false;
 			}
-		}
-		if (clientServerVisible) {
+		} else if (clientServerVisible) {
 			if (checkButtonClick(xMax / 4, yMax / 3, yMax / 6, xMax / 5)) {
 				//Client clicked
 				System.out.println("CLIENT");
@@ -369,8 +369,7 @@ public class GameWindow extends JFrame {
 				forceUpdate = true;
 				updateScreen();
 				return true;
-			}
-			if (checkButtonClick(xMax / 2 + xMax / 20, yMax /3, yMax / 6,
+			} else if (checkButtonClick(xMax / 2 + xMax / 20, yMax /3, yMax / 6,
 					xMax / 5)) {
 				//Server clicked
 				System.out.println("SERVER");
@@ -379,8 +378,7 @@ public class GameWindow extends JFrame {
 				forceUpdate = true;
 				updateScreen();
 				return true;
-			}
-			if (checkButtonClick(4 * (xMax / 10), yMax / 3 + yMax / 4,
+			} else if (checkButtonClick(4 * (xMax / 10), yMax / 3 + yMax / 4,
 					yMax / 6, xMax / 5)) {
 				//Local clicked
 				System.out.println("LOCAL");
@@ -389,56 +387,61 @@ public class GameWindow extends JFrame {
 				forceUpdate = true;
 				updateScreen();
 				return true;
+			} else {
+				return false;
 			}
-		}
-		if (clientScreenVisible) {
+		} else if (clientScreenVisible) {
 			if (false) {
 				//Address field clicked
 				
-			}
-			if (false) {
+			} else if (false) {
 				//Port field clicked
+			} else if (checkNumberPadButtons()) {
+				
+			} else {
+				return false;
 			}
-		}
-		if (serverScreenVisible) {
+		} else if (serverScreenVisible) {
 			if (false) {
 				//Rows field clicked
 				
-			}
-			if (false) {
+			} else if (false) {
 				//Columns field clicked
 				
-			}
-			if (false) {
+			} else if (false) {
 				//Port field clicked
 				
-			}
-			if (false) {
+			} else if (false) {
 				//Color checkbox clicked
 				
+			} else if (checkNumberPadButtons()) {
+				
+			} else {
+				return false;
 			}
-		}
-		if (localScreenVisible) {
+		} else if (localScreenVisible) {
 			if (false) {
 				//Rows field clicked
 				
-			}
-			if (false) {
+			} else if (false) {
 				//Columns field clicked
 				
-			}
-			if (false) {
+			} else if (false) {
 				//Color checkbox clicked
 				
-			}
-			if (false) {
+			} else if (false) {
 				//Player 1 type checkbox clicked
 				
-			}
-			if (false) {
+			} else if (false) {
 				//Player 2 type checkbox clicked
 				
+			} else if (checkNumberPadButtons()) {
+				
+			} else {
+				return false;
 			}
+		} else {
+			return false;
 		}
 		return false;
 	}
@@ -810,6 +813,61 @@ public class GameWindow extends JFrame {
 		drawBox(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9);
 		graphics.drawString("<-", xMax / 3 + 5 * xMax / 18 - xShift,
 				yMax / 3 + 7 * yMax / 18 - yShift + yOffset);
+	}
+	
+	private boolean checkNumberPadButtons() {
+		int yOffset = yMax / 6;
+		if (checkButtonClick(xMax / 3, yMax / 3 + yOffset, yMax / 9, xMax / 9)) {
+			//7 pressed
+			System.out.println("7");
+			return true;
+		} else if (checkButtonClick(xMax / 3 + xMax / 9, yMax / 3 + yOffset, yMax / 9, xMax / 9)) {
+			//8 pressed
+			System.out.println("8");
+			return true;
+		} else if (checkButtonClick(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + yOffset, yMax / 9, xMax / 9)) {
+			//9 pressed
+			System.out.println("9");
+			return true;
+		} else if (checkButtonClick(xMax / 3, yMax / 3 + yMax / 9 + yOffset, yMax / 9, xMax / 9)) {
+			//4 pressed
+			System.out.println("4");
+			return true;
+		} else if (checkButtonClick(xMax / 3 + xMax / 9, yMax / 3 + yMax / 9 + yOffset, yMax / 9, xMax / 9)) {
+			//5 pressed
+			System.out.println("5");
+			return true;
+		} else if (checkButtonClick(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + yMax / 9 + yOffset, yMax / 9, xMax / 9)) {
+			//6 pressed
+			System.out.println("6");
+			return true;
+		} else if (checkButtonClick(xMax / 3, yMax / 3 + 2 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9)) {
+			//1 pressed
+			System.out.println("1");
+			return true;
+		} else if (checkButtonClick(xMax / 3 + xMax / 9, yMax / 3 + 2 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9)) {
+			//2 pressed
+			System.out.println("2");
+			return true;
+		} else if (checkButtonClick(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + 2 * yMax / 9 - 1 + yOffset, yMax / 9 , xMax / 9)) {
+			//1 pressed
+			System.out.println("3");
+			return true;
+		} else if (checkButtonClick(xMax / 3, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9)) {
+			//. pressed
+			System.out.println(".");
+			return true;
+		} else if (checkButtonClick(xMax / 3 + xMax / 9, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9)) {
+			//0 pressed
+			System.out.println("0");
+			return true;
+		} else if (checkButtonClick(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9)) {
+			//Backspace pressed
+			System.out.println("Bkspc");
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	private void quit() {
