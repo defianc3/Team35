@@ -783,7 +783,7 @@ public class GameWindow extends JFrame {
 		drawBox(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + yOffset, yMax / 9, xMax / 9);
 		graphics.drawString("9", xMax / 3 + 5 * xMax / 18 - xShift,
 				yMax / 3 + yMax / 18 - yShift + yOffset);
-		
+
 		drawBox(xMax / 3, yMax / 3 + yMax / 9 + yOffset, yMax / 9, xMax / 9);
 		graphics.drawString("4", xMax / 3 + xMax / 18 - xShift,
 				yMax / 3 + 3 * yMax / 18 - yShift + yOffset);
@@ -793,7 +793,7 @@ public class GameWindow extends JFrame {
 		drawBox(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + yMax / 9 + yOffset, yMax / 9, xMax / 9);
 		graphics.drawString("6", xMax / 3 + 5 * xMax / 18 - xShift,
 				yMax / 3 + 3 * yMax / 18 - yShift + yOffset);
-		
+
 		drawBox(xMax / 3, yMax / 3 + 2 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9);
 		graphics.drawString("1", xMax / 3 + xMax / 18 - xShift,
 				yMax / 3 + 5 * yMax / 18 - yShift + yOffset);
@@ -803,10 +803,12 @@ public class GameWindow extends JFrame {
 		drawBox(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + 2 * yMax / 9 - 1 + yOffset, yMax / 9 , xMax / 9);
 		graphics.drawString("3", xMax / 3 + 5 * xMax / 18 - xShift,
 				yMax / 3 + 5 * yMax / 18 - yShift + yOffset);
-		
-		drawBox(xMax / 3, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9);
-		graphics.drawString(".", xMax / 3 + xMax / 18 - xShift,
-				yMax / 3 + 7 * yMax / 18 - yShift + yOffset);
+
+		if (clientScreenVisible) {
+			drawBox(xMax / 3, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9);
+			graphics.drawString(".", xMax / 3 + xMax / 18 - xShift,
+					yMax / 3 + 7 * yMax / 18 - yShift + yOffset);
+		}
 		drawBox(xMax / 3 + xMax / 9, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9);
 		graphics.drawString("0", xMax / 3 + 3 * xMax / 18 - xShift,
 				yMax / 3 + 7 * yMax / 18 - yShift + yOffset);
@@ -853,7 +855,7 @@ public class GameWindow extends JFrame {
 			//1 pressed
 			System.out.println("3");
 			return true;
-		} else if (checkButtonClick(xMax / 3, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9)) {
+		} else if (checkButtonClick(xMax / 3, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9) && clientScreenVisible) {
 			//. pressed
 			System.out.println(".");
 			return true;
