@@ -734,6 +734,8 @@ public class GameWindow extends JFrame {
 				2 * yMax / 10 + yMax / 12 + yMax / 20, yMax / 12, xMax / 5)) {
 			//Port field clicked
 			return true;
+		} else if (checkNumberPadButtons()) {
+			return true;
 		} else {
 			return false;
 		}
@@ -761,6 +763,8 @@ public class GameWindow extends JFrame {
 		} else if (checkButtonClick(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 10)) {
 			//Player 1 color white clicked
 			isPlayer1White = true;
+			return true;
+		} else if (checkNumberPadButtons()) {
 			return true;
 		} else {
 			return false;
@@ -795,6 +799,8 @@ public class GameWindow extends JFrame {
 			return true;
 		} else if (checkButtonClick(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 4 * ySpacing + 4 * boxHeight, boxHeight - ySelectorShift, xMax / 8)) {
 			//Player 2 computer clicked
+			return true;
+		} else if (checkNumberPadButtons()) {
 			return true;
 		} else {
 			return false;
