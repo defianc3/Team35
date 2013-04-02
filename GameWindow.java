@@ -738,10 +738,14 @@ public class GameWindow extends JFrame {
 	private boolean checkClientButtons() {
 		if (checkButtonClick(xMax / 2, 2 * yMax / 10, yMax / 12, xMax / 5)) {
 			//Address field clicked
+			focusedField = 1;
+			System.out.println("Address clicked");
 			return true;
 		} else if (checkButtonClick(xMax / 2,
 				2 * yMax / 10 + yMax / 12 + yMax / 20, yMax / 12, xMax / 5)) {
 			//Port field clicked
+			focusedField = 2;
+			System.out.println("Port clicked");
 			return true;
 		} else if (checkNumberPadButtons()) {
 			return true;
@@ -757,12 +761,18 @@ public class GameWindow extends JFrame {
 		int ySelectorShift = yMax / 50;
 		if (checkButtonClick(xMax / 2, yMax / 10, boxHeight, xMax / 5)) {
 			//Row field clicked
+			focusedField = 1;
+			System.out.println("Row clicked");
 			return true;
 		} else if (checkButtonClick(xMax / 2, yMax / 10 + ySpacing + boxHeight, boxHeight, xMax / 5)) {
 			//Columns field clicked
+			focusedField = 2;
+			System.out.println("Column clicked");
 			return true;
 		} else if (checkButtonClick(xMax / 2, yMax / 10 + 2 * ySpacing + 2 * boxHeight, boxHeight, xMax / 5)) {
 			//Port field clicked
+			focusedField = 3;
+			System.out.println("Port clicked");
 			return true;
 		} else if (checkButtonClick(xMax / 2, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 10)) {
 			//Player 1 color black clicked
@@ -788,9 +798,13 @@ public class GameWindow extends JFrame {
 		int ySelectorShift = yMax / 50;
 		if (checkButtonClick(xMax / 2, yMax / 10, boxHeight, xMax / 5)) {
 			//Rows field clicked
+			focusedField = 1;
+			System.out.println("Row clicked");
 			return true;
 		} else if (checkButtonClick(xMax / 2, yMax / 10 + ySpacing + boxHeight, boxHeight, xMax / 5)) {
 			//Columns field clicked
+			System.out.println("Column clicked");
+			focusedField = 2;
 			return true;
 		} else if (checkButtonClick(xMax / 2, yMax / 10 + 2 * ySpacing + 2 * boxHeight, boxHeight - ySelectorShift, xMax / 10)) {
 			//Player 1 color black clicked
@@ -1022,43 +1036,43 @@ public class GameWindow extends JFrame {
 				}
 			} else if (focusedField == 2) {
 				if (add) {
-					lengthenInt(port, tempString);
+					port = lengthenInt(port, tempString);
 				} else {
-					shortenInt(port);
+					port = shortenInt(port);
 				}
 			}
 		} else if (serverScreenVisible) {
 			if (focusedField == 1) {
 				if (add) {
-					lengthenInt(tempRows, tempString);
+					tempRows = lengthenInt(tempRows, tempString);
 				} else {
-					shortenInt(tempRows);
+					tempRows = shortenInt(tempRows);
 				}
 			} else if (focusedField == 2) {
 				if (add) {
-					lengthenInt(tempColumns, tempString);
+					tempColumns = lengthenInt(tempColumns, tempString);
 				} else {
-					shortenInt(tempColumns);
+					tempColumns = shortenInt(tempColumns);
 				}
 			} else if (focusedField == 3) {
 				if (add) {
-					lengthenInt(port, tempString);
+					port = lengthenInt(port, tempString);
 				} else {
-					shortenInt(port);
+					port = shortenInt(port);
 				}
 			}
 		} else if (localScreenVisible) {
 			if (focusedField == 1) {
 				if (add) {
-					lengthenInt(tempRows, tempString);
+					tempRows = lengthenInt(tempRows, tempString);
 				} else {
-					shortenInt(tempRows);
+					tempRows = shortenInt(tempRows);
 				}
 			} else if (focusedField == 2) {
 				if (add) {
-					lengthenInt(tempColumns, tempString);
+					tempColumns = lengthenInt(tempColumns, tempString);
 				} else {
-					shortenInt(tempColumns);
+					tempColumns = shortenInt(tempColumns);
 				}
 			}
 		}
@@ -1067,10 +1081,14 @@ public class GameWindow extends JFrame {
 	
 	private int shortenInt(int i) {
 		String tempString = Integer.toString(i);
-		if (tempString.length() > 0) {
+		if (tempString.length() >= 1) {
 			tempString = tempString.substring(0, tempString.length() - 1);
 		}
-		return Integer.parseInt(tempString);
+		if (tempString.length() == 0) {
+			return 0;
+		} else {
+			return Integer.parseInt(tempString);
+		}
 	}
 	
 	private int lengthenInt(int i, String addition) {
