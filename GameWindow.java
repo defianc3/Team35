@@ -757,12 +757,23 @@ public class GameWindow extends JFrame {
 			return true;
 		} else if (checkButtonClick(xMax / 2, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 10)) {
 			//Player 1 color black clicked
-			isPlayer1White = false;
-			//Update here?
+			if (!forceUpdate) {
+				isPlayer1White = false;
+				forceUpdate = true;
+				clicked = false;
+				updateScreen();
+				System.out.println("Black selected");
+			}
 			return true;
 		} else if (checkButtonClick(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 10)) {
 			//Player 1 color white clicked
-			isPlayer1White = true;
+			if (!forceUpdate) {
+				isPlayer1White = true;
+				forceUpdate = true;
+				clicked = false;
+				updateScreen();
+				System.out.println("White selected");
+			}
 			return true;
 		} else if (checkNumberPadButtons()) {
 			return true;
@@ -784,21 +795,63 @@ public class GameWindow extends JFrame {
 			return true;
 		} else if (checkButtonClick(xMax / 2, yMax / 10 + 2 * ySpacing + 2 * boxHeight, boxHeight - ySelectorShift, xMax / 10)) {
 			//Player 1 color black clicked
+			if (!forceUpdate) {
+				isPlayer1White = false;
+				forceUpdate = true;
+				clicked = false;
+				updateScreen();
+				System.out.println("Black selected");
+			}
 			return true;
 		} else if (checkButtonClick(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 2 * ySpacing + 2 * boxHeight, boxHeight - ySelectorShift, xMax / 10)) {
 			//Player 1 color white clicked
+			if (!forceUpdate) {
+				isPlayer1White = true;
+				forceUpdate = true;
+				clicked = false;
+				updateScreen();
+				System.out.println("White selected");
+			}
 			return true;
 		} else if (checkButtonClick(xMax / 2, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 10)) {
 			//Player 1 human clicked
+			if (!forceUpdate) {
+				isPlayer1Human = true;
+				forceUpdate = true;
+				clicked = false;
+				updateScreen();
+				System.out.println("Player 1 Human selected");
+			}
 			return true;
 		} else if (checkButtonClick(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 8)) {
 			//Player 1 computer clicked
+			if (!forceUpdate) {
+				isPlayer1Human = false;
+				forceUpdate = true;
+				clicked = false;
+				updateScreen();
+				System.out.println("Player 1 Computer selected");
+			}
 			return true;
 		} else if (checkButtonClick(xMax / 2, yMax / 10 + 4 * ySpacing + 4 * boxHeight, boxHeight - ySelectorShift, xMax / 10)) {
 			//Player 2 human clicked
+			if (!forceUpdate) {
+				isPlayer2Human = true;
+				forceUpdate = true;
+				clicked = false;
+				updateScreen();
+				System.out.println("Player 2 Human selected");
+			}
 			return true;
 		} else if (checkButtonClick(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 4 * ySpacing + 4 * boxHeight, boxHeight - ySelectorShift, xMax / 8)) {
 			//Player 2 computer clicked
+			if (!forceUpdate) {
+				isPlayer2Human = false;
+				forceUpdate = true;
+				clicked = false;
+				updateScreen();
+				System.out.println("Player 2 Computer selected");
+			}
 			return true;
 		} else if (checkNumberPadButtons()) {
 			return true;
@@ -825,7 +878,7 @@ public class GameWindow extends JFrame {
 		graphics.drawString("Player 1 Color:", xMax / 4, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
 		graphics.drawString("Black", xMax / 2 + xSelectorShift, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
 		graphics.drawString("White", xMax / 2 + xMax / 9 + xSelectorShift, yMax / 10 + 3 * ySpacing + 7 * boxHeight / 2);
-		if (isPlayer1White) {
+		if (!isPlayer1White) {
 			drawBox(xMax / 2, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 10);
 		} else {
 			drawBox(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 3 * ySpacing + 3 * boxHeight, boxHeight - ySelectorShift, xMax / 10);
@@ -849,7 +902,7 @@ public class GameWindow extends JFrame {
 		graphics.drawString("Player 1 Color:", xMax / 4, yMax / 10 + 2 * ySpacing + 5 * boxHeight / 2);
 		graphics.drawString("Black", xMax / 2 + xSelectorShift, yMax / 10 + 2 * ySpacing + 5 * boxHeight / 2);
 		graphics.drawString("White", xMax / 2 + xMax / 9 + xSelectorShift, yMax / 10 + 2 * ySpacing + 5 * boxHeight / 2);
-		if (isPlayer1White) {
+		if (!isPlayer1White) {
 			drawBox(xMax / 2, yMax / 10 + 2 * ySpacing + 2 * boxHeight, boxHeight - ySelectorShift, xMax / 10);
 		} else {
 			drawBox(xMax / 2 + xMax / 10 + xSelectorShift, yMax / 10 + 2 * ySpacing + 2 * boxHeight, boxHeight - ySelectorShift, xMax / 10);
@@ -925,6 +978,10 @@ public class GameWindow extends JFrame {
 	}
 	
 	private boolean checkNumberPadButtons() {
+		if (forceUpdate) {
+			/* To handle clickes "going through" to the next menu screen */
+			return false;
+		}
 		int yOffset = yMax / 6;
 		if (checkButtonClick(xMax / 3, yMax / 3 + yOffset, yMax / 9, xMax / 9)) {
 			//7 pressed
@@ -1030,6 +1087,7 @@ public class GameWindow extends JFrame {
 				}
 				drawButtons();
 				processClick(xClick, yClick);
+
 			}
 			drawTime();
 			if (advWithVisible) {
