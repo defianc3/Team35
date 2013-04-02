@@ -22,7 +22,6 @@ class TimedMoveGet implements Runnable {
     public void run() {
         while (!killed) {
             try {
-            	System.out.println("Doing iteration "+iteration);
             	doOnce();
             } catch (InterruptedException ex) {
             	killed = true;
@@ -33,14 +32,19 @@ class TimedMoveGet implements Runnable {
     public void kill() { killed = true; }
     private void doOnce() throws InterruptedException { 
     	
-    	if(iteration > 4 || (iteration > 2 && game.board.whiteMoves == "")){
+    	if(iteration > 15 || (iteration > 2 && game.board.whiteMoves == "")){
     		throw new InterruptedException();
     	}
     	
     	Piece.Type otherPlayer = player;
 		
 		MiniMaxTree mmt = new MiniMaxTree(game.copyGame());
-		mmt.processToDepth(iteration,start,limit);
+		try{
+			mmt.processToDepth(iteration,start,limit);
+		}
+		catch(StackOverflowError e){
+			iteration = 100;
+		}
 		
 		if(otherPlayer == Piece.Type.BLACK){
 			int minimum = 100000;
