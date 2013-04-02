@@ -6,20 +6,7 @@ import java.util.LinkedList;
 
 	Constructor takes two arguments, the number of rows and columns
 
-
-
-	Possible input format:
-		[row][column] [row2][column2] [w/a/f]
-
-		Where [row][column] is the piece to move, [row2][column2] is the place to move it, and
-		[w/a/f] indicates whether this move is to be a withdrawal capture, approach capture, or capture-free move
-
-	If a capturing move is possible, a capturing move must be taken
-
 */
-
-/* TODO handle cases where no move is possible */
-
 
 
 class Fanorona implements Evaluatable{
@@ -61,8 +48,7 @@ class Fanorona implements Evaluatable{
 	}
 	
 	private Fanorona getState(int n){
-		String move = numberOfMoves3(n);
-		int temp = 0;
+		String move = getNthMove(n);
 		Fanorona newState = copyGame();
 				
 		newState.move(move);
@@ -246,13 +232,10 @@ class Fanorona implements Evaluatable{
 	}
 	
 	
-	public String numberOfMoves3(int row, int column, boolean recursion, int goal, String tempString){
-		int count = 0;
+	public String getNthMove(int row, int column, boolean recursion, int goal, String tempString){
 		String tempCount = "";
 		if(this.board.capturingMoveAvailable(this.board.array[row][column])){
 			String possibleMoves = this.board.PossibleCapturingMovesWithDirection(this.board.array[row][column]);
-			int temp = 0;
-//			String tempCount = null;
 			while(possibleMoves.length() > 0){
 				int row1 = getFirstRow(possibleMoves);
 				int col1 = getFirstColumn(possibleMoves);
@@ -271,12 +254,11 @@ class Fanorona implements Evaluatable{
 					int tempRow = getSecondRow(move);	//hold the destination position so i can call recursively
 					int tempCol = getSecondColumn(move);
 					newGame.move(getFirstRow(move), getFirstColumn(move), getSecondRow(move), getSecondColumn(move), getMoveType(move));
-					tempCount = newGame.numberOfMoves3(tempRow, tempCol, true,goal,tempString);
+					tempCount = newGame.getNthMove(tempRow, tempCol, true,goal,tempString);
 					tempString = tempCount;
 					if(cc == goal) return tempString;
 				}
 				else{
-					count++;
 					cc++;
 					if(cc == goal){
 						if(tempString.length() == 0){
@@ -312,7 +294,6 @@ class Fanorona implements Evaluatable{
 				String move = type+" "+row1+" "+col1+" "+row2+" "+col2;
 				int index = possibleMoves.indexOf(',');
 				possibleMoves = possibleMoves.substring(index+1);
-				count++;
 				cc++;
 				if(cc == goal) return move;
 				
@@ -322,16 +303,15 @@ class Fanorona implements Evaluatable{
 		return tempString;
 	}
 	
-	public String numberOfMoves3(int goal){
+	public String getNthMove(int goal){
 		cc = 0;
-		int count = 0;
 		String eMove = "";
 		for(int i = 0; i < board.rows; i++){
 			for(int j = 0; j < board.columns; j++){
 				eMove = "";
 				tempMove = "";
 				if(board.capturingMoveAvailable(board.array[i][j])){
-					eMove = numberOfMoves3(i,j,false,goal,eMove);
+					eMove = getNthMove(i,j,false,goal,eMove);
 					if(cc == goal) return eMove;
 				}
 				else if(!capturingMoveAvailable()){
@@ -357,7 +337,6 @@ class Fanorona implements Evaluatable{
 						else{
 							possibleMoves = "";
 						}
-						count++;
 						cc++;
 						if(cc == goal) return move;
 					}
@@ -371,7 +350,6 @@ class Fanorona implements Evaluatable{
 		int count = 0;
 		if(this.board.capturingMoveAvailable(this.board.array[row][column])){
 			String possibleMoves = this.board.PossibleCapturingMovesWithDirection(this.board.array[row][column]);
-			int temp = 0;
 			
 			while(possibleMoves.length() > 0){
 				int row1 = getFirstRow(possibleMoves);
@@ -423,12 +401,6 @@ class Fanorona implements Evaluatable{
 					}
 					
 					while(possibleMoves.length() > 0){
-						int row1 = getFirstRow(possibleMoves);
-						int col1 = getFirstColumn(possibleMoves);
-						int row2 = getSecondRow(possibleMoves);
-						int col2 = getSecondColumn(possibleMoves);
-						char type = getMoveType(possibleMoves);
-						String move = type+" "+row1+" "+col1+" "+row2+" "+col2;
 						int index = possibleMoves.indexOf(',');
 						possibleMoves = possibleMoves.substring(index+1);
 						if(possibleMoves.length() > 2){

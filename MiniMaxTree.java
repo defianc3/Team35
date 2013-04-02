@@ -127,7 +127,7 @@ public class MiniMaxTree {
 			boolean ignoreRemaining, long start, long limit) throws InterruptedException {
 		
 		long temp = System.currentTimeMillis();
-		if((temp-start > limit-500 && limit != 0)){
+		if((temp-start > limit-50 && limit != 0)){
 			throw new InterruptedException();
 		}
 		
