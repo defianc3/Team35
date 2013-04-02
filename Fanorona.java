@@ -62,50 +62,10 @@ class Fanorona implements Evaluatable{
 	
 	private Fanorona getState(int n){
 		String move = numberOfMoves3(n);
-		//System.out.print("to next state: "+move+"  evaluates to: ");
 		int temp = 0;
 		Fanorona newState = copyGame();
-		
-//		while(move.length() > 0){
-//			int index = move.indexOf(' ');
-//			char type = (move.substring(0, index)).charAt(0);
-//			move = move.substring(index+1);
-//			index = move.indexOf(' ');
-//			int row1 = Integer.parseInt(move.substring(0,index));
-//			move = move.substring(index+1);
-//			index = move.indexOf(' ');
-//			int col1 = Integer.parseInt(move.substring(0,index));
-//			move = move.substring(index+1);
-//			index = move.indexOf(' ');
-//			int row2 = Integer.parseInt(move.substring(0,index));
-//			move = move.substring(index+1);
-//			index = move.indexOf('>');
-//			int col2;
-//			if(index == -1){
-//				col2 = Integer.parseInt(move);
-//				move = "";
-//			}
-//			else{
-//				col2 = Integer.parseInt(move.substring(0,index));
-//				move = move.substring(index+1);
-//			}
-//			
-//			newState.move(row1, col1, row2, col2, type);
-//		}
-		
+				
 		newState.move(move);
-		
-		
-		
-//		for(int i = 0; i < move.length()/7; i++){
-//			String move2 = move.substring(temp,temp+7);
-//			temp+=8;
-//			newState.move(getFirstRow(move2),getFirstColumn(move2),getSecondRow(move2),getSecondColumn(move2),getMoveType(move2));
-//		}
-		
-		
-		
-		
 		
 		return newState;
 	}
@@ -457,9 +417,7 @@ class Fanorona implements Evaluatable{
 					count += numberOfMoves(i,j,false);
 				}
 				else if(!capturingMoveAvailable()){
-					/* TODO fix this loop for paika moves */
 					String possibleMoves = board.possibleMovesWithDirection(board.array[i][j]);
-					/* TODO look into this code for possible bug related to paika moves */
 					if(possibleMoves.length() > 0){
 						possibleMoves = possibleMoves.substring(1);
 					}
@@ -669,7 +627,6 @@ class Fanorona implements Evaluatable{
 			return false;
 		}
 		else{
-			//System.out.println("Invalid move entered");
 		}
 		return false;
 	}
@@ -928,7 +885,6 @@ class Fanorona implements Evaluatable{
 		try {
 			mmt.processToDepth(5,0,0);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
