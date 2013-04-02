@@ -32,8 +32,8 @@ public class SocketMain{
 		
 		System.out.print("(1) Server or (2) Client?");
 		Scanner firstScan = new Scanner(System.in);
-		String response1 = firstScan.nextLine();
-		System.out.println("(1) Human or (2) Computer?");
+		String response1 = firstScan.nextLine();				//TODO update this to take input from the gameWindow
+		System.out.println("(1) Human or (2) Computer?");				//Also ip/host and port# (only applicable to the client)
 		String response2 = firstScan.nextLine();
 		
 		boolean human = false;
@@ -48,7 +48,7 @@ public class SocketMain{
 			System.exit(3);
 		}
 		
-		if(response1.equals("1")){
+		if(response1.equals("1")){		//this is the server side
 			
 			
 			long time1 = 0;
@@ -59,15 +59,12 @@ public class SocketMain{
 			ServerSocket sock = create();
 			System.out.println("Listening on "+sock.getLocalPort());
 			
-//			clientThread cT = new clientThread("",sock.getLocalPort());
-//			cT.start();
-			
 			Socket client = null;
 			PrintWriter out = null;
 			BufferedReader in = null;
 			try{
 				client = sock.accept();
-				out = new PrintWriter(client.getOutputStream(), true);
+				out = new PrintWriter(client.getOutputStream(), true);		//socket related stuff
 				in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			}
 			catch(IOException e){
@@ -75,19 +72,18 @@ public class SocketMain{
 				System.exit(1);
 			}
 			
-			String inputLine, outputLine;
-			out.println("WELCOME");
-			int _rows = 5;
+			out.println("WELCOME");			//server sends the client a welcome
+			int _rows = 7;
 			int _columns = 9;
-			char clientT = 'W';
+			char clientT = 'W';				//hardcoded board characteristics
 			int responseTime = 1000;
-			out.println("INFO "+_columns+" "+_rows+" "+clientT+" "+responseTime);
+			out.println("INFO "+_columns+" "+_rows+" "+clientT+" "+responseTime);   //send the info command
 			
 			game = new Fanorona(_columns,_rows);
 			Piece.Type serverPlayer;
 			if(clientT == 'B'){
 				clientPlayer = Piece.Type.BLACK;
-				serverPlayer = Piece.Type.WHITE;
+				serverPlayer = Piece.Type.WHITE;			//initialize game and determine which side controls which pieces
 			}
 			else{
 				clientPlayer = Piece.Type.WHITE;
@@ -97,21 +93,15 @@ public class SocketMain{
 			String playerInput = "";
 			boolean cont = true;
 			try {
-				while((playerInput = in.readLine()) != null && cont){
-		//			System.out.print("Enter a command: ");
-					//System.out.println("From client: "+playerInput);
-						
-		
-		//			Scanner scan2 = new Scanner(System.in);
-					if(playerInput.equals("READY")){
+				while((playerInput = in.readLine()) != null && cont){			//loops until it reads a null or cont == false
+																					//cont is set to false when an illegal move occurs
+					
+					if(playerInput.equals("READY")){			//client sends ready, so begin game
 						out.println("BEGIN");
 						
 						if(serverPlayer == Piece.Type.WHITE && !human){
-							// String move = game.getAIMove(serverPlayer);
-							// game.move(move);
-							// out.println(move);
 
-							String move;
+							String move;					//if the server is white and the AI is playing...
 							TimedMoveGet tmg = new TimedMoveGet(game.copyGame(), 0, 0, serverPlayer);
 							Thread t = new Thread(tmg);
 							t.run();
@@ -119,75 +109,79 @@ public class SocketMain{
 							try {
 								t.join();
 							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
-							move = tmg.bestMove;
+							move = tmg.bestMove;			//tmg.bestMove is updated anytime a better move is found
 							game.move(move);
-							out.println(move);
+							out.println(move);				//do the move and send it to the client
 
 						}
 						else if(serverPlayer == Piece.Type.WHITE && human){
 							
 							System.out.print("Enter a move ");
 							playerInput = "";
-							Scanner scan2 = new Scanner(System.in);
-							playerInput = scan2.nextLine();
+							Scanner scan2 = new Scanner(System.in);			//The server is white and a human is playing
+							playerInput = scan2.nextLine();					//TODO update this code to work with the gamewindow
 							playerInput = game.convertToInternalMove(playerInput);
 							game.move(playerInput);
 							out.println(playerInput);
 							
 						}
-						
-						continue;
+						continue;		//go back to the beginning of the while loop and wait for more input
 					}
 					if(playerInput.equals("OK")){
-						time1 = System.currentTimeMillis();
+						time1 = System.currentTimeMillis();			//client has acknowledged getting a move, start timer
 						continue;
 					}
 					if(playerInput.equals("TIME")){
-						System.out.println("Time exceeded");
+						System.out.println("Time exceeded");		//Client reports that the server took too long to respond
 						break;
 					}
 					if(playerInput.equals("ILLEGAL")){
-						System.out.println("Illegal move");
+						System.out.println("Illegal move");			//client reports that the server attempted an illegal move
+						out.println("WINNER");
 						break;
 					}
 					
-					System.out.println("input = " + playerInput);
+					System.out.println("input = " + playerInput);	
 					int index = playerInput.indexOf(' ');
 					String command = "";
 					try{
-						command = playerInput.substring(0,index);
+						command = playerInput.substring(0,index);		//Gets the command from the player input
 					}
 					catch(Exception e){
 						command = playerInput;
 					}
 					
-					if(command.equals("A") || command.equals("W") || command.equals("S") || command.equals("P")){
+					if(command.equals("A") || command.equals("W") || command.equals("S") || command.equals("P")){	//A move command
 						time2 = System.currentTimeMillis();
-						System.out.println("response time: "+responseTime);
-						System.out.println("time: "+(time2-time1));
+						
 						if(time2-time1 > responseTime && responseTime != 0 && game.numberOfTurns != 0){
 							out.println("TIME");
-							out.println("LOSER");
+							out.println("LOSER");			//Client exceeded time limit on a move that wasnt the first		
 							break;
 						}
 						
 						
-						out.println("OK");
+						out.println("OK");					//Server responds ok, it received a move
 						long time3 = System.currentTimeMillis();
 						if(game.capturingMoveAvailable() && !game.isPossibleCapturingMove(playerInput)){
+							out.println("ILLEGAL");
+							out.println("LOSER");		//If the move is illegal, notify the client
+							break;
+						}
+						else if(!game.capturingMoveAvailable() && !game.isPossibleNonCapturingMove(playerInput)){
 							out.println("ILLEGAL");
 							out.println("LOSER");
 							break;
 						}
+						
 						game.move(playerInput);
 						game.prettyprint();
-						System.out.println("turns: "+game.numberOfTurns);
-						int val = game.checkEndGame();
+						
+						int val = game.checkEndGame();		//returns an int which represents the possible game states
 						if(val == 1){
-							//white win
+																				//white win
 							if(clientPlayer == Piece.Type.WHITE){
 								out.println("WINNER");
 								break;
@@ -198,7 +192,7 @@ public class SocketMain{
 							}
 						}
 						else if(val == -1){
-							//black win
+																				//black win
 							if(clientPlayer == Piece.Type.WHITE){
 								out.println("LOSER");
 								break;
@@ -209,25 +203,21 @@ public class SocketMain{
 							}
 						}
 						else if(val == 2){
-							//max turns
+																				//max turns
 							out.println("TIE");
 							break;
 						}
-						else{
-							if(!human){
-								// String move = game.getAIMove(serverPlayer);
-								// game.move(move);
-								// out.println(move);
+						else{											//The game is not over
+							if(!human){											
 
 								String move;
 								TimedMoveGet tmg = new TimedMoveGet(game.copyGame(), time3, responseTime, serverPlayer);
 								Thread t = new Thread(tmg);
 								t.run();
-								System.out.println("thread ended");
-								try {
+								System.out.println("thread ended");				//Get a move from the AI with a time limit of responseTime
+								try {											//time3 is the start time
 									t.join();
 								} catch (InterruptedException e) {
-									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
 								move = tmg.bestMove;
@@ -238,15 +228,15 @@ public class SocketMain{
 							else{
 								System.out.print("Enter a move ");
 								playerInput = "";
-								Scanner scan2 = new Scanner(System.in);
-								playerInput = scan2.nextLine();
+								Scanner scan2 = new Scanner(System.in);			//Get a move from the user
+								playerInput = scan2.nextLine();					//TODO update for gamewindow
 								playerInput = game.convertToInternalMove(playerInput);
 								game.move(playerInput);
 								out.println(playerInput);
 							}
 						}
 						
-						val = game.checkEndGame();
+						val = game.checkEndGame();					//perform an endgame check again
 						if(val == 1){
 							//white win
 							if(clientPlayer == Piece.Type.WHITE){
@@ -276,28 +266,25 @@ public class SocketMain{
 						}
 						//Approach move
 					}
-					else{
+					else{									//The command was not recognized
 						out.println("ILLEGAL");
 						cont = false;
 					}
 				}
 			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			try {
 				sock.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		else if(response1.equals("2")){
 			
-			//Running as a client
+														//Running as a client
 			
 			long time1 = 0;
 			long time2 = 0;
@@ -315,7 +302,7 @@ public class SocketMain{
 			String host = "";
 			int port = 0;
 			try{
-				host = args[0];
+				host = args[0];						//TODO get hostname / port# from game window instead of command line
 				port = Integer.parseInt(args[1]);
 			}
 			catch(Exception e){
@@ -324,14 +311,12 @@ public class SocketMain{
 			}
 			
 			try {
-				tSock = new Socket(host, port);
+				tSock = new Socket(host, port);					//Socket related
 				out = new PrintWriter(tSock.getOutputStream(), true);
 				in = new BufferedReader(new InputStreamReader(tSock.getInputStream()));
 			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			System.out.println("client - got connection");
@@ -340,33 +325,37 @@ public class SocketMain{
 			try {
 				while((response = in.readLine()) != null){
 					System.out.println("from server: "+response+".");
-					if(response.equals("WELCOME")){
+					if(response.equals("WELCOME")){						//server sends a welcome, nothing to do here
 						continue;
 					}
 					if(response.equals("OK")){
-						time1 = System.currentTimeMillis();
+						time1 = System.currentTimeMillis();				//server received the move, start timer
 						continue;
 					}
 					if(response.equals("ILLEGAL")){
-						break;
+						break;											//server reports that an illegal move was attempted
 					}
-					if(response.equals("LOSER")){
+					if(response.equals("LOSER")){						
 						System.out.println("Lost");
-						System.exit(4);
-					}
+						break;
+					}													//Server reporting win/loss condition
 					if(response.equals("WINNER")){
 						System.out.println("won");
-						System.exit(5);
+						break;
+					}
+					if(response.equals("TIE")){							//TODO display end game conditions on the gamewindow
+						System.out.println("Tie");
+						break;
 					}
 					if(response.equals("TIME")){
-						System.out.println("Time limit exceeded");
+						System.out.println("Time limit exceeded");		//Server reporting time limit exceeded, continue. A LOSER command is coming next.
 						continue;
 					}
 					
 					int index = response.indexOf(' ');
 					String command = response;
 					if(index == -1){
-						command = response;
+						command = response;								//Retrieve the command from the player input
 					}
 					else{
 						command = response.substring(0,index);
@@ -374,23 +363,25 @@ public class SocketMain{
 					System.out.println("Command: "+command);
 					
 					if(command.equals("INFO")){
+						
 						String cmd = response;
 						cmd = cmd.substring(index+1);
 						index = cmd.indexOf(' ');
 						int columns = Integer.parseInt(cmd.substring(0,index));
 						cmd = cmd.substring(index+1);
 						index = cmd.indexOf(' ');
-						int rows = Integer.parseInt(cmd.substring(0,index));
+						int rows = Integer.parseInt(cmd.substring(0,index));			//Get the various parameters passed by the server
 						cmd = cmd.substring(index+1);
 						index = cmd.indexOf(' ');
 						char startType = cmd.charAt(index-1);
 						cmd = cmd.substring(index+1);
 						int timeRestriction = Integer.parseInt(cmd);
 						System.out.println("rows: "+rows+" columns: "+columns);
+						
 						game = new Fanorona(columns,rows);
 						if(startType == 'W'){
 							clientPlayer = Piece.Type.WHITE;
-						}
+						}																	//Determine which side the client plays on
 						else if(startType == 'B'){
 							clientPlayer = Piece.Type.BLACK;
 						}
@@ -405,33 +396,31 @@ public class SocketMain{
 							serverPlayer = Piece.Type.WHITE;
 						}
 						responseTime = timeRestriction;
-						out.println("READY");
+						out.println("READY");												//Let server know the client is done setting up the game
 					}
 					else if(command.equals("BEGIN")){
-						//Start game
+																				//Start game
 						game.prettyprint();
 						if(clientPlayer == Piece.Type.WHITE && !human){
-//							String move = game.getAIMove(clientPlayer);
 							String move;
-							TimedMoveGet tmg = new TimedMoveGet(game.copyGame(), 0, 0, clientPlayer);
+							TimedMoveGet tmg = new TimedMoveGet(game.copyGame(), 0, 0, clientPlayer);		//get an AI move with no time restriction
 							Thread t = new Thread(tmg);
 							t.run();
 							System.out.println("thread ended");
 							try {
 								t.join();
 							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 							move = tmg.bestMove;
 							game.move(move);
 							out.println(move);
 						}
-						else{
+						else if(clientPlayer == Piece.Type.WHITE && human){
 							
 							System.out.print("Enter a move ");
 							String playerInput = "";
-							Scanner scan2 = new Scanner(System.in);
+							Scanner scan2 = new Scanner(System.in);				//TODO update for gamewindow
 							playerInput = scan2.nextLine();
 							playerInput = game.convertToInternalMove(playerInput);
 							game.move(playerInput);
@@ -442,15 +431,13 @@ public class SocketMain{
 					}
 					else if(command.equals("A") || command.equals("W") || command.equals("S") || command.equals("P")){
 						
-						System.out.println("outside");
-						
 						time2 = System.currentTimeMillis();
 						if(time2 - time1 > responseTime && responseTime != 0 && game.numberOfTurns != 0){
-							out.println("TIME");
+							out.println("TIME");						//report time limit exceeded
 							break;
 						}
 						
-						out.println("OK");
+						out.println("OK");								//acknowledge move received
 						
 						if(game.capturingMoveAvailable() && !game.isPossibleCapturingMove(response)){
 							out.println("ILLEGAL");
@@ -460,22 +447,19 @@ public class SocketMain{
 							out.println("ILLEGAL");
 							break;
 						}
-						out.println("OK");
 						game.move(response);
 						game.prettyprint();
 						if(!human){
-//							String move = game.getAIMove(clientPlayer);
 							String move;
 							long startTime = System.currentTimeMillis();
 							long tempTime = (long) responseTime;
-							TimedMoveGet tmg = new TimedMoveGet(game.copyGame(), startTime, tempTime, clientPlayer);
+							TimedMoveGet tmg = new TimedMoveGet(game.copyGame(), startTime, tempTime, clientPlayer);		//Get AI move move with time limit
 							Thread t = new Thread(tmg);
 							t.run();
 							System.out.println("thread ended");
 							try {
 								t.join();
 							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 							move = tmg.bestMove;
@@ -487,32 +471,28 @@ public class SocketMain{
 							System.out.print("Enter a move ");
 							String playerInput = "";
 							Scanner scan2 = new Scanner(System.in);
-							playerInput = scan2.nextLine();
+							playerInput = scan2.nextLine();						//TODO update for gamewindow
 							playerInput = game.convertToInternalMove(playerInput);
 							game.move(playerInput);
 							out.println(playerInput);
 						}
-						
-						//Approach move
 					}
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				e.printStackTrace();			//the end of a giant try/catch which started right before the while loop
 			}
 			
 			out.close();
 			try {
-				in.close();
+				in.close();					//clean up the buffers and sockets
 				tSock.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}	
 		}
 		else{
 			
-			System.out.println("Server/client selection error");
+			System.out.println("Server/client selection error");			//User failed to specify client or server
 			
 		}
 	}
