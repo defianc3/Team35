@@ -392,10 +392,53 @@ public class GameWindow extends JFrame {
 			}
 		}
 		if (clientScreenVisible) {
-			
+			if (false) {
+				//Address field clicked
+				
+			}
+			if (false) {
+				//Port field clicked
+			}
 		}
 		if (serverScreenVisible) {
-			
+			if (false) {
+				//Rows field clicked
+				
+			}
+			if (false) {
+				//Columns field clicked
+				
+			}
+			if (false) {
+				//Port field clicked
+				
+			}
+			if (false) {
+				//Color checkbox clicked
+				
+			}
+		}
+		if (localScreenVisible) {
+			if (false) {
+				//Rows field clicked
+				
+			}
+			if (false) {
+				//Columns field clicked
+				
+			}
+			if (false) {
+				//Color checkbox clicked
+				
+			}
+			if (false) {
+				//Player 1 type checkbox clicked
+				
+			}
+			if (false) {
+				//Player 2 type checkbox clicked
+				
+			}
 		}
 		return false;
 	}
@@ -700,6 +743,28 @@ public class GameWindow extends JFrame {
 		graphics.drawString("Local", xMax / 2 - xMax / 30, 2 * yMax / 3);
 	}
 	
+	private void drawClientScreen() {
+		//Address field
+		//Port field
+		//Number pad
+	}
+	
+	private void drawServerScreen() {
+		//Rows field
+		//Columns field
+		//Port field
+		//Color checkbox
+		//Number pad
+	}
+	
+	private void drawLocalScreen() {
+		//Rows field
+		//Columns field
+		//Player 1 color checkbox
+		//Player 1 player checkbox
+		//Player 2 player checkbox
+	}
+	
 	private void quit() {
 		
 	}
@@ -725,6 +790,15 @@ public class GameWindow extends JFrame {
 				}
 				if (clientServerVisible) {
 					drawClientServer();
+				}
+				if (clientScreenVisible) {
+					drawClientScreen();
+				}
+				if (serverScreenVisible) {
+					drawServerScreen();
+				}
+				if (localScreenVisible) {
+					drawLocalScreen();
 				}
 				drawButtons();
 				processClick(xClick, yClick);
