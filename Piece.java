@@ -13,12 +13,7 @@ class Piece{
 		type = t;
 		row = _row;
 		column = _column;
-		if(_row%2 == _column%2){
-			stronglyConnected = true;
-		}
-		else{
-			stronglyConnected = false;
-		}
+		stronglyConnected = false;
 	}
 
 	public void setType(Type t){

@@ -86,6 +86,7 @@ class Board{
 				else if(j == middle){
 					if(i == col/2){
 						array[j][i] = new Piece(Piece.Type.NULL,j,i);
+						array[j][i].stronglyConnected = true;
 						even = true;
 					}
 					else if(even){
@@ -99,6 +100,23 @@ class Board{
 				}
 				else{
 					array[j][i] = new Piece(Piece.Type.WHITE,j,i);
+				}
+			}
+		}
+		
+		for(int k = 0; k < rows+columns; k++){
+			for(int j = 0; j < rows; j++){
+				for(int i = 0; i < col; i++){
+					if(array[j][i].stronglyConnected == true){
+						if(j+1 < rows) array[j+1][i].stronglyConnected = false;
+						if(j-1 >= 0) array[j-1][i].stronglyConnected = false;
+						if(i+1 < columns) array[j][i+1].stronglyConnected = false;
+						if(i-1 >= 0) array[j][i-1].stronglyConnected = false;
+						if(j+1 < rows && i+1 < columns) array[j+1][i+1].stronglyConnected = true;
+						if(j+1 < rows && i-1 >= 0) array[j+1][i-1].stronglyConnected = true;
+						if(j-1 >= 0 && i+1 < columns) array[j-1][i+1].stronglyConnected = true;
+						if(j-1 >= 0 && i-1 >= 0) array[j-1][i-1].stronglyConnected = true;
+					}
 				}
 			}
 		}

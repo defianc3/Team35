@@ -77,13 +77,13 @@ public class SocketMain{
 			
 			String inputLine, outputLine;
 			out.println("WELCOME");
-			int _rows = 7;
+			int _rows = 5;
 			int _columns = 9;
 			char clientT = 'W';
 			int responseTime = 1000;
 			out.println("INFO "+_columns+" "+_rows+" "+clientT+" "+responseTime);
 			
-			game = new Fanorona(9,5);
+			game = new Fanorona(_columns,_rows);
 			Piece.Type serverPlayer;
 			if(clientT == 'B'){
 				clientPlayer = Piece.Type.BLACK;
