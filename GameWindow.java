@@ -66,6 +66,7 @@ public class GameWindow extends JFrame {
 	boolean isPlayer2Human = false;
 	int tempRows = 0;
 	int tempColumns = 0;
+	int focusedField = 1;
 	
 	
 	/* Game Variables */
@@ -951,75 +952,131 @@ public class GameWindow extends JFrame {
 	
 	private boolean checkNumberPadButtons() {
 		if (forceUpdate) {
-			/* To handle clickes "going through" to the next menu screen */
+			/* To handle clicks "going through" to the next menu screen */
 			return false;
 		}
+		String tempString = "";
+		boolean add = true;
+		boolean returnVal = false;
 		int yOffset = yMax / 6;
 		if (checkButtonClick(xMax / 3, yMax / 3 + yOffset, yMax / 9, xMax / 9)) {
 			//7 pressed
-			address += "7";
-			System.out.println(address);
-			return true;
+			tempString += "7";
+			returnVal = true;
 		} else if (checkButtonClick(xMax / 3 + xMax / 9, yMax / 3 + yOffset, yMax / 9, xMax / 9)) {
 			//8 pressed
-			address += "8";
-			System.out.println(address);
-			return true;
+			tempString += "8";
+			returnVal = true;
 		} else if (checkButtonClick(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + yOffset, yMax / 9, xMax / 9)) {
 			//9 pressed
-			address += "9";
-			System.out.println(address);
-			return true;
+			tempString += "9";
+			returnVal = true;
 		} else if (checkButtonClick(xMax / 3, yMax / 3 + yMax / 9 + yOffset, yMax / 9, xMax / 9)) {
 			//4 pressed
-			address += "4";
-			System.out.println(address);
-			return true;
+			tempString += "4";
+			returnVal = true;
 		} else if (checkButtonClick(xMax / 3 + xMax / 9, yMax / 3 + yMax / 9 + yOffset, yMax / 9, xMax / 9)) {
 			//5 pressed
-			address += "5";
-			System.out.println(address);
-			return true;
+			tempString += "5";
+			returnVal = true;
 		} else if (checkButtonClick(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + yMax / 9 + yOffset, yMax / 9, xMax / 9)) {
 			//6 pressed
-			address += "6";
-			System.out.println(address);
-			return true;
+			tempString += "6";
+			returnVal = true;
 		} else if (checkButtonClick(xMax / 3, yMax / 3 + 2 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9)) {
 			//1 pressed
-			address += "1";
-			System.out.println(address);
-			return true;
+			tempString += "1";
+			returnVal = true;
 		} else if (checkButtonClick(xMax / 3 + xMax / 9, yMax / 3 + 2 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9)) {
 			//2 pressed
-			address += "2";
-			System.out.println(address);
-			return true;
+			tempString += "2";
+			returnVal = true;
 		} else if (checkButtonClick(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + 2 * yMax / 9 - 1 + yOffset, yMax / 9 , xMax / 9)) {
 			//1 pressed
-			address += "3";
-			System.out.println(address);
-			return true;
+			tempString += "3";
+			returnVal = true;
 		} else if (checkButtonClick(xMax / 3, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9) && clientScreenVisible) {
 			//. pressed
-			address += ".";
-			System.out.println(address);
-			return true;
+			tempString += ".";
+			returnVal = true;
 		} else if (checkButtonClick(xMax / 3 + xMax / 9, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9)) {
 			//0 pressed
-			address += "0";
-			System.out.println(address);
-			return true;
+			tempString += "0";
+			returnVal = true;
 		} else if (checkButtonClick(xMax / 3 + 2 * xMax / 9 - 1, yMax / 3 + 3 * yMax / 9 - 1 + yOffset, yMax / 9, xMax / 9)) {
 			//Backspace pressed
-			if (address.length() > 0) {
-				address = address.substring(0, address.length() - 1);
-			}
-			System.out.println(address);
-			return true;
+			add = false;
+			returnVal = true;
 		} else {
-			return false;
+			returnVal = false;
 		}
+		if (clientScreenVisible) {
+			if (focusedField == 1) {
+				if (add) {
+					address += tempString;
+				} else {
+					if (address.length() > 0) {
+						address = address.substring(0, address.length() - 1);
+					}
+					System.out.println(address);
+				}
+			} else if (focusedField == 2) {
+				if (add) {
+					lengthenInt(port, tempString);
+				} else {
+					shortenInt(port);
+				}
+			}
+		} else if (serverScreenVisible) {
+			if (focusedField == 1) {
+				if (add) {
+					lengthenInt(tempRows, tempString);
+				} else {
+					shortenInt(tempRows);
+				}
+			} else if (focusedField == 2) {
+				if (add) {
+					lengthenInt(tempColumns, tempString);
+				} else {
+					shortenInt(tempColumns);
+				}
+			} else if (focusedField == 3) {
+				if (add) {
+					lengthenInt(port, tempString);
+				} else {
+					shortenInt(port);
+				}
+			}
+		} else if (localScreenVisible) {
+			if (focusedField == 1) {
+				if (add) {
+					lengthenInt(tempRows, tempString);
+				} else {
+					shortenInt(tempRows);
+				}
+			} else if (focusedField == 2) {
+				if (add) {
+					lengthenInt(tempColumns, tempString);
+				} else {
+					shortenInt(tempColumns);
+				}
+			}
+		}
+		return returnVal;
+	}
+	
+	private int shortenInt(int i) {
+		String tempString = Integer.toString(i);
+		if (tempString.length() > 0) {
+			tempString = tempString.substring(0, tempString.length() - 1);
+		}
+		return Integer.parseInt(tempString);
+	}
+	
+	private int lengthenInt(int i, String addition) {
+		String tempString = Integer.toString(i);
+		tempString += addition;
+		return Integer.parseInt(tempString);
 	}
 	
 	private void quit() {
