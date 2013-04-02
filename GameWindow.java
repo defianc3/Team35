@@ -47,15 +47,17 @@ public class GameWindow extends JFrame {
 	/* Used to force window updates independent of events */
 	boolean forceUpdate = true;
 	/* Controls the visibility of the advance and withdraw buttons */
-	boolean advWithVisible = true;
+	boolean advWithVisible = false;
 	/* Controls the visibility of the board and related buttons */
-	boolean gameVisible = true;
+	boolean gameVisible = false;
 	/* Controls the visibility of the client/server/local game type */
-	boolean clientServerVisible = false;
+	boolean clientServerVisible = true;
 	/* Controls the visibility of the client options screen */
 	boolean clientScreenVisible = false;
 	/* Controls the visibility of the server options screen */
 	boolean serverScreenVisible = false;
+	/* Controls the visibility of the local options screen */
+	boolean localScreenVisible = false;
 	
 	
 	/* Game Variables */
@@ -333,24 +335,24 @@ public class GameWindow extends JFrame {
 	
 	private boolean checkButtonClicks() {
 		if (gameVisible) {
-			if (checkButtonClick(40, yMax - 30)) {
+			if (checkButtonClick(40, yMax - 30, 20, 80)) {
 				//Reset clicked
 				System.out.println("RESET");
 				return true;
 			}
-			if (checkButtonClick(480, yMax - 30)) {
+			if (checkButtonClick(480, yMax - 30, 20, 80)) {
 				//Quit clicked
 				System.out.println("QUIT");
 				return true;
 			}
 			if (advWithVisible) {
-				if (checkButtonClick(200, yMax - 30)) {
+				if (checkButtonClick(200, yMax - 30, 20, 80)) {
 					//Advance clicked
 					advWithVisible = false;
 					forceUpdate = true;
 					return true;
 				}
-				if (checkButtonClick(315, yMax - 30)) {
+				if (checkButtonClick(315, yMax - 30, 20, 80)) {
 					//Withdraw clicked
 					advWithVisible = false;
 					forceUpdate = true;
@@ -359,7 +361,23 @@ public class GameWindow extends JFrame {
 			}
 		}
 		if (clientServerVisible) {
-			
+			if (checkButtonClick(xMax / 4, yMax / 3, yMax / 6, xMax / 5)) {
+				//Client clicked
+				System.out.println("CLIENT");
+				return true;
+			}
+			if (checkButtonClick(xMax / 2 + xMax / 20, yMax /3, yMax / 6,
+					xMax / 5)) {
+				//Server clicked
+				System.out.println("SERVER");
+				return true;
+			}
+			if (checkButtonClick(4 * (xMax / 10), yMax / 3 + yMax / 4,
+					yMax / 6, xMax / 5)) {
+				//Local clicked
+				System.out.println("LOCAL");
+				return true;
+			}
 		}
 		if (clientScreenVisible) {
 			
@@ -370,9 +388,9 @@ public class GameWindow extends JFrame {
 		return false;
 	}
 	
-	private boolean checkButtonClick(int x, int y) {
-		if ((xClick > x && xClick < (x + 80))
-				&& (yClick > y && yClick < y + 20)) {
+	private boolean checkButtonClick(int x, int y, int height, int width) {
+		if ((xClick > x && xClick < (x + width))
+				&& (yClick > y && yClick < y + height)) {
 			return true;
 		} else {
 			return false;
@@ -653,7 +671,21 @@ public class GameWindow extends JFrame {
 	}
 	
 	private void drawClientServer() {
-		
+		Graphics2D graphics2D = (Graphics2D) graphics;
+		graphics2D.setStroke(new BasicStroke(3F));
+		graphics.setColor(Color.BLACK);
+		//Client button
+		drawBox(xMax / 4, yMax / 3, yMax / 6, xMax / 5);
+		graphics.drawString("Client", xMax / 4 + xMax / 10 - xMax / 30,
+				yMax / 3 + yMax / 10);
+		//Server button
+		drawBox(xMax / 2 + xMax / 20, yMax /3, yMax / 6, xMax / 5);
+		graphics.drawString("Server", xMax / 4 + 2 * xMax / 10 - xMax / 30 + 
+				xMax / 5,
+				yMax / 3 + yMax / 10);
+		//Local button
+		drawBox(4 * (xMax / 10), yMax / 3 + yMax / 4, yMax / 6, xMax / 5);
+		graphics.drawString("Local", xMax / 2 - xMax / 30, 2 * yMax / 3);
 	}
 	
 	private void quit() {
@@ -678,6 +710,9 @@ public class GameWindow extends JFrame {
 					drawGrid();
 					drawInfo();
 					drawPieces();
+				}
+				if (clientServerVisible) {
+					drawClientServer();
 				}
 				drawButtons();
 				processClick(xClick, yClick);
