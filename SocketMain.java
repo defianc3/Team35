@@ -334,16 +334,21 @@ public class SocketMain{
 		BufferedReader in = null;
 		PrintWriter out = null;
 		
-		try {
-			tSock = new Socket(host, port);					//Socket related
-			out = new PrintWriter(tSock.getOutputStream(), true);
-			in = new BufferedReader(new InputStreamReader(tSock.getInputStream()));
-		}
-		catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
+		boolean cont = true;
+		while(cont){
+			try {
+				tSock = new Socket(host, port);					//Socket related
+				out = new PrintWriter(tSock.getOutputStream(), true);
+				in = new BufferedReader(new InputStreamReader(tSock.getInputStream()));
+				cont = false;
+			}
+			catch (UnknownHostException e) {
+			}
+			catch (IOException e) {
+			}
+			catch (Exception e){
+
+			}
 		}
 		System.out.println("client - got connection");
 		
