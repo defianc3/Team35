@@ -6,9 +6,17 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferStrategy;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Scanner;
 
 import javax.swing.JFrame;
 import javax.swing.JViewport;
@@ -16,7 +24,7 @@ import javax.swing.Timer;
 
 public class GameWindow extends JFrame {
 	private static final long serialVersionUID = 1L; //To suppress warning
-	static JFrame frame;
+	JFrame frame;
 	BufferStrategy bufferStrat;
 	Graphics graphics;
 	Rectangle rec;
@@ -65,6 +73,9 @@ public class GameWindow extends JFrame {
 	int tempRows = 0;
 	int tempColumns = 0;
 	int focusedField = 1;
+	char clientT = 'B';
+	
+	int gameType = 0;
 	
 	
 	/* Game Variables */
@@ -77,6 +88,7 @@ public class GameWindow extends JFrame {
 	Piece.Type otherPlayer;
 	long time1;
 	long time2;
+	int responseTime = 5000;
 	
 	private enum selectionStates {
 		NONE,
@@ -147,174 +159,6 @@ public class GameWindow extends JFrame {
                 }
 			}
 		});
-	}
-	
-	private void initGame() {
-		game = new Fanorona(xBoardDim, yBoardDim);
-		turn = 0;
-		turnLimit = yBoardDim * 10;
-		numberOfBlackMovesThisTurn = 0;
-		moveTurn = false;
-		time1 = new Date().getTime();
-		time2 = -1;
-		if (humanPlayer == Piece.Type.WHITE) {
-			otherPlayer = Piece.Type.BLACK; 
-		} else {
-			otherPlayer = Piece.Type.WHITE;
-		}
-	}
-	
-	private void handleMove() {
-		if (game.activePlayer() == otherPlayer) {
-			String bestMove = game.getAIMove(otherPlayer);
-
-			System.out.println("best move: " + bestMove);
-
-			//move = bestMove;
-
-			numberOfBlackMovesThisTurn++;
-			//move = game.getRandomMove();
-			//System.out.println("Other move: " + move);
-
-			time2 = new Date().getTime();
-		} else {
-			//Move selection entered here
-			time2 = new Date().getTime();
-
-			/*if (playerInput.equals("quit")) {
-				
-				//Quit here
-			} else if(playerInput.equals("moves")) {
-				System.out.println("\nwhite: " + game.board.whiteMovesFull);
-				System.out.println("\nblack: " + game.board.blackMovesFull);
-				moveTurn = false;
-				turn--;
-			} else if(playerInput.equals("reset")) {
-				//Start a new game here
-				initGame();
-				continue;
-			} else {
-				try {
-					//Get move
-				}
-				catch(Exception e) {
-					System.out.println("Error: " + e.getMessage());
-				}
-			}*/
-		}
-	}
-	
-	private void gameLoop() {
-		initGame();
-		updateScreen();
-
-		while (true) {
-
-			
-			String move = "";
-			//if (game.capturingMoveAvailable()) System.out.println("Capturing move required");
-
-			int pieceInt1 = -1;
-			int pieceInt2 = -1;
-
-			String pieceStr1 = "";
-			String pieceStr2 = "";
-
-			moveTurn = true; //Indicates that a move as been entered
-
-
-			boolean valid = true;
-			if (moveTurn) {
-				int row1;
-				int row2;
-				int col1;
-				int col2;
-				char moveType;
-
-				if(move.equals("N")) {
-					moveType = 'N';
-					row1 = 0;
-					col1 = 0;
-					row2 = 0;
-					col2 = 0;
-				}
-				else {
-					if (game.activePlayer() == humanPlayer) {
-
-						moveType = Fanorona.getMoveType(move);
-						if (moveType == 'S') {
-							row1 = game.board.rows-Fanorona.getFirstRowCMD(move);
-							col1 = Fanorona.getFirstColumnCMD(move)-1;
-							row2 = 0;
-							col2 = 0;
-						}
-						else {
-							row1 = game.board.rows-Fanorona.getFirstRowCMD(move);
-							col1 = Fanorona.getFirstColumnCMD(move)-1;
-							row2 = game.board.rows-Fanorona.getSecondRowCMD(move);
-							col2 = Fanorona.getSecondColumnCMD(move)-1;
-						}
-
-						move = game.convertToInternalMove(move);
-					}
-					else{
-
-						row1 = Fanorona.getFirstRow(move);
-						col1 = Fanorona.getFirstColumn(move);
-						row2 = Fanorona.getSecondRow(move);
-						col2 = Fanorona.getSecondColumn(move);
-						moveType = Fanorona.getMoveType(move);
-					}
-				}
-
-				valid = game.validMoveSystax(move);
-
-				if (!valid) {
-					//Not a valid move
-				} else {
-					if(game.activePlayer() == Piece.Type.WHITE) {
-						//Total time it took for the player to make the move
-						game.player1Time += (time2 - time1);
-					}
-					else {
-						game.player2Time += (time2 - time1);
-					}
-
-					if (game.capturingMoveAvailable()){
-						if (game.isPossibleCapturingMove(row1, col1, row2, col2, moveType) || moveType == 'S') {
-							Piece.Type previous = game.activePlayer();
-							//			      			boolean successiveMove = game.move(row1, col1, row2, col2, moveType);
-							//boolean successiveMove = game.move(move);
-							if(previous == Piece.Type.BLACK && game.activePlayer() == Piece.Type.WHITE) {
-								numberOfBlackMovesThisTurn = 0;
-							}
-							game.removeSacrifices(game.activePlayer());
-						} else {
-							System.out.println("A capturing move must be entered\n");
-							valid = false;
-						}
-					} else {
-						game.move(row1,col1,row2,col2,moveType);
-					}
-					if (game.board.numberRemaining(Piece.Type.WHITE) == 0) {
-						//Black wins here
-						break;
-					} else if (game.board.numberRemaining(Piece.Type.BLACK) == 0) {
-						//White wins here
-						break;
-					}
-				}
-			}
-			updateScreen();
-			//game.printTime();
-			if(valid && moveTurn) {
-				turn++;
-			}
-			if (turn == turnLimit) {
-				//Maximum number of turns reached here
-				break;
-			}
-		}
 	}
 	
 	private void calculateDimensions() {
@@ -629,11 +473,25 @@ public class GameWindow extends JFrame {
 		/* xCoord and yCoord points start at the top left corner with (0,0)
 		 * and go to the bottom left corner with (n,m) where n and m are the
 		 * x and y dimensions of the board, respectively */
-		int xCoord = 4;
-		int yCoord = 4;
-		int xPoint = xGridMin + (xSpacing * xCoord);
-		int yPoint = yGridMin + (ySpacing * yCoord);
-		//drawPiece(pieceType.WHITE, xPoint, yPoint);
+		if (game != null) {
+			for (int i = 1; i < xBoardDim; i++) {
+				for (int j = 1; j < yBoardDim; j++) {
+					Piece.Type pT = game.board.array[i][j].type;
+					int xOutputPoint = xGridMin + (xSpacing * (i - 1));
+					int yOutputPoint = yGridMin + (ySpacing * (yBoardDim - j));
+					if (pT == Piece.Type.WHITE) {
+						drawPiece(pieceType.WHITE, xOutputPoint, yOutputPoint);
+					} else if (pT == Piece.Type.BLACK) {
+						drawPiece(pieceType.BLACK, xOutputPoint, yOutputPoint);
+					} else if ((pT == Piece.Type.BLACKSACRIFICE) ||
+							(pT == Piece.Type.WHITESACRIFICE)) {
+						drawPiece(pieceType.SACRIFICED, xOutputPoint, yOutputPoint);
+					} else {
+						continue;
+					}
+				}
+			}
+		}
 	}
 	
 	public void drawInfo() {
@@ -746,6 +604,7 @@ public class GameWindow extends JFrame {
 			return true;
 		} else if (checkButtonClick(7 * xMax / 10, 4 * yMax / 5, yMax / 12, xMax / 5)) {
 			startGame();
+			gameType = 1;
 			return true;
 		} else {
 			return false;
@@ -786,6 +645,7 @@ public class GameWindow extends JFrame {
 			return true;
 		} else if (checkButtonClick(7 * xMax / 10, 4 * yMax / 5, yMax / 12, xMax / 5)) {
 			startGame();
+			gameType = 2;
 			return true;
 		} else {
 			return false;
@@ -841,6 +701,7 @@ public class GameWindow extends JFrame {
 			return true;
 		} else if (checkButtonClick(7 * xMax / 10, 4 * yMax / 5, yMax / 12, xMax / 5)) {
 			startGame();
+			gameType = 3;
 			return true;
 		} else {
 			return false;
@@ -1120,6 +981,16 @@ public class GameWindow extends JFrame {
 			yGridMin = (radius) + 40;
 			calculateDimensions();
 		}
+		if (gameType == 1) {
+			//Client
+			clientMode(true, address, port);
+		} else if (gameType == 2) {
+			//Server
+			serverMode(true);
+		} else if (gameType == 3) {
+			//Local
+			
+		}
 	}
 	
 	private void quit() {
@@ -1127,7 +998,7 @@ public class GameWindow extends JFrame {
 	}
 	
 	private void updateScreen() {
-		bufferStrat = this.getBufferStrategy();
+		bufferStrat = getBufferStrategy();
 		graphics = null;
 
 		try {
@@ -1178,4 +1049,506 @@ public class GameWindow extends JFrame {
 		Toolkit.getDefaultToolkit().sync();
 		forceUpdate = false;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//Client should be set as the white player
+	
+	public ServerSocket create(){
+		
+		for(int i = 1024; i < 2048; i++){
+			try{
+				return new ServerSocket(i);
+			}
+			catch(IOException e){
+				continue;
+			}
+		}
+		return null;
+	}
+	
+	//serverMode(human);
+
+	//clientMode(human,host,port);
+
+	public String getPlayerInput(){
+		System.out.print("Enter a move ");
+		String playerInput = "";
+		Scanner scan2 = new Scanner(System.in);			//The server is white and a human is playing
+		playerInput = scan2.nextLine();					//TODO update this code to work with the gamewindow
+		return playerInput;
+	}
+	
+	public void serverMode(boolean human){
+		
+		long startTime = 0;
+		long endTime = 0;
+
+		Piece.Type clientPlayer;
+		ServerSocket sock = null;
+
+		try{
+			sock = new ServerSocket(port);
+		}
+		catch(Exception e){
+			System.out.println("Port not available");
+		}
+		System.out.println("Listening on "+sock.getLocalPort());
+		
+		Socket client = null;
+		PrintWriter out = null;
+		BufferedReader in = null;
+		try{
+			client = sock.accept();
+			out = new PrintWriter(client.getOutputStream(), true);		//socket related stuff
+			in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+		}
+		catch(IOException e){
+			System.out.println("Accept failed");
+			System.exit(1);
+		}
+		
+		out.println("WELCOME");			//server sends the client a welcome
+		out.println("INFO "+yBoardDim+" "+xBoardDim+" "+clientT+" "+responseTime);   //send the info command
+		
+		game = new Fanorona(yBoardDim,xBoardDim);
+		
+		Piece.Type serverPlayer;
+		if(clientT == 'B'){
+			clientPlayer = Piece.Type.BLACK;
+			serverPlayer = Piece.Type.WHITE;			//initialize game and determine which side controls which pieces
+		}
+		else{
+			clientPlayer = Piece.Type.WHITE;
+			serverPlayer = Piece.Type.BLACK;
+		}
+
+		String playerInput = "";
+		boolean cont = true;
+		
+		try {
+			while((playerInput = in.readLine()) != null && cont){			//loops until it reads a null or cont == false
+																				//cont is set to false when an illegal move occurs
+				if(playerInput.equals("READY")){			//client sends ready, so begin game
+					out.println("BEGIN");
+					
+					if(serverPlayer == Piece.Type.WHITE && !human){
+
+						String move;					//if the server is white and the AI is playing...
+						TimedMoveGet tmg = new TimedMoveGet(game.copyGame(), 0, 0, serverPlayer);
+						Thread t = new Thread(tmg);
+						t.run();
+						try {
+							t.join();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						move = tmg.bestMove;			//tmg.bestMove is updated anytime a better move is found
+						game.move(move);
+						out.println(move);				//do the move and send it to the client
+
+					}
+					else if(serverPlayer == Piece.Type.WHITE && human){
+						
+						String input = getPlayerInput();
+						input = game.convertToInternalMove(input);
+						
+						game.move(input);
+						out.println(input);
+						
+					}
+					continue;		//go back to the beginning of the while loop and wait for more input
+				}
+				if(playerInput.equals("OK")){
+					startTime = System.currentTimeMillis();			//client has acknowledged getting a move, start timer
+					continue;
+				}
+				if(playerInput.equals("TIME")){
+					System.out.println("Time exceeded");		//Client reports that the server took too long to respond
+					out.println("WINNER");
+					break;
+				}
+				if(playerInput.equals("ILLEGAL")){
+					System.out.println("Illegal move");			//client reports that the server attempted an illegal move
+					out.println("WINNER");
+					break;
+				}
+				
+				System.out.println("input = " + playerInput);	
+				int index = playerInput.indexOf(' ');
+				String command = "";
+				try{
+					command = playerInput.substring(0,index);		//Gets the command from the player input
+				}
+				catch(Exception e){
+					command = playerInput;
+				}
+				
+				if(command.equals("A") || command.equals("W") || command.equals("S") || command.equals("P")){	//A move command
+					endTime = System.currentTimeMillis();
+					
+					if(endTime-startTime > responseTime && responseTime != 0 && game.numberOfTurns != 0){
+						out.println("TIME");
+						out.println("LOSER");			//Client exceeded time limit on a move that wasnt the first		
+						break;
+					}
+					
+					
+					out.println("OK");					//Server responds ok, it received a move
+					long time3 = System.currentTimeMillis();
+					if(game.capturingMoveAvailable() && !game.isPossibleCapturingMove(playerInput)){
+						out.println("ILLEGAL");
+						out.println("LOSER");		//If the move is illegal, notify the client
+						System.out.println("WINNER");
+						break;
+					}
+					else if(!game.capturingMoveAvailable() && !game.isPossibleNonCapturingMove(playerInput)){
+						out.println("ILLEGAL");
+						out.println("LOSER");
+						System.out.println("WINNER");
+						break;
+					}
+					
+					game.move(playerInput);
+					//game.prettyprint();
+					forceUpdate = true;
+					updateScreen();
+					int val = game.checkEndGame();		//returns an int which represents the possible game states
+					if(val == 1){
+																			//white win
+						if(clientPlayer == Piece.Type.WHITE){
+							out.println("WINNER");
+							System.out.println("LOSER");
+							break;
+						}
+						else{
+							out.println("LOSER");
+							System.out.println("WINNER");
+							break;
+						}
+					}
+					else if(val == -1){
+																			//black win
+						if(clientPlayer == Piece.Type.WHITE){
+							out.println("LOSER");
+							System.out.println("WINNER");
+							break;
+						}
+						else{
+							out.println("WINNER");
+							System.out.println("LOSER");
+							break;
+						}
+					}
+					else if(val == 2){
+																			//max turns
+						out.println("TIE");
+						System.out.println("TIE");
+						break;
+					}
+					else{											//The game is not over
+						if(!human){											
+
+							String move;
+							TimedMoveGet tmg = new TimedMoveGet(game.copyGame(), time3, responseTime, serverPlayer);
+							Thread t = new Thread(tmg);
+							t.run();										//Get a move from the AI with a time limit of responseTime
+							try {											//time3 is the start time
+								t.join();
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							move = tmg.bestMove;
+							game.move(move);
+							out.println(move);
+
+						}
+						else{
+							String input = getPlayerInput();
+							input = game.convertToInternalMove(input);
+							
+							game.move(input);
+							out.println(input);
+						}
+					}
+					
+					val = game.checkEndGame();					//perform an endgame check again
+					if(val == 1){
+						//white win
+						if(clientPlayer == Piece.Type.WHITE){
+							out.println("WINNER");
+							System.out.println("LOSER");
+							break;
+						}
+						else{
+							out.println("LOSER");
+							System.out.println("WINNER");
+							break;
+						}
+					}
+					else if(val == -1){
+						//black win
+						if(clientPlayer == Piece.Type.WHITE){
+							out.println("LOSER");
+							System.out.println("WINNER");
+							break;
+						}
+						else{
+							out.println("WINNER");
+							System.out.println("LOSER");
+							break;
+						}
+					}
+					else if(val == 2){
+						//max turns
+						out.println("TIE");
+						System.out.println("TIE");
+						break;
+					}
+					//Approach move
+				}
+				else{									//The command was not recognized
+					out.println("ILLEGAL");
+					cont = false;
+				}
+			}
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			sock.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void clientMode(boolean human,String host, int port){
+		
+		//Running as a client
+		
+		long startTime = 0;
+		long endTime = 0;
+		
+		game = null;
+		Piece.Type clientPlayer = null;
+		Piece.Type serverPlayer = null;
+		
+		int responseTime = 0;
+		
+		Socket tSock = null;
+		BufferedReader in = null;
+		PrintWriter out = null;
+		
+		boolean cont = true;
+		while(cont){
+			try {
+				tSock = new Socket(host, port);					//Socket related
+				out = new PrintWriter(tSock.getOutputStream(), true);
+				in = new BufferedReader(new InputStreamReader(tSock.getInputStream()));
+				cont = false;
+			}
+			catch (UnknownHostException e) {
+			}
+			catch (IOException e) {
+			}
+			catch (Exception e){
+
+			}
+		}
+		System.out.println("client - got connection");
+		
+		String response = "";
+		try {
+			while((response = in.readLine()) != null){
+				System.out.println("from server: "+response+".");
+				if(response.equals("WELCOME")){						//server sends a welcome, nothing to do here
+					continue;
+				}
+				if(response.equals("OK")){
+					startTime = System.currentTimeMillis();				//server received the move, start timer
+					continue;
+				}
+					if(response.equals("ILLEGAL")){
+						break;											//server reports that an illegal move was attempted
+				}
+				if(response.equals("LOSER")){						
+					System.out.println("Lost");
+					break;
+				}													//Server reporting win/loss condition
+				if(response.equals("WINNER")){
+					System.out.println("won");
+					break;
+				}
+				if(response.equals("TIE")){							//TODO display end game conditions on the gamewindow
+					System.out.println("Tie");
+					break;
+				}
+				if(response.equals("TIME")){
+					System.out.println("Time limit exceeded");		//Server reporting time limit exceeded, continue. A LOSER command is coming next.
+					continue;
+				}
+				
+				int index = response.indexOf(' ');
+				String command = response;
+				if(index == -1){
+					command = response;								//Retrieve the command from the player input
+				}
+				else{
+					command = response.substring(0,index);
+				}
+				System.out.println("Command: "+command);
+				
+				if(command.equals("INFO")){
+				
+					String cmd = response;
+					cmd = cmd.substring(index+1);
+					index = cmd.indexOf(' ');
+					int columns = Integer.parseInt(cmd.substring(0,index));
+					cmd = cmd.substring(index+1);
+					index = cmd.indexOf(' ');
+					int rows = Integer.parseInt(cmd.substring(0,index));			//Get the various parameters passed by the server
+					cmd = cmd.substring(index+1);
+					index = cmd.indexOf(' ');
+					char startType = cmd.charAt(index-1);
+					cmd = cmd.substring(index+1);
+					int timeRestriction = Integer.parseInt(cmd);
+					System.out.println("rows: "+rows+" columns: "+columns);
+					
+					game = new Fanorona(columns,rows);
+					if(startType == 'W'){
+						clientPlayer = Piece.Type.WHITE;
+					}																	//Determine which side the client plays on
+					else if(startType == 'B'){
+						clientPlayer = Piece.Type.BLACK;
+					}
+					else{
+						System.out.println("Type error");
+						System.exit(1);
+					}
+					if(clientPlayer == Piece.Type.WHITE){
+						serverPlayer = Piece.Type.BLACK;
+					}
+					else{
+						serverPlayer = Piece.Type.WHITE;
+					}
+						responseTime = timeRestriction;
+						out.println("READY");												//Let server know the client is done setting up the game
+					}
+				else if(command.equals("BEGIN")){
+													//Start game
+					//game.prettyprint();
+					forceUpdate = true;
+					updateScreen();
+					if(clientPlayer == Piece.Type.WHITE && !human){
+						String move;
+						TimedMoveGet tmg = new TimedMoveGet(game.copyGame(), 0, 0, clientPlayer);		//get an AI move with no time restriction
+						Thread t = new Thread(tmg);
+						t.run();
+						try {
+							t.join();
+						}
+						catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						move = tmg.bestMove;
+						game.move(move);
+						out.println(move);
+					}
+					else if(clientPlayer == Piece.Type.WHITE && human){
+					
+						String input = getPlayerInput();
+						input = game.convertToInternalMove(input);
+						
+						game.move(input);
+						out.println(input);
+						
+					}
+					continue;
+				}
+				else if(command.equals("A") || command.equals("W") || command.equals("S") || command.equals("P")){
+				
+					endTime = System.currentTimeMillis();
+					if(endTime - startTime > responseTime && responseTime != 0 && game.numberOfTurns != 0){
+						out.println("TIME");						//report time limit exceeded
+						continue;
+					}
+					
+					out.println("OK");								//acknowledge move received
+					startTime = System.currentTimeMillis();
+					
+					if(game.capturingMoveAvailable() && !game.isPossibleCapturingMove(response)){
+						out.println("ILLEGAL");
+						continue;
+					}
+					else if(!game.capturingMoveAvailable() && !game.isPossibleNonCapturingMove(response)){
+						out.println("ILLEGAL");
+						continue;
+					}
+					game.move(response);
+					//game.prettyprint();
+					forceUpdate = true;
+					updateScreen();
+					if(!human){
+						String move;
+						long tempTime = (long) responseTime;
+						TimedMoveGet tmg = new TimedMoveGet(game.copyGame(), startTime, tempTime, clientPlayer);		//Get AI move move with time limit
+						Thread t = new Thread(tmg);
+						t.run();
+						
+						try {
+							t.join();
+						}
+						catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						move = tmg.bestMove;
+						System.out.println("Move: "+move);
+						game.move(move);
+						//game.prettyprint();
+						forceUpdate = true;
+						updateScreen();
+						out.println(move);
+						}
+					else{
+						String input = getPlayerInput();
+						input = game.convertToInternalMove(input);
+					
+						game.move(input);
+						out.println(input);
+					}
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();			//the end of a giant try/catch which started right before the while loop
+		}
+		
+		out.close();
+		try {
+			in.close();					//clean up the buffers and sockets
+			tSock.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
 }
