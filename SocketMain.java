@@ -8,7 +8,13 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class SocketMain{
-	
+
+	static int portNumber;
+	static int _rows;
+	static int _columns;
+	static char clientT;
+	static int responseTime;
+		
 	public static ServerSocket create(){
 		
 		for(int i = 1024; i < 2048; i++){
@@ -80,11 +86,10 @@ public class SocketMain{
 		long startTime = 0;
 		long endTime = 0;
 
-		int portNumber = 1024;
-		
 		Fanorona game;
 		Piece.Type clientPlayer;
 		ServerSocket sock = null;
+
 		try{
 			sock = new ServerSocket(portNumber);
 		}
@@ -107,10 +112,6 @@ public class SocketMain{
 		}
 		
 		out.println("WELCOME");			//server sends the client a welcome
-		int _rows = 5;
-		int _columns = 9;
-		char clientT = 'B';				//hardcoded board characteristics
-		int responseTime = 150;
 		out.println("INFO "+_columns+" "+_rows+" "+clientT+" "+responseTime);   //send the info command
 		
 		game = new Fanorona(_columns,_rows);
