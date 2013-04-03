@@ -474,11 +474,11 @@ public class GameWindow extends JFrame {
 		 * and go to the bottom left corner with (n,m) where n and m are the
 		 * x and y dimensions of the board, respectively */
 		if (game != null) {
-			for (int i = 1; i < xBoardDim; i++) {
-				for (int j = 1; j < yBoardDim; j++) {
+			for (int i = 0; i < yBoardDim; i++) {
+				for (int j = 0; j < xBoardDim; j++) {
 					Piece.Type pT = game.board.array[i][j].type;
-					int xOutputPoint = xGridMin + (xSpacing * (i - 1));
-					int yOutputPoint = yGridMin + (ySpacing * (yBoardDim - j));
+					int xOutputPoint = xGridMin + (xSpacing * (j));
+					int yOutputPoint = yGridMin + (ySpacing * (i));
 					if (pT == Piece.Type.WHITE) {
 						drawPiece(pieceType.WHITE, xOutputPoint, yOutputPoint);
 					} else if (pT == Piece.Type.BLACK) {
@@ -1097,10 +1097,12 @@ public class GameWindow extends JFrame {
 			yGridMin = (radius) + 40;
 			calculateDimensions();
 		}
-		int temp = tempRows;
+		/*int temp = tempRows;
 		tempRows = tempColumns;
-		tempColumns = temp;
-		game = new Fanorona(yBoardDim,xBoardDim);
+		tempColumns = temp;*/
+		
+		//Server Fanorona
+		game = new Fanorona(xBoardDim,yBoardDim);
 		
 		long startTime = 0;
 		long endTime = 0;
@@ -1132,7 +1134,7 @@ public class GameWindow extends JFrame {
 		out.println("WELCOME");			//server sends the client a welcome
 		out.println("INFO "+yBoardDim+" "+xBoardDim+" "+clientT+" "+responseTime);   //send the info command
 		
-		game = new Fanorona(yBoardDim,xBoardDim);
+		game = new Fanorona(xBoardDim,yBoardDim);
 		
 		Piece.Type serverPlayer;
 		if(clientT == 'B'){
@@ -1439,9 +1441,9 @@ public class GameWindow extends JFrame {
 					
 					xBoardDim = tempRows;
 					yBoardDim = tempColumns;
-					int temp = tempRows;
+					/*int temp = tempRows;
 					tempRows = tempColumns;
-					tempColumns = temp;
+					tempColumns = temp;*/
 					
 					calculateDimensions();
 					if (radius > xGridMin) {
@@ -1450,7 +1452,8 @@ public class GameWindow extends JFrame {
 						calculateDimensions();
 					}
 					
-					game = new Fanorona(yBoardDim,xBoardDim);
+					//Client Fanorona
+					game = new Fanorona(xBoardDim,yBoardDim);
 					if(startType == 'W'){
 						clientPlayer = Piece.Type.WHITE;
 					}																	//Determine which side the client plays on
