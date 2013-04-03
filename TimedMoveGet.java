@@ -1,4 +1,3 @@
-import java.util.LinkedList;
 
 class TimedMoveGet implements Runnable {
 	
@@ -71,7 +70,7 @@ class TimedMoveGet implements Runnable {
 				}
 			}
 		}
-		System.out.println("Set best move as "+bestMove);
+		//System.out.println("Set best move as "+bestMove);
 		iteration++;
     }
 }

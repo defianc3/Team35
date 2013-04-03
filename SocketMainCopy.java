@@ -7,13 +7,13 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
-public class SocketMain{
+public class SocketMainCopy{
 
-	static int portNumber;
-	static int _rows;
-	static int _columns;
-	static char clientT;
-	static int responseTime;
+	static int portNumber = 1024;
+	static int _rows = 5;
+	static int _columns = 9;
+	static char clientT = 'B';
+	static int responseTime = 10000;
 		
 	public static ServerSocket create(){
 		
@@ -29,9 +29,8 @@ public class SocketMain{
 	}
 	
 	
-//	public static void main(String args[]){
-	
-	public void run(){
+	public static void main(String args[]){
+		
 		System.out.print("(1) Server or (2) Client?");
 		Scanner firstScan = new Scanner(System.in);
 		String response1 = firstScan.nextLine();				//TODO update this to take input from the gameWindow
@@ -51,14 +50,28 @@ public class SocketMain{
 		}
 		
 		if(response1.equals("1")){		//this is the server side
+			
+			try{
+				portNumber = Integer.parseInt(args[0]);
+				_rows = Integer.parseInt(args[1]);
+				_columns = Integer.parseInt(args[2]);
+				clientT = args[3].charAt(0);
+				responseTime = Integer.parseInt(args[4]);
+			}
+			catch(Exception e){
+				System.out.println("Command line arguments error");
+				System.exit(2);
+			}
+			
+			
 			serverMode(human);
 		}
 		else if(response1.equals("2")){
 			String host = "";
 			int port = 0;
 			try{
-//				host = args[0];						//TODO get hostname / port# from game window instead of command line
-//				port = Integer.parseInt(args[1]);
+				host = args[0];						//TODO get hostname / port# from game window instead of command line
+				port = Integer.parseInt(args[1]);
 			}
 			catch(Exception e){
 				System.out.println("Command line arguments error");
@@ -72,9 +85,7 @@ public class SocketMain{
 			System.out.println("Server/client selection error");			//User failed to specify client or server
 			
 		}
-		
 	}
-	//}
 	
 	public static String getPlayerInput(){
 		System.out.print("Enter a move ");
@@ -160,6 +171,7 @@ public class SocketMain{
 						input = game.convertToInternalMove(input);
 						
 						game.move(input);
+						game.prettyprint();
 						out.println(input);
 						
 					}
@@ -172,11 +184,13 @@ public class SocketMain{
 				if(playerInput.equals("TIME")){
 					System.out.println("Time exceeded");		//Client reports that the server took too long to respond
 					out.println("WINNER");
+					System.out.println("LOSER");
 					break;
 				}
 				if(playerInput.equals("ILLEGAL")){
 					System.out.println("Illegal move");			//client reports that the server attempted an illegal move
 					out.println("WINNER");
+					System.out.println("LOSER");
 					break;
 				}
 				
@@ -265,6 +279,7 @@ public class SocketMain{
 							}
 							move = tmg.bestMove;
 							game.move(move);
+							game.prettyprint();
 							out.println(move);
 
 						}
@@ -273,6 +288,7 @@ public class SocketMain{
 							input = game.convertToInternalMove(input);
 							
 							game.move(input);
+							game.prettyprint();
 							out.println(input);
 						}
 					}
@@ -457,6 +473,7 @@ public class SocketMain{
 						}
 						move = tmg.bestMove;
 						game.move(move);
+						game.prettyprint();
 						out.println(move);
 					}
 					else if(clientPlayer == Piece.Type.WHITE && human){
@@ -515,6 +532,7 @@ public class SocketMain{
 						input = game.convertToInternalMove(input);
 					
 						game.move(input);
+						game.prettyprint();
 						out.println(input);
 					}
 				}

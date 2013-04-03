@@ -1,0 +1,1 @@
+javac Board.java Evaluatable.java Fanorona.java MiniMaxTree.java Piece.java SocketMainCopy.java TimedMoveGet.java
