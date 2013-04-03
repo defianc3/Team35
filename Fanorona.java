@@ -1,5 +1,3 @@
-import java.util.LinkedList;
-
 /*
 
 	Fanorona game
@@ -811,7 +809,7 @@ class Fanorona implements Evaluatable{
 			e.printStackTrace();
 		}
 		
-		LinkedList<Evaluatable> path = mmt.getPath();
+//		LinkedList<Evaluatable> path = mmt.getPath();
 		
 		String bestMove;
 		if(otherPlayer == Piece.Type.BLACK){

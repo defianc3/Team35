@@ -413,17 +413,6 @@ class Board{
 
 	//Determine if there is a capturing move available with origin position p
 	boolean capturingMoveAvailable(Piece p){
-		String latestMove = "";
-		if(activePlayer == Piece.Type.WHITE && whiteMoves.length() != 0){
-			int temp = whiteMoves.lastIndexOf("\n");
-			if(temp != -1)
-				latestMove = whiteMoves.substring(temp);
-		}
-		else if(activePlayer == Piece.Type.BLACK && blackMoves.length() != 0){
-			int temp = blackMoves.lastIndexOf("\n");
-			if(temp != -1)
-				latestMove = blackMoves.substring(temp);
-		}
 
 		String s = possibleMoves(p);
 
@@ -538,8 +527,6 @@ class Board{
 		String connected = connectedSpaces(p);
 
 		String possible = "";
-
-		int temp = 1;
 		
 		while(connected.length() != 0){
 			int row2;
@@ -663,9 +650,7 @@ class Board{
 		for(int i = 0; i < columns; i++){
 			line2 += "-----";
 		}
-
-		int t = 0;
-		//System.out.println(line2);
+		
 		for(int i = 0; i < columns; i++){
 			System.out.print((i+1)+"    ");
 		}
@@ -679,7 +664,6 @@ class Board{
 					System.out.print("O");
 				}
 				if(array[i][j].type == Piece.Type.NULL){
-					//System.out.print("N");
 					System.out.print(" ");
 				}
 				if(array[i][j].type == Piece.Type.WHITESACRIFICE){
