@@ -474,9 +474,9 @@ public class GameWindow extends JFrame {
 		 * and go to the bottom left corner with (n,m) where n and m are the
 		 * x and y dimensions of the board, respectively */
 		if (game != null) {
-			for (int i = 0; i < yBoardDim; i++) {
-				for (int j = 0; j < xBoardDim; j++) {
-					Piece.Type pT = game.board.array[j][i].type;
+			for (int i = 1; i < xBoardDim; i++) {
+				for (int j = 1; j < yBoardDim; j++) {
+					Piece.Type pT = game.board.array[i][j].type;
 					int xOutputPoint = xGridMin + (xSpacing * (i - 1));
 					int yOutputPoint = yGridMin + (ySpacing * (yBoardDim - j));
 					if (pT == Piece.Type.WHITE) {
@@ -1089,14 +1089,17 @@ public class GameWindow extends JFrame {
 	
 	public void serverMode(boolean human){
 		
-		xBoardDim = tempColumns;
-		yBoardDim = tempRows;
+		xBoardDim = tempRows;
+		yBoardDim = tempColumns;
 		calculateDimensions();
 		if (radius > xGridMin) {
 			xGridMin = (radius) + 10;
 			yGridMin = (radius) + 40;
 			calculateDimensions();
 		}
+		int temp = tempRows;
+		tempRows = tempColumns;
+		tempColumns = temp;
 		game = new Fanorona(yBoardDim,xBoardDim);
 		
 		long startTime = 0;
@@ -1423,10 +1426,10 @@ public class GameWindow extends JFrame {
 					String cmd = response;
 					cmd = cmd.substring(index+1);
 					index = cmd.indexOf(' ');
-					tempColumns = Integer.parseInt(cmd.substring(0,index));
+					tempRows = Integer.parseInt(cmd.substring(0,index));
 					cmd = cmd.substring(index+1);
 					index = cmd.indexOf(' ');
-					tempRows = Integer.parseInt(cmd.substring(0,index));			//Get the various parameters passed by the server
+					tempColumns = Integer.parseInt(cmd.substring(0,index));			//Get the various parameters passed by the server
 					cmd = cmd.substring(index+1);
 					index = cmd.indexOf(' ');
 					char startType = cmd.charAt(index-1);
@@ -1434,8 +1437,12 @@ public class GameWindow extends JFrame {
 					int timeRestriction = Integer.parseInt(cmd);
 					//System.out.println("rows: "+rows+" columns: "+columns);
 					
-					xBoardDim = tempColumns;
-					yBoardDim = tempRows;
+					xBoardDim = tempRows;
+					yBoardDim = tempColumns;
+					int temp = tempRows;
+					tempRows = tempColumns;
+					tempColumns = temp;
+					
 					calculateDimensions();
 					if (radius > xGridMin) {
 						xGridMin = (radius) + 10;
