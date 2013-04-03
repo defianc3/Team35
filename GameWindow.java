@@ -65,13 +65,13 @@ public class GameWindow extends JFrame {
 	/* Controls the visibility of the local options screen */
 	boolean localScreenVisible = false;
 	
-	String address = "";
-	int port;
+	String address = "127.0.0.1";
+	int port = 1024;
 	boolean isPlayer1White = true;
 	boolean isPlayer1Human = false;
 	boolean isPlayer2Human = false;
-	int tempRows = 0;
-	int tempColumns = 0;
+	int tempRows = 5;
+	int tempColumns = 9;
 	int focusedField = 1;
 	char clientT = 'B';
 	
@@ -474,9 +474,9 @@ public class GameWindow extends JFrame {
 		 * and go to the bottom left corner with (n,m) where n and m are the
 		 * x and y dimensions of the board, respectively */
 		if (game != null) {
-			for (int i = 1; i < xBoardDim; i++) {
-				for (int j = 1; j < yBoardDim; j++) {
-					Piece.Type pT = game.board.array[i][j].type;
+			for (int i = 0; i < yBoardDim; i++) {
+				for (int j = 0; j < xBoardDim; j++) {
+					Piece.Type pT = game.board.array[j][i].type;
 					int xOutputPoint = xGridMin + (xSpacing * (i - 1));
 					int yOutputPoint = yGridMin + (ySpacing * (yBoardDim - j));
 					if (pT == Piece.Type.WHITE) {
@@ -603,8 +603,8 @@ public class GameWindow extends JFrame {
 		} else if (checkNumberPadButtons()) {
 			return true;
 		} else if (checkButtonClick(7 * xMax / 10, 4 * yMax / 5, yMax / 12, xMax / 5)) {
-			startGame();
 			gameType = 1;
+			startGame();
 			return true;
 		} else {
 			return false;
@@ -644,8 +644,8 @@ public class GameWindow extends JFrame {
 		} else if (checkNumberPadButtons()) {
 			return true;
 		} else if (checkButtonClick(7 * xMax / 10, 4 * yMax / 5, yMax / 12, xMax / 5)) {
-			startGame();
 			gameType = 2;
+			startGame();
 			return true;
 		} else {
 			return false;
@@ -700,8 +700,8 @@ public class GameWindow extends JFrame {
 		} else if (checkNumberPadButtons()) {
 			return true;
 		} else if (checkButtonClick(7 * xMax / 10, 4 * yMax / 5, yMax / 12, xMax / 5)) {
-			startGame();
 			gameType = 3;
+			startGame();
 			return true;
 		} else {
 			return false;
@@ -973,14 +973,6 @@ public class GameWindow extends JFrame {
 		serverScreenVisible = false;
 		localScreenVisible = false;
 		gameVisible = true;
-		xBoardDim = tempRows;
-		yBoardDim = tempColumns;
-		calculateDimensions();
-		if (radius > xGridMin) {
-			xGridMin = (radius) + 10;
-			yGridMin = (radius) + 40;
-			calculateDimensions();
-		}
 		if (gameType == 1) {
 			//Client
 			clientMode(true, address, port);
@@ -1096,6 +1088,16 @@ public class GameWindow extends JFrame {
 	}
 	
 	public void serverMode(boolean human){
+		
+		xBoardDim = tempColumns;
+		yBoardDim = tempRows;
+		calculateDimensions();
+		if (radius > xGridMin) {
+			xGridMin = (radius) + 10;
+			yGridMin = (radius) + 40;
+			calculateDimensions();
+		}
+		game = new Fanorona(yBoardDim,xBoardDim);
 		
 		long startTime = 0;
 		long endTime = 0;
@@ -1383,11 +1385,11 @@ public class GameWindow extends JFrame {
 					continue;
 				}
 				if(response.equals("OK")){
-					startTime = System.currentTimeMillis();				//server received the move, start timer
+					startTime = System.currentTimeMillis();			//server received the move, start timer
 					continue;
 				}
-					if(response.equals("ILLEGAL")){
-						break;											//server reports that an illegal move was attempted
+				if(response.equals("ILLEGAL")){
+					break;											//server reports that an illegal move was attempted
 				}
 				if(response.equals("LOSER")){						
 					System.out.println("Lost");
@@ -1421,18 +1423,27 @@ public class GameWindow extends JFrame {
 					String cmd = response;
 					cmd = cmd.substring(index+1);
 					index = cmd.indexOf(' ');
-					int columns = Integer.parseInt(cmd.substring(0,index));
+					tempColumns = Integer.parseInt(cmd.substring(0,index));
 					cmd = cmd.substring(index+1);
 					index = cmd.indexOf(' ');
-					int rows = Integer.parseInt(cmd.substring(0,index));			//Get the various parameters passed by the server
+					tempRows = Integer.parseInt(cmd.substring(0,index));			//Get the various parameters passed by the server
 					cmd = cmd.substring(index+1);
 					index = cmd.indexOf(' ');
 					char startType = cmd.charAt(index-1);
 					cmd = cmd.substring(index+1);
 					int timeRestriction = Integer.parseInt(cmd);
-					System.out.println("rows: "+rows+" columns: "+columns);
+					//System.out.println("rows: "+rows+" columns: "+columns);
 					
-					game = new Fanorona(columns,rows);
+					xBoardDim = tempColumns;
+					yBoardDim = tempRows;
+					calculateDimensions();
+					if (radius > xGridMin) {
+						xGridMin = (radius) + 10;
+						yGridMin = (radius) + 40;
+						calculateDimensions();
+					}
+					
+					game = new Fanorona(yBoardDim,xBoardDim);
 					if(startType == 'W'){
 						clientPlayer = Piece.Type.WHITE;
 					}																	//Determine which side the client plays on
